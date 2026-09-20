@@ -1,0 +1,74 @@
+{
+ "n_normas": 813,
+ "n_columnas": 13,
+ "faltantes_total": 6,
+ "razon_desbalance": 4.7,
+ "mediana_palabras": 44.0,
+ "media_palabras": 50.9,
+ "max_palabras": 274,
+ "min_palabras": 6,
+ "atipicos_iqr": 26,
+ "textos_cortos_lt12": 10,
+ "idiomas": {
+  "es": 712,
+  "pt": 76,
+  "en": 25
+ },
+ "idioma_titulo": {
+  "es": 660,
+  "indet.": 69,
+  "pt": 66,
+  "en": 18
+ },
+ "idioma_obs": {
+  "es": 798,
+  "indet.": 14,
+  "pt": 1
+ },
+ "cramers_tipo_dominio": 0.362,
+ "cramers_ambito_dominio": 0.243,
+ "cramers_pais_investigador": 0.989,
+ "grupos_url_repetida": 14,
+ "grupos_url_dominios_distintos": 8,
+ "fechas_interpretables_pct": 58.3,
+ "tipos_crudos": 14,
+ "tipos_normalizados": 11,
+ "fuga": [
+  {
+   "Dimensión": "Pedagógico",
+   "textos de la clase que contienen la pista": 49,
+   "% dentro de la clase": 16.7,
+   "textos de OTRAS clases que la contienen": 24,
+   "% fuera de la clase": 4.6
+  },
+  {
+   "Dimensión": "Ética",
+   "textos de la clase que contienen la pista": 166,
+   "% dentro de la clase": 62.6,
+   "textos de OTRAS clases que la contienen": 125,
+   "% fuera de la clase": 22.8
+  },
+  {
+   "Dimensión": "Administrativo",
+   "textos de la clase que contienen la pista": 12,
+   "% dentro de la clase": 10.0,
+   "textos de OTRAS clases que la contienen": 21,
+   "% fuera de la clase": 3.0
+  },
+  {
+   "Dimensión": "Protección de Datos",
+   "textos de la clase que contienen la pista": 52,
+   "% dentro de la clase": 73.2,
+   "textos de OTRAS clases que la contienen": 51,
+   "% fuera de la clase": 6.9
+  },
+  {
+   "Dimensión": "Técnico",
+   "textos de la clase que contienen la pista": 8,
+   "% dentro de la clase": 12.7,
+   "textos de OTRAS clases que la contienen": 47,
+   "% fuera de la clase": 6.3
+  }
+ ],
+ "vocabulario": 2421
+}

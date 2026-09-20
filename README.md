@@ -56,8 +56,9 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 │   └── imn.py          umbral de confianza, enrutamiento, carga residual, tabla IMN con trazabilidad
 ├── scripts/run_pipeline.py              ejecución por etapas
 ├── prompts/clasificador_v0.1.md         prompt versionado con política de idioma
-├── notebooks/01_eda.ipynb               exploración y reporte de calidad (Sprint 2)
+├── notebooks/EDA_corpus_GENIAL.ipynb    EDA ejecutado (Semana 2) + exportación HTML + figuras/ + eda_resumen.json
 ├── docs/                                documento técnico (PDF), decisiones metodológicas, protocolo de codificación ciega
+│   └── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
 └── tests/test_pipeline.py               pruebas unitarias (partición sin fuga, métricas, parseo, enrutamiento)
 ```
 
@@ -142,6 +143,9 @@ Piso aritmético (clase mayoritaria, sin entrenar nada): 36.2 % de exactitud y 0
 | Datasets alternativos (plan B) | MultiEURLEX CC-BY-4.0 (Hugging Face `coastalcph/multi_eurlex`); OECD.AI Policy Navigator, acceso público con atribución | sí |
 
 ## 10. Documentación
+
+- `docs/semana2/` — entregables de la Semana 2: informe del EDA, análisis comparativo de ocho técnicas y Ficha de Decisión Técnica y Arquitectura (la decisión: Regresión Logística sobre TF-IDF frente a LLM few-shot).
+- `notebooks/EDA_corpus_GENIAL.ipynb` — cuaderno ejecutado del EDA (pandas, matplotlib, seaborn); hallazgo principal: las observaciones están en español aunque el título esté en portugués o inglés, por lo que `idioma` se deriva del título.
 
 - `docs/Grupo_9_Documento_Tecnico_Presentacion_Proyecto.pdf` — documento técnico completo (estado del arte, datasets, métricas, stakeholders, alcance, cronograma Scrum, recursos, hitos, anexos).
 - `docs/decisiones_metodologicas_v1.md` — las cuatro condiciones metodológicas del tutor y su resolución.

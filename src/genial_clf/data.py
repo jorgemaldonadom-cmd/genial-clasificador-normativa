@@ -4,7 +4,7 @@ Decisiones que implementa (véase docs/decisiones_metodologicas_v1.md):
   * el archivo se congela: si el hash SHA-256 no coincide con config.yaml, el pipeline se detiene;
   * el único valor faltante de `Dominio` se corrige con criterio experto documentado (no por imputación);
   * `Tipo de norma` se normaliza (capitalización) pero NUNCA entra como variable predictora;
-  * se añade la variable `idioma` (detección automática + país como respaldo) para estratificar y desagregar;
+  * se añade la variable `idioma` detectada sobre el TÍTULO (las observaciones están en español; hallazgo del EDA), con el país como respaldo;
   * se marcan duplicados por URL oficial para que caigan en la misma partición;
   * el texto de entrada del modelo es `Título de la Norma` + `Observaciones`.
 """
@@ -70,8 +70,11 @@ def build_text(df: pd.DataFrame, parts: list[str]) -> pd.Series:
     return text.str.replace(r"\s+", " ", regex=True).str.strip()
 
 
-def detect_language(text: pd.Series, country: pd.Series) -> pd.Series:
-    """Detecta es/pt/en/fr con lingua; usa el país como respaldo cuando la detección no es fiable."""
+def detect_language(title: pd.Series, country: pd.Series) -> pd.Series:
+    """Idioma de la norma = idioma del TÍTULO (texto original). Hallazgo del EDA (Semana 2): las
+    `Observaciones` están redactadas en español por los codificadores casi siempre, incluso para Brasil
+    y el Caribe anglófono, así que detectar sobre el texto completo devolvería 'es' para casi todo.
+    Respaldo: idioma esperado por país cuando el título es demasiado corto o ambiguo."""
     try:
         from lingua import Language, LanguageDetectorBuilder
 
@@ -83,12 +86,13 @@ def detect_language(text: pd.Series, country: pd.Series) -> pd.Series:
         code = {Language.SPANISH: "es", Language.PORTUGUESE: "pt", Language.ENGLISH: "en", Language.FRENCH: "fr"}
 
         def one(t: str, pais: str) -> str:
+            t = str(t)
             lang = det.detect_language_of(t) if len(t) >= 20 else None
             if lang is None:
                 return COUNTRY_LANG.get(pais, "es")
             return code[lang]
 
-        return pd.Series([one(t, p) for t, p in zip(text, country)], index=text.index)
+        return pd.Series([one(t, p) for t, p in zip(title, country)], index=title.index)
     except ImportError:  # pragma: no cover
         log.warning("lingua no disponible: idioma asignado solo por país")
         return country.map(COUNTRY_LANG).fillna("es")
@@ -112,7 +116,7 @@ def preprocess(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     df["Tipo de norma"] = normalize_tipo_norma(df["Tipo de norma"])
     df["texto"] = build_text(df, cols["text_parts"])
     df["n_palabras"] = df["texto"].str.split().str.len()
-    df["idioma"] = detect_language(df["texto"], df[cols["country"]])
+    df["idioma"] = detect_language(df["Título de la Norma"], df[cols["country"]])
     df["grupo_url"] = mark_duplicates(df, cols["url"])
     n_dup = int((df.groupby("grupo_url").size() > 1).sum())
     log.info("grupos de URL repetida: %d", n_dup)
