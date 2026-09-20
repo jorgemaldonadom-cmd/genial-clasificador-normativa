@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "Si usa este repositorio, cite el proyecto y el corpus GENIAL como se indica."
+title: "genial-clasificador-normativa: clasificación automática de normativa sobre IA en educación superior de ALC"
+type: software
+version: 0.1.0
+date-released: 2026-09-20
+license: MIT
+authors:
+  - family-names: Maldonado Mahauad
+    given-names: Jorge Javier
+    affiliation: "Universidad de Cuenca / UEES"
+  - family-names: Figallo
+    given-names: Melissa
+    affiliation: "UEES"
+keywords:
+  - text classification
+  - AI governance
+  - higher education
+  - Latin America
+  - few-shot learning
+  - inter-coder reliability
+references:
+  - type: data
+    title: "Corpus consolidado de normativa sobre inteligencia artificial en educación superior de América Latina y el Caribe"
+    authors:
+      - name: "Proyecto GENIAL (Erasmus+)"
+    year: 2026
+    notes: "Conjunto de datos de investigación no publicado; uso autorizado por la coordinación del consorcio."

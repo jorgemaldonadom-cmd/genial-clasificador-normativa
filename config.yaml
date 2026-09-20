@@ -1,0 +1,50 @@
+# Configuración del pipeline. Todos los valores se documentan en el README.
+seed: 2026
+
+paths:
+  raw_corpus: data/raw/consolidado_limpio.xlsx     # NO se versiona; se coloca localmente con autorización de GENIAL
+  raw_sheet: "Datos limpios"
+  processed: data/processed/corpus_depurado.csv
+  splits_dir: data/splits
+  results_dir: results
+  prompt: prompts/clasificador_v0.1.md
+
+# Hash SHA-256 del archivo congelado (septiembre de 2026). El pipeline se detiene si no coincide.
+corpus_sha256: f9797147e7026f796d453fa84d09c4bf32c48ae75c3744912806a72db3ff7f33
+
+columns:
+  target: Dominio
+  text_parts: ["Título de la Norma", "Observaciones"]
+  leakage_excluded: ["Tipo de norma", "Investigador", "Fecha de Publicación"]   # nunca son variables predictoras
+  country: País
+  url: URL Oficial
+
+classes: ["Pedagógico", "Ética", "Administrativo", "Protección de Datos", "Técnico"]
+
+split:
+  test_size: 125          # entre 100 y 150; estratificado por dimensión e idioma
+  fewshot_per_class: 3    # pool few-shot = 15
+  min_non_spanish_test: 20
+
+classic:
+  ngram_range: [1, 2]
+  max_features: 5000
+  class_weight: balanced
+  cv_folds: 5
+  C: 1.0
+
+llm:
+  provider: anthropic                 # alternativa documentada: modelo abierto (Qwen) vía endpoint compatible
+  model: claude-sonnet-4-5            # fijar y registrar la versión exacta usada en cada ejecución
+  temperature: 0.0
+  repeats: 3
+  max_tokens: 40
+
+evaluation:
+  bootstrap_iters: 2000
+  ci_level: 0.95
+
+routing:
+  confidence_threshold: 0.60          # valor inicial; se calibra en el Sprint 3 con la curva enrutamiento-exactitud
+  mandatory_review_min_country_n: 20  # países con menos normas que este umbral van siempre a revisión humana
+  mandatory_review_languages: ["en", "fr"]

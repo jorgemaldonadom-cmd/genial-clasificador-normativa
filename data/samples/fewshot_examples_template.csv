@@ -1,0 +1,2 @@
+id_norma,País,idioma,texto,Dominio
+<entero>,<país>,<es|pt|en|fr>,"<Título de la Norma>. <Observaciones>",<Pedagógico|Ética|Administrativo|Protección de Datos|Técnico>
