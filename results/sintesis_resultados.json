@@ -1,0 +1,197 @@
+{
+ "corpus": {
+  "n": 813,
+  "train": 669,
+  "fewshot": 15,
+  "test": 129,
+  "origen_test": "muestreo estratificado por dimensión e idioma (sin 2.º codificador todavía)"
+ },
+ "piso_mayoritaria": {
+  "accuracy": 0.36472346786248133,
+  "f1_macro": 0.10690032858707559
+ },
+ "metadata_cv": {
+  "accuracy": 0.5043050430504306,
+  "f1_macro": 0.3538619873520291
+ },
+ "clasico_cv": {
+  "accuracy": 0.6346863468634686,
+  "accuracy_ci": [
+   0.601025751673053,
+   0.6670801306069414
+  ],
+  "f1_macro": 0.587320226123206,
+  "f1_macro_ci": [
+   0.5491464379977895,
+   0.6232141651059415
+  ],
+  "top2": 0.8523985239852399,
+  "kappa": 0.49626571424995103,
+  "f1_por_clase": {
+   "Pedagógico": 0.7093425605536332,
+   "Ética": 0.6714542190305206,
+   "Administrativo": 0.4056603773584906,
+   "Protección de Datos": 0.7972027972027972,
+   "Técnico": 0.35294117647058826
+  }
+ },
+ "ablaciones": [
+  {
+   "variante": "RL balanceada (configuración elegida)",
+   "exactitud": 0.635,
+   "F1 macro": 0.587,
+   "F1 Pedagógico": 0.709,
+   "F1 Ética": 0.671,
+   "F1 Administrativo": 0.406,
+   "F1 Protección de Datos": 0.797,
+   "F1 Técnico": 0.353
+  },
+  {
+   "variante": "RL sin ponderar clases",
+   "exactitud": 0.622,
+   "F1 macro": 0.475,
+   "F1 Pedagógico": 0.706,
+   "F1 Ética": 0.657,
+   "F1 Administrativo": 0.211,
+   "F1 Protección de Datos": 0.769,
+   "F1 Técnico": 0.031
+  },
+  {
+   "variante": "RL balanceada, C = 3",
+   "exactitud": 0.637,
+   "F1 macro": 0.581,
+   "F1 Pedagógico": 0.72,
+   "F1 Ética": 0.664,
+   "F1 Administrativo": 0.409,
+   "F1 Protección de Datos": 0.783,
+   "F1 Técnico": 0.327
+  },
+  {
+   "variante": "SVM lineal balanceada, C = 0.5",
+   "exactitud": 0.645,
+   "F1 macro": 0.578,
+   "F1 Pedagógico": 0.732,
+   "F1 Ética": 0.68,
+   "F1 Administrativo": 0.368,
+   "F1 Protección de Datos": 0.783,
+   "F1 Técnico": 0.328
+  },
+  {
+   "variante": "RL balanceada, solo unigramas",
+   "exactitud": 0.62,
+   "F1 macro": 0.576,
+   "F1 Pedagógico": 0.684,
+   "F1 Ética": 0.663,
+   "F1 Administrativo": 0.391,
+   "F1 Protección de Datos": 0.776,
+   "F1 Técnico": 0.366
+  },
+  {
+   "variante": "RL balanceada, caracteres 3-5",
+   "exactitud": 0.609,
+   "F1 macro": 0.573,
+   "F1 Pedagógico": 0.69,
+   "F1 Ética": 0.635,
+   "F1 Administrativo": 0.407,
+   "F1 Protección de Datos": 0.786,
+   "F1 Técnico": 0.35
+  }
+ ],
+ "prueba_ciega": [
+  {
+   "rama": "mayoritaria",
+   "n": 129,
+   "exactitud": 0.3643410852713178,
+   "IC95 exactitud": "[0.286, 0.450]",
+   "F1 macro": 0.10681818181818181,
+   "IC95 F1 macro": "[0.087, 0.124]",
+   "top-2": 0.3643410852713178,
+   "κ vs etiqueta original": 0.0,
+   "F1 Pedagógico": 0.5340909090909091,
+   "F1 Ética": 0.0,
+   "F1 Administrativo": 0.0,
+   "F1 Protección de Datos": 0.0,
+   "F1 Técnico": 0.0
+  },
+  {
+   "rama": "metadata",
+   "n": 129,
+   "exactitud": 0.4573643410852713,
+   "IC95 exactitud": "[0.374, 0.543]",
+   "F1 macro": 0.3168312829536247,
+   "IC95 F1 macro": "[0.244, 0.383]",
+   "top-2": 0.5503875968992248,
+   "κ vs etiqueta original": 0.21831717451523536,
+   "F1 Pedagógico": 0.5737704918032787,
+   "F1 Ética": 0.4507042253521127,
+   "F1 Administrativo": 0.07692307692307693,
+   "F1 Protección de Datos": 0.4827586206896552,
+   "F1 Técnico": 0.0
+  },
+  {
+   "rama": "clasico",
+   "n": 129,
+   "exactitud": 0.6124031007751938,
+   "IC95 exactitud": "[0.526, 0.692]",
+   "F1 macro": 0.5103389330975537,
+   "IC95 F1 macro": "[0.426, 0.589]",
+   "top-2": 0.8837209302325582,
+   "κ vs etiqueta original": 0.47273767677593403,
+   "F1 Pedagógico": 0.7126436781609196,
+   "F1 Ética": 0.735632183908046,
+   "F1 Administrativo": 0.3,
+   "F1 Protección de Datos": 0.6923076923076923,
+   "F1 Técnico": 0.1111111111111111
+  },
+  {
+   "rama": "svm",
+   "n": 129,
+   "exactitud": 0.6434108527131783,
+   "IC95 exactitud": "[0.558, 0.721]",
+   "F1 macro": 0.5520961420474366,
+   "IC95 F1 macro": "[0.451, 0.638]",
+   "top-2": 0.875968992248062,
+   "κ vs etiqueta original": 0.5105575717584956,
+   "F1 Pedagógico": 0.7446808510638298,
+   "F1 Ética": 0.7228915662650602,
+   "F1 Administrativo": 0.3783783783783784,
+   "F1 Protección de Datos": 0.6923076923076923,
+   "F1 Técnico": 0.2222222222222222
+  }
+ ],
+ "mcnemar": [
+  {
+   "A": "clasico",
+   "B": "mayoritaria",
+   "A acierta, B falla": 48,
+   "A falla, B acierta": 16,
+   "valor p": 0.0001066246995021925,
+   "method": "chi2 con corrección de continuidad"
+  },
+  {
+   "A": "clasico",
+   "B": "metadata",
+   "A acierta, B falla": 34,
+   "A falla, B acierta": 14,
+   "valor p": 0.006098945931214356,
+   "method": "chi2 con corrección de continuidad"
+  },
+  {
+   "A": "clasico",
+   "B": "svm",
+   "A acierta, B falla": 3,
+   "A falla, B acierta": 7,
+   "valor p": 0.34375,
+   "method": "binomial exacta"
+  }
+ ],
+ "fiabilidad": null,
+ "operacion": {
+  "umbral": 0.5,
+  "pct_enrutado": 0.8388683886838868,
+  "exactitud_auto": 0.8778625954198473,
+  "horas_ahorradas": 21.833333333333332,
+  "horas_total": 135.5
+ },
+ "llm_disponible": false
+}

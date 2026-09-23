@@ -6,8 +6,7 @@ Proyecto Integrador · Maestría en Inteligencia Artificial · Universidad de Es
 Jorge Javier Maldonado Mahauad · Melissa Figallo · septiembre-octubre de 2026
 En colaboración con el proyecto [GENIAL](https://genial-project.eu) (Erasmus+).
 
-> Estado: **planificación completada; desarrollo en curso (Sprint 2).** Este repositorio contiene el código inicial del *pipeline*, la muestra pública del corpus, el *prompt* versionado, la documentación de planificación y las pruebas unitarias. No contiene resultados: se publicarán al cierre del proyecto (25 de octubre de 2026).
-
+> Estado: **experimento ejecutado (Sprint 3).** Rama clásica, líneas base, ablaciones, prueba ciega y especificación operativa están en `notebooks/02_experimento.ipynb` (ejecutado) y en `results/`. Pendientes: rama LLM *few-shot* (requiere clave de API; instrucciones en `notebooks/README_experimento.md`) y κ humano-humano con la codificación del segundo codificador de GENIAL. Cierre del proyecto: 25 de octubre de 2026.
 ---
 
 ## 1. Propósito
@@ -49,7 +48,7 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 │   ├── data.py         carga + verificación de hash, corrección experta, idioma, duplicados, campo de texto
 │   ├── split.py        muestreo estratificado por dimensión e idioma; archivos ciegos
 │   ├── baselines.py    clase mayoritaria y línea base de metadata (Tipo de norma)
-│   ├── classic.py      TF-IDF + Regresión Logística, validación cruzada, top-2, términos por dimensión
+│   ├── classic.py      TF-IDF + Regresión Logística, validación cruzada por grupo (StratifiedGroupKFold), top-2, términos
 │   ├── llm.py          prompt few-shot, llamada a la API, parseo de top-2, repeticiones, estabilidad
 │   ├── evaluate.py     F1, matriz de confusión, McNemar, IC de Wilson y bootstrap, kappa, desagregación
 │   ├── reliability.py  kappa humano-humano, adjudicación, hoja de tipificación de errores
@@ -57,6 +56,8 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 ├── scripts/run_pipeline.py              ejecución por etapas
 ├── prompts/clasificador_v0.1.md         prompt versionado con política de idioma
 ├── notebooks/EDA_corpus_GENIAL.ipynb    EDA ejecutado (Semana 2) + exportación HTML + figuras/ + eda_resumen.json
+├── notebooks/02_experimento.ipynb       experimento ejecutado (generado por make_results_notebook.py) + README_experimento.md
+├── results/                             agregados versionados: sintesis_resultados.json, ablaciones, comparación pareada, McNemar, curva, IMN, figuras
 ├── docs/                                documento técnico (PDF), decisiones metodológicas, protocolo de codificación ciega
 │   └── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
 └── tests/test_pipeline.py               pruebas unitarias (partición sin fuga, métricas, parseo, enrutamiento)
@@ -142,8 +143,21 @@ Piso aritmético (clase mayoritaria, sin entrenar nada): 36.2 % de exactitud y 0
 | Dependencias | scikit-learn (BSD-3), pandas (BSD-3), numpy (BSD-3), scipy (BSD-3), PyYAML (MIT), openpyxl (MIT), lingua-language-detector (Apache-2.0), anthropic (MIT), pytest (MIT), tabulate (MIT) | sí |
 | Datasets alternativos (plan B) | MultiEURLEX CC-BY-4.0 (Hugging Face `coastalcph/multi_eurlex`); OECD.AI Policy Navigator, acceso público con atribución | sí |
 
-## 10. Documentación
+## 10. Resultados (validación cruzada por grupo, n = 813; conjunto ciego, n = 129)
 
+| Rama | F1 macro CV [IC95] | Exactitud CV | Top-2 CV | F1 macro ciego [IC95] |
+|---|---|---|---|---|
+| Clase mayoritaria | 0.107 | 0.365 | — | 0.107 [0.087, 0.124] |
+| Metadata (Tipo de norma) | 0.354 | 0.504 | — | 0.317 [0.244, 0.383] |
+| **TF-IDF + Regresión Logística** | **0.587 [0.549, 0.623]** | 0.635 [0.601, 0.667] | 0.852 | 0.510 [0.426, 0.589] |
+| SVM lineal (ablación) | 0.578 | 0.645 | — | 0.552 [0.451, 0.638] |
+| LLM few-shot | pendiente (ejecución local) | | | |
+
+F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 · Protección de Datos 0.80 · Técnico 0.35. El modelo supera a ambas líneas base con significancia (McNemar *p* < 0.01) pero **no alcanza el umbral de excelencia (0.70)**; el desbalance de clases y la señal léxica explican la mayor parte del déficit. Con top-2 en 0.85-0.88 y una curva de enrutamiento que exige revisar ~84 % de las normas para garantizar 85 % de exactitud automática, la recomendación operativa es **codificación asistida** (dos candidatas + probabilidad, decisión humana), no automatización. Lectura completa en la sección 9 del cuaderno; cifras en `results/sintesis_resultados.json`.
+
+## 11. Documentación
+
+- `notebooks/02_experimento.ipynb` / `.html` — experimento ejecutado (secciones 1-9); `notebooks/README_experimento.md` — cómo reproducirlo, formato del archivo del segundo codificador y ejecución local de la rama LLM.
 - `docs/semana2/` — entregables de la Semana 2: informe del EDA, análisis comparativo de ocho técnicas y Ficha de Decisión Técnica y Arquitectura (la decisión: Regresión Logística sobre TF-IDF frente a LLM few-shot).
 - `notebooks/EDA_corpus_GENIAL.ipynb` — cuaderno ejecutado del EDA (pandas, matplotlib, seaborn); hallazgo principal: las observaciones están en español aunque el título esté en portugués o inglés, por lo que `idioma` se deriva del título.
 
@@ -151,7 +165,7 @@ Piso aritmético (clase mayoritaria, sin entrenar nada): 36.2 % de exactitud y 0
 - `docs/decisiones_metodologicas_v1.md` — las cuatro condiciones metodológicas del tutor y su resolución.
 - `docs/protocolo_codificacion_ciega.md` — protocolo para el segundo y tercer codificador.
 
-## 11. Cómo citar
+## 12. Cómo citar
 
 Véase `CITATION.cff`. Texto sugerido:
 

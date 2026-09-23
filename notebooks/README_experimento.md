@@ -1,0 +1,62 @@
+# Cómo ejecutar `02_experimento.ipynb`
+
+El cuaderno reproduce el experimento completo y regenera `results/` y `results/figuras/`. Tarda menos de dos minutos sin la rama LLM.
+
+## 1. Requisitos
+
+```bash
+git clone https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa.git
+cd genial-clasificador-normativa
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt jupyter
+```
+
+Copiar el corpus autorizado a `data/raw/consolidado_limpio.xlsx` (el cuaderno verifica el hash SHA-256; si no coincide, se detiene).
+
+## 2. Archivo del segundo codificador (define el conjunto de prueba)
+
+Guardar la codificación ciega del investigador de GENIAL como `data/raw/coder2_labels.csv` (UTF-8, separado por comas) con estas columnas:
+
+| columna | obligatoria | contenido |
+|---|---|---|
+| `id_norma` **o** `Título de la Norma` | sí | identificador de la norma (el `id_norma` de `data/processed/corpus_depurado.csv`) o el título literal; si viene el título, se empareja normalizando mayúsculas, acentos y espacios |
+| `Dominio_coder2` | sí | dimensión asignada por el segundo codificador (una de las cinco) |
+| `Dominio_alt_coder2` | no | segunda dimensión que el codificador consideró defendible |
+
+Con ese archivo presente, el conjunto de prueba a ciegas pasa a ser **exactamente** esas normas (más sus duplicados por URL), y el cuaderno calcula κ humano-humano, κ modelo-humano para cada rama y la matriz de confusión entre codificadores. Sin el archivo, usa el muestreo estratificado de respaldo y lo indica en la salida.
+
+## 3. Rama LLM (ejecución local)
+
+```bash
+export ANTHROPIC_API_KEY="..."        # Windows PowerShell: $env:ANTHROPIC_API_KEY="..."
+jupyter nbconvert --to notebook --execute notebooks/02_experimento.ipynb --inplace --ExecutePreprocessor.timeout=1800
+```
+
+La sección 5 detecta la clave, ejecuta tres pasadas a temperatura 0 con `prompts/clasificador_v0.1.md`, guarda `results/pred_llm.csv`, `results/pred_llm_runs.csv` y `results/pred_llm_runs.csv.meta.json` (modelo y versión exacta), y la sección 6 incorpora la rama a la comparación pareada y a McNemar. Costo estimado: < USD 2 por ejecución completa del conjunto de prueba (≈ 130 normas × 3 pasadas). Modelo y proveedor se cambian en `config.yaml` (`llm.model`, `llm.provider`).
+
+Si ya existe `results/pred_llm.csv` de una ejecución anterior y no hay clave en el entorno, el cuaderno reutiliza ese archivo.
+
+## 4. Salidas
+
+| archivo | contenido |
+|---|---|
+| `results/sintesis_resultados.json` | todas las cifras citadas en informe, presentación y guion |
+| `results/ablaciones_cv.csv` | seis variantes de la rama clásica en validación cruzada |
+| `results/comparacion_pareada.csv` · `mcnemar.csv` | ramas sobre el conjunto ciego con IC95 y pruebas pareadas |
+| `results/fiabilidad.csv` · `confusion_humano_humano.csv` | solo con `coder2_labels.csv` |
+| `results/hoja_tipificacion_errores_clasico.csv` | hoja de trabajo para tipificar cada error (multi-etiqueta) |
+| `results/curva_enrutamiento.csv` · `imn_propuesta.csv` | operación: umbral, carga residual, IMN por país con margen |
+| `results/figuras/10_cv_confusion_f1.png` · `11_curva_enrutamiento.png` | figuras del informe |
+| `notebooks/02_experimento.html` | exportación estática del cuaderno ejecutado |
+
+`results/` está en `.gitignore` salvo los agregados sin texto de normas (síntesis, ablaciones, comparación, curva, IMN, figuras), que sí se versionan.
+
+## 5. Regenerar el cuaderno desde su generador
+
+El cuaderno se construye con `notebooks/make_results_notebook.py` (para que texto y código vivan en un solo archivo revisable):
+
+```bash
+python notebooks/make_results_notebook.py
+jupyter nbconvert --to notebook --execute notebooks/02_experimento.ipynb --inplace
+jupyter nbconvert --to html notebooks/02_experimento.ipynb
+```

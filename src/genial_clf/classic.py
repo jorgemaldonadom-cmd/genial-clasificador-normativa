@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
+from sklearn.model_selection import StratifiedGroupKFold, StratifiedKFold, cross_val_predict
 from sklearn.pipeline import Pipeline
 
 
@@ -27,11 +27,17 @@ def top2(proba: np.ndarray, classes: np.ndarray) -> tuple[np.ndarray, np.ndarray
 
 
 def cross_validate(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """Validación cruzada estratificada sobre el conjunto de entrenamiento: predicciones fuera de muestra por norma."""
+    """Validación cruzada estratificada sobre el conjunto de entrenamiento: predicciones fuera de muestra por norma.
+    Si existe `grupo_url`, los duplicados por URL se mantienen en el mismo pliegue (StratifiedGroupKFold)."""
     pipe = build_pipeline(cfg)
     y = df[cfg["columns"]["target"]].to_numpy()
-    skf = StratifiedKFold(n_splits=cfg["classic"]["cv_folds"], shuffle=True, random_state=cfg["seed"])
-    proba = cross_val_predict(pipe, df["texto"], y, cv=skf, method="predict_proba")
+    k = cfg["classic"]["cv_folds"]
+    if "grupo_url" in df.columns:
+        cv = StratifiedGroupKFold(n_splits=k, shuffle=True, random_state=cfg["seed"])
+        proba = cross_val_predict(pipe, df["texto"], y, cv=cv, groups=df["grupo_url"].to_numpy(), method="predict_proba")
+    else:
+        cv = StratifiedKFold(n_splits=k, shuffle=True, random_state=cfg["seed"])
+        proba = cross_val_predict(pipe, df["texto"], y, cv=cv, method="predict_proba")
     classes = np.array(sorted(set(y)))
     p1, p2, conf = top2(proba, classes)
     return pd.DataFrame({"id_norma": df["id_norma"].to_numpy(), "y_true": y, "pred": p1, "pred_2": p2, "conf": conf})

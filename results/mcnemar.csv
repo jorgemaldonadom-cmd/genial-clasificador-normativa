@@ -1,0 +1,4 @@
+A,B,"A acierta, B falla","A falla, B acierta",valor p,method
+clasico,mayoritaria,48,16,0.0001066246995021925,chi2 con corrección de continuidad
+clasico,metadata,34,14,0.006098945931214356,chi2 con corrección de continuidad
+clasico,svm,3,7,0.34375,binomial exacta

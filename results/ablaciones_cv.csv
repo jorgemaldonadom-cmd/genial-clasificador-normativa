@@ -1,0 +1,7 @@
+variante,exactitud,F1 macro,F1 Pedagógico,F1 Ética,F1 Administrativo,F1 Protección de Datos,F1 Técnico
+RL balanceada (configuración elegida),0.635,0.587,0.709,0.671,0.406,0.797,0.353
+RL sin ponderar clases,0.622,0.475,0.706,0.657,0.211,0.769,0.031
+"RL balanceada, C = 3",0.637,0.581,0.72,0.664,0.409,0.783,0.327
+"SVM lineal balanceada, C = 0.5",0.645,0.578,0.732,0.68,0.368,0.783,0.328
+"RL balanceada, solo unigramas",0.62,0.576,0.684,0.663,0.391,0.776,0.366
+"RL balanceada, caracteres 3-5",0.609,0.573,0.69,0.635,0.407,0.786,0.35

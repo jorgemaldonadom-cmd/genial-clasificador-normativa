@@ -18,3 +18,13 @@ __pycache__/
 # Secretos
 .env
 *.key
+
+# Agregados sin texto de normas: sí se versionan
+!results/sintesis_resultados.json
+!results/ablaciones_cv.csv
+!results/comparacion_pareada.csv
+!results/mcnemar.csv
+!results/curva_enrutamiento.csv
+!results/imn_propuesta.csv
+!results/reporte_calidad.md
+!results/figuras/
