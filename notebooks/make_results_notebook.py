@@ -170,7 +170,28 @@ dec = svm.decision_function(test["texto"]); order = np.argsort(-dec, axis=1)
 pd.DataFrame({"id_norma": test["id_norma"].to_numpy(), "pred": svm.classes_[order[:, 0]], "pred_2": svm.classes_[order[:, 1]], "conf": np.nan}).to_csv(RES / "pred_svm.csv", index=False)
 print(f"Predicciones del conjunto ciego guardadas: {len(pred_cls)} normas · confianza media {pred_cls['conf'].mean():.2f}")"""))
 
-C.append(md("## 5. Rama LLM few-shot (E5)\n\nSe ejecuta solo si `ANTHROPIC_API_KEY` está definida. Tres ejecuciones a temperatura 0 con el *prompt* versionado (`prompts/clasificador_v0.1.md`) y los 15 ejemplos del pool; se registra la versión exacta del modelo. La predicción consolidada es la de la primera ejecución; las otras dos miden estabilidad."))
+C.append(md("## 5. Rama LLM few-shot (E5)\n\nTres ejecuciones a temperatura 0 con el *prompt* versionado (`prompts/clasificador_v0.1.md`) y los 15 ejemplos del pool; se registra la versión exacta del modelo. La predicción consolidada es la de la primera ejecución; las otras dos miden estabilidad.\n\n**Dónde va la clave de API.** La celda siguiente la busca, en este orden: (1) la variable de entorno `ANTHROPIC_API_KEY`; (2) el archivo `data/raw/anthropic_key.txt` con la clave como única línea; (3) el archivo `.env` en la raíz del repositorio con la línea `ANTHROPIC_API_KEY=sk-ant-...`. Ambos archivos están en `.gitignore`: **nunca pegue la clave dentro del cuaderno**, porque el cuaderno sí se versiona. Si no encuentra ninguna, la rama se omite y la comparación se hace con las ramas disponibles."))
+C.append(code(r"""def _buscar_api_key():
+    k = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if k: return k, "variable de entorno"
+    f = ROOT / "data/raw/anthropic_key.txt"
+    if f.exists():
+        k = f.read_text(encoding="utf-8").strip().splitlines()[0].strip()
+        if k: return k, "data/raw/anthropic_key.txt"
+    f = ROOT / ".env"
+    if f.exists():
+        for line in f.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("ANTHROPIC_API_KEY"):
+                k = line.split("=", 1)[1].strip().strip('"').strip("'")
+                if k: return k, ".env"
+    return None, None
+
+api_key, api_origen = _buscar_api_key()
+if api_key:
+    os.environ["ANTHROPIC_API_KEY"] = api_key
+    print(f"Clave de API encontrada ({api_origen}); modelo: {cfg['llm']['model']}. La rama LLM se ejecutará en la celda siguiente.")
+else:
+    print("Sin clave de API: cree data/raw/anthropic_key.txt (una línea con la clave) o defina ANTHROPIC_API_KEY, y vuelva a ejecutar desde esta celda.")"""))
 C.append(code(r"""if os.environ.get("ANTHROPIC_API_KEY"):
     preds_llm = llm.classify_blind(test, fewshot, cfg, cfg["paths"]["prompt"])
     llm.save(preds_llm, RES / "pred_llm_runs.csv")

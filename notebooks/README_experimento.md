@@ -31,8 +31,16 @@ El cuaderno deja lista la plantilla con las normas del conjunto de prueba en `re
 
 ## 3. Rama LLM (ejecución local)
 
+La clave de API **no se pega en el cuaderno** (el cuaderno se versiona). La sección 5 la busca, en este orden:
+
+1. la variable de entorno `ANTHROPIC_API_KEY`;
+2. el archivo `data/raw/anthropic_key.txt`, con la clave como única línea (opción recomendada sin terminal: crear el archivo con TextEdit en formato texto plano);
+3. el archivo `.env` en la raíz del repositorio con la línea `ANTHROPIC_API_KEY=sk-ant-...`.
+
+Los tres lugares están fuera del control de versiones (`.gitignore`). Con la clave en su sitio, abrir `notebooks/02_experimento.ipynb` en Jupyter o VS Code y ejecutar *Kernel → Restart & Run All*; o desde terminal:
+
 ```bash
-export ANTHROPIC_API_KEY="..."        # Windows PowerShell: $env:ANTHROPIC_API_KEY="..."
+export ANTHROPIC_API_KEY="..."        # opcional si ya existe data/raw/anthropic_key.txt
 jupyter nbconvert --to notebook --execute notebooks/02_experimento.ipynb --inplace --ExecutePreprocessor.timeout=1800
 ```
 

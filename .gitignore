@@ -28,3 +28,6 @@ __pycache__/
 !results/imn_propuesta.csv
 !results/reporte_calidad.md
 !results/figuras/
+
+# clave de API local (nunca se versiona)
+data/raw/anthropic_key.txt
