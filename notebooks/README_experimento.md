@@ -13,17 +13,21 @@ pip install -r requirements.txt jupyter
 
 Copiar el corpus autorizado a `data/raw/consolidado_limpio.xlsx` (el cuaderno verifica el hash SHA-256; si no coincide, se detiene).
 
-## 2. Archivo del segundo codificador (define el conjunto de prueba)
+## 2. Codificación del investigador de GENIAL (define el conjunto de prueba)
 
-Guardar la codificación ciega del investigador de GENIAL como `data/raw/coder2_labels.csv` (UTF-8, separado por comas) con estas columnas:
+Hay dos archivos posibles en `data/raw/` (ninguno se versiona):
+
+**a) `codificacion_investigador_A.xlsx`** — el instrumento de codificación ciega del Framework Dimensional GENIAL (hoja `Codificación`: 142 normas, dimensiones D1-D6 con etiquetas secundarias, `Confianza`, `Notas`). El cuaderno empareja sus normas con la versión congelada del corpus (título + país; desempate por URL y observaciones) y **esas normas son el conjunto de prueba a ciegas**; las que no están en la versión congelada se evalúan aparte como «normas nuevas». Este instrumento **no recodifica `Dominio`**, así que no permite κ humano-humano sobre la dimensión; sí permite cruzar los errores del modelo con la confianza humana y con la multidimensionalidad (sección 6.2).
+
+**b) `coder2_labels.csv`** — recodificación ciega de `Dominio` sobre las mismas normas (UTF-8, separado por comas):
 
 | columna | obligatoria | contenido |
 |---|---|---|
-| `id_norma` **o** `Título de la Norma` | sí | identificador de la norma (el `id_norma` de `data/processed/corpus_depurado.csv`) o el título literal; si viene el título, se empareja normalizando mayúsculas, acentos y espacios |
+| `id_norma` **o** `Título de la Norma` | sí | identificador de la norma (el `id_norma` de `data/processed/corpus_depurado.csv`) o el título literal |
 | `Dominio_coder2` | sí | dimensión asignada por el segundo codificador (una de las cinco) |
 | `Dominio_alt_coder2` | no | segunda dimensión que el codificador consideró defendible |
 
-Con ese archivo presente, el conjunto de prueba a ciegas pasa a ser **exactamente** esas normas (más sus duplicados por URL), y el cuaderno calcula κ humano-humano, κ modelo-humano para cada rama y la matriz de confusión entre codificadores. Sin el archivo, usa el muestreo estratificado de respaldo y lo indica en la salida.
+El cuaderno deja lista la plantilla con las normas del conjunto de prueba en `results/coder2_labels_plantilla.csv`: el codificador llena `Dominio_coder2` (≈ 20-30 minutos para 125 normas), se copia a `data/raw/coder2_labels.csv` y, al re-ejecutar, se calculan κ humano-humano, κ modelo-humano por rama y la matriz de confusión entre codificadores.
 
 ## 3. Rama LLM (ejecución local)
 
@@ -44,6 +48,7 @@ Si ya existe `results/pred_llm.csv` de una ejecución anterior y no hay clave en
 | `results/ablaciones_cv.csv` | seis variantes de la rama clásica en validación cruzada |
 | `results/comparacion_pareada.csv` · `mcnemar.csv` | ramas sobre el conjunto ciego con IC95 y pruebas pareadas |
 | `results/fiabilidad.csv` · `confusion_humano_humano.csv` | solo con `coder2_labels.csv` |
+| `results/dominio_x_D4_finalidad.csv` · `pred_normas_nuevas.csv` · `coder2_labels_plantilla.csv` | sección 6.2 (instrumento del investigador) |
 | `results/hoja_tipificacion_errores_clasico.csv` | hoja de trabajo para tipificar cada error (multi-etiqueta) |
 | `results/curva_enrutamiento.csv` · `imn_propuesta.csv` | operación: umbral, carga residual, IMN por país con margen |
 | `results/figuras/10_cv_confusion_f1.png` · `11_curva_enrutamiento.png` | figuras del informe |

@@ -6,7 +6,7 @@ Proyecto Integrador · Maestría en Inteligencia Artificial · Universidad de Es
 Jorge Javier Maldonado Mahauad · Melissa Figallo · septiembre-octubre de 2026
 En colaboración con el proyecto [GENIAL](https://genial-project.eu) (Erasmus+).
 
-> Estado: **experimento ejecutado (Sprint 3).** Rama clásica, líneas base, ablaciones, prueba ciega y especificación operativa están en `notebooks/02_experimento.ipynb` (ejecutado) y en `results/`. Pendientes: rama LLM *few-shot* (requiere clave de API; instrucciones en `notebooks/README_experimento.md`) y κ humano-humano con la codificación del segundo codificador de GENIAL. Cierre del proyecto: 25 de octubre de 2026.
+> Estado: **experimento ejecutado (Sprint 3).** Rama clásica, líneas base, ablaciones, prueba ciega y especificación operativa están en `notebooks/02_experimento.ipynb` (ejecutado) y en `results/`. Pendientes: rama LLM *few-shot* (requiere clave de API; instrucciones en `notebooks/README_experimento.md`) y κ humano-humano sobre `Dominio` (el instrumento del investigador codifica D1-D6; plantilla en `results/coder2_labels_plantilla.csv`). Cierre del proyecto: 25 de octubre de 2026.
 ---
 
 ## 1. Propósito
@@ -52,6 +52,7 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 │   ├── llm.py          prompt few-shot, llamada a la API, parseo de top-2, repeticiones, estabilidad
 │   ├── evaluate.py     F1, matriz de confusión, McNemar, IC de Wilson y bootstrap, kappa, desagregación
 │   ├── reliability.py  kappa humano-humano, adjudicación, hoja de tipificación de errores
+│   ├── coder.py        lectura del instrumento de codificación ciega de GENIAL (D1-D6), emparejamiento con el corpus
 │   └── imn.py          umbral de confianza, enrutamiento, carga residual, tabla IMN con trazabilidad
 ├── scripts/run_pipeline.py              ejecución por etapas
 ├── prompts/clasificador_v0.1.md         prompt versionado con política de idioma
@@ -143,17 +144,17 @@ Piso aritmético (clase mayoritaria, sin entrenar nada): 36.2 % de exactitud y 0
 | Dependencias | scikit-learn (BSD-3), pandas (BSD-3), numpy (BSD-3), scipy (BSD-3), PyYAML (MIT), openpyxl (MIT), lingua-language-detector (Apache-2.0), anthropic (MIT), pytest (MIT), tabulate (MIT) | sí |
 | Datasets alternativos (plan B) | MultiEURLEX CC-BY-4.0 (Hugging Face `coastalcph/multi_eurlex`); OECD.AI Policy Navigator, acceso público con atribución | sí |
 
-## 10. Resultados (validación cruzada por grupo, n = 813; conjunto ciego, n = 129)
+## 10. Resultados (validación cruzada por grupo, n = 813; conjunto ciego = normas leídas por el investigador de GENIAL, n = 125)
 
 | Rama | F1 macro CV [IC95] | Exactitud CV | Top-2 CV | F1 macro ciego [IC95] |
 |---|---|---|---|---|
-| Clase mayoritaria | 0.107 | 0.365 | — | 0.107 [0.087, 0.124] |
-| Metadata (Tipo de norma) | 0.354 | 0.504 | — | 0.317 [0.244, 0.383] |
-| **TF-IDF + Regresión Logística** | **0.587 [0.549, 0.623]** | 0.635 [0.601, 0.667] | 0.852 | 0.510 [0.426, 0.589] |
-| SVM lineal (ablación) | 0.578 | 0.645 | — | 0.552 [0.451, 0.638] |
+| Clase mayoritaria | 0.107 | 0.365 | — | 0.106 [0.087, 0.124] |
+| Metadata (Tipo de norma) | 0.354 | 0.504 | — | 0.322 [0.251, 0.394] |
+| **TF-IDF + Regresión Logística** | **0.587 [0.549, 0.623]** | 0.635 [0.601, 0.667] | 0.852 | 0.617 [0.505, 0.712] |
+| SVM lineal (ablación) | 0.578 | 0.645 | — | 0.646 [0.535, 0.741] |
 | LLM few-shot | pendiente (ejecución local) | | | |
 
-F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 · Protección de Datos 0.80 · Técnico 0.35. El modelo supera a ambas líneas base con significancia (McNemar *p* < 0.01) pero **no alcanza el umbral de excelencia (0.70)**; el desbalance de clases y la señal léxica explican la mayor parte del déficit. Con top-2 en 0.85-0.88 y una curva de enrutamiento que exige revisar ~84 % de las normas para garantizar 85 % de exactitud automática, la recomendación operativa es **codificación asistida** (dos candidatas + probabilidad, decisión humana), no automatización. Lectura completa en la sección 9 del cuaderno; cifras en `results/sintesis_resultados.json`.
+F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 · Protección de Datos 0.80 · Técnico 0.35. El modelo supera a ambas líneas base con significancia (McNemar *p* < 0.01) pero **no alcanza el umbral de excelencia (0.70)**; el desbalance de clases y la señal léxica explican la mayor parte del déficit. Con top-2 en 0.85-0.88 y una curva de enrutamiento que exige revisar ~84 % de las normas para garantizar 85 % de exactitud automática, la recomendación operativa es **codificación asistida** (dos candidatas + probabilidad, decisión humana), no automatización. La codificación ciega del investigador de GENIAL (instrumento de seis dimensiones, 142 normas) define el conjunto de prueba y muestra que los errores del modelo se concentran donde el humano declaró confianza media (exactitud 0.41 frente a 0.76 con confianza alta) y en normas con etiquetas secundarias (35 de 37 errores); sobre 23 normas nuevas del Caribe anglófono la exactitud cae a 0.39. Lectura completa en la sección 9 del cuaderno; cifras en `results/sintesis_resultados.json`.
 
 ## 11. Documentación
 

@@ -7796,7 +7796,7 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2300891d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=464cfbaa">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7809,7 +7809,7 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9469c959">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2e045252">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7866,7 +7866,7 @@ a.anchor-link {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=91dc53a2">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d5276b2d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7876,7 +7876,7 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=58ab5f90">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=abab67f5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7950,17 +7950,18 @@ a.anchor-link {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d4e105a1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=96dbe826">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="2.-Conjunto-de-prueba-a-ciegas-y-particiones-(E2)">2. Conjunto de prueba a ciegas y particiones (E2)<a class="anchor-link" href="#2.-Conjunto-de-prueba-a-ciegas-y-particiones-(E2)">¶</a></h2><p>Regla: el conjunto de prueba son las normas <strong>codificadas a ciegas por el segundo codificador de GENIAL</strong> (<code>data/raw/coder2_labels.csv</code>, columnas <code>id_norma</code> o <code>Título de la Norma</code>, <code>Dominio_coder2</code>, opcional <code>Dominio_alt_coder2</code>). Si ese archivo no existe, se usa el muestreo estratificado por dimensión e idioma de <code>split.make_splits</code>. Los duplicados por URL nunca se reparten entre entrenamiento y prueba; el pool few-shot (15 normas) se excluye de ambos.</p>
+<h2 id="2.-Conjunto-de-prueba-a-ciegas-y-particiones-(E2)">2. Conjunto de prueba a ciegas y particiones (E2)<a class="anchor-link" href="#2.-Conjunto-de-prueba-a-ciegas-y-particiones-(E2)">¶</a></h2><p>Regla: el conjunto de prueba son las normas <strong>que el investigador de GENIAL codificó a ciegas</strong> con el instrumento del Framework Dimensional (<code>data/raw/codificacion_investigador_A.xlsx</code>, hoja <code>Codificación</code>, 142 normas, seis dimensiones D1-D6 con etiquetas secundarias y nivel de confianza). Las normas se emparejan con la versión congelada del corpus por título + país (desempate por URL y observaciones); las que GENIAL incorporó después del corte se apartan como <strong>normas nuevas</strong> y se usan en la sección 6.2 como prueba de robustez fuera de la versión congelada.</p>
+<p>El instrumento <strong>no recodifica <code>Dominio</code></strong> (la muestra como contexto), así que no permite calcular κ humano-humano sobre la dimensión; para eso el cuaderno acepta además <code>data/raw/coder2_labels.csv</code> (<code>id_norma</code>, <code>Dominio_coder2</code>, opcional <code>Dominio_alt_coder2</code>). Si no existe ninguno de los dos archivos, se usa el muestreo estratificado de <code>split.make_splits</code>. Los duplicados por URL nunca se reparten entre entrenamiento y prueba; el pool few-shot (15 normas) se excluye de ambos.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ca26b6ce">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0d2078de">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7968,26 +7969,36 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">coder2_path</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"data/raw/coder2_labels.csv"</span>
-<span class="k">if</span> <span class="n">coder2_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-    <span class="n">c2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">coder2_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">"id_norma"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">c2</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>   <span class="c1"># empareja por título normalizado</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s+"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">c2</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"id_norma"</span><span class="p">,</span> <span class="s2">"Título de la Norma"</span><span class="p">]]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">_k</span><span class="o">=</span><span class="n">key</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Título de la Norma"</span><span class="p">])),</span> <span class="n">left_on</span><span class="o">=</span><span class="n">key</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="s2">"Título de la Norma"</span><span class="p">]),</span> <span class="n">right_on</span><span class="o">=</span><span class="s2">"_k"</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"inner"</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"_k"</span><span class="p">)</span>
-    <span class="n">test_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">])</span>
-    <span class="c1"># el conjunto de prueba se completa con los duplicados por URL de esas normas para no partir grupos</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">genial_clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">coder</span>
+<span class="n">instr_path</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"data/raw/codificacion_investigador_A.xlsx"</span>
+<span class="n">coder2_path</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"data/raw/coder2_labels.csv"</span>
+<span class="n">instr</span><span class="p">,</span> <span class="n">instr_nuevas</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">particion_desde_ids</span><span class="p">(</span><span class="n">test_ids</span><span class="p">):</span>
     <span class="n">grupos_test</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">test_ids</span><span class="p">),</span> <span class="s2">"grupo_url"</span><span class="p">])</span>
-    <span class="n">test</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"grupo_url"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">grupos_test</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">resto</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s2">"grupo_url"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">grupos_test</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"grupo_url"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">grupos_test</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">();</span> <span class="n">resto</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s2">"grupo_url"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">grupos_test</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">SEED</span><span class="p">);</span> <span class="n">fs_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C5</span><span class="p">:</span>
         <span class="n">pool</span> <span class="o">=</span> <span class="n">resto</span><span class="p">[(</span><span class="n">resto</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">resto</span><span class="p">[</span><span class="s2">"n_palabras"</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">90</span><span class="p">)][</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="n">fs_ids</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"split"</span><span class="p">][</span><span class="s2">"fewshot_per_class"</span><span class="p">],</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-    <span class="n">fewshot</span> <span class="o">=</span> <span class="n">resto</span><span class="p">[</span><span class="n">resto</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">fs_ids</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">();</span> <span class="n">train</span> <span class="o">=</span> <span class="n">resto</span><span class="p">[</span><span class="o">~</span><span class="n">resto</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">fs_ids</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">origen_test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"normas codificadas por el 2.º codificador (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test_ids</span><span class="p">)</span><span class="si">}</span><span class="s2"> normas; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2"> con duplicados por URL)"</span>
+    <span class="k">return</span> <span class="n">resto</span><span class="p">[</span><span class="o">~</span><span class="n">resto</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">fs_ids</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">resto</span><span class="p">[</span><span class="n">resto</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">fs_ids</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">test</span>
+
+<span class="k">if</span> <span class="n">instr_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">instr</span><span class="p">,</span> <span class="n">instr_nuevas</span> <span class="o">=</span> <span class="n">coder</span><span class="o">.</span><span class="n">load_instrument</span><span class="p">(</span><span class="n">instr_path</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">fewshot</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">particion_desde_ids</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">instr</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]))</span>
+    <span class="n">origen_test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"normas del instrumento de codificación ciega del investigador A de GENIAL: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">instr</span><span class="p">)</span><span class="si">}</span><span class="s2"> en la versión congelada (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2"> con duplicados por URL); </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">instr_nuevas</span><span class="p">)</span><span class="si">}</span><span class="s2"> normas nuevas fuera de la versión congelada"</span>
+<span class="k">elif</span> <span class="n">coder2_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">coder2_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"id_norma"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">c2</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s+"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"id_norma"</span><span class="p">,</span> <span class="s2">"Título de la Norma"</span><span class="p">]]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">_k</span><span class="o">=</span><span class="n">key</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Título de la Norma"</span><span class="p">])),</span> <span class="n">left_on</span><span class="o">=</span><span class="n">key</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="s2">"Título de la Norma"</span><span class="p">]),</span> <span class="n">right_on</span><span class="o">=</span><span class="s2">"_k"</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"inner"</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"_k"</span><span class="p">)</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">fewshot</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">particion_desde_ids</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]))</span>
+    <span class="n">origen_test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"normas codificadas por el 2.º codificador (</span><span class="si">{</span><span class="n">c2</span><span class="p">[</span><span class="s1">'id_norma'</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="si">}</span><span class="s2"> normas; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2"> con duplicados por URL)"</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">sp</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">make_splits</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cfg</span><span class="p">);</span> <span class="n">train</span><span class="p">,</span> <span class="n">fewshot</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"train"</span><span class="p">],</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"fewshot"</span><span class="p">],</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"test"</span><span class="p">];</span> <span class="n">c2</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">origen_test</span> <span class="o">=</span> <span class="s2">"muestreo estratificado por dimensión e idioma (sin 2.º codificador todavía)"</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">make_splits</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cfg</span><span class="p">);</span> <span class="n">train</span><span class="p">,</span> <span class="n">fewshot</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"train"</span><span class="p">],</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"fewshot"</span><span class="p">],</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"test"</span><span class="p">]</span>
+    <span class="n">origen_test</span> <span class="o">=</span> <span class="s2">"muestreo estratificado por dimensión e idioma (sin codificación externa)"</span>
+<span class="k">if</span> <span class="n">instr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coder2_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>   <span class="c1"># recodificación de Dominio disponible además del instrumento</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">coder2_path</span><span class="p">);</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">c2</span><span class="p">[</span><span class="n">c2</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="s2">"id_norma"</span><span class="p">])]</span>
 <span class="n">split</span><span class="o">.</span><span class="n">write_splits</span><span class="p">({</span><span class="s2">"train"</span><span class="p">:</span> <span class="n">train</span><span class="p">,</span> <span class="s2">"fewshot"</span><span class="p">:</span> <span class="n">fewshot</span><span class="p">,</span> <span class="s2">"test"</span><span class="p">:</span> <span class="n">test</span><span class="p">},</span> <span class="n">SPL</span><span class="p">,</span> <span class="n">cfg</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Conjunto de prueba:"</span><span class="p">,</span> <span class="n">origen_test</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"entrenamiento </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">}</span><span class="s2"> · few-shot </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fewshot</span><span class="p">)</span><span class="si">}</span><span class="s2"> · prueba </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -8003,16 +8014,9 @@ a.anchor-link {
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>solo 20 normas no hispanohablantes disponibles en prueba (mínimo deseado 20)
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Conjunto de prueba: muestreo estratificado por dimensión e idioma (sin 2.º codificador todavía)
-entrenamiento 669 · few-shot 15 · prueba 129
+<pre>Conjunto de prueba: normas del instrumento de codificación ciega del investigador A de GENIAL: 119 en la versión congelada (125 con duplicados por URL); 23 normas nuevas fuera de la versión congelada
+entrenamiento 673 · few-shot 15 · prueba 125
 </pre>
 </div>
 </div>
@@ -8047,10 +8051,10 @@ entrenamiento 669 · few-shot 15 · prueba 129
 <tbody>
 <tr>
 <th>entrenamiento</th>
-<td>244</td>
-<td>222</td>
-<td>97</td>
-<td>56</td>
+<td>246</td>
+<td>219</td>
+<td>100</td>
+<td>58</td>
 <td>50</td>
 </tr>
 <tr>
@@ -8063,10 +8067,10 @@ entrenamiento 669 · few-shot 15 · prueba 129
 </tr>
 <tr>
 <th>prueba</th>
-<td>47</td>
-<td>40</td>
-<td>20</td>
-<td>12</td>
+<td>45</td>
+<td>43</td>
+<td>17</td>
+<td>10</td>
 <td>10</td>
 </tr>
 </tbody>
@@ -8076,7 +8080,7 @@ entrenamiento 669 · few-shot 15 · prueba 129
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=31031886">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=12c53aba">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8100,8 +8104,8 @@ entrenamiento 669 · few-shot 15 · prueba 129
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Distribución del conjunto de prueba por idioma: {'es': 109, 'pt': 16, 'en': 4}
-Países en prueba: 19 · normas nacionales: 32 · institucionales: 97
+<pre>Distribución del conjunto de prueba por idioma: {'es': 112, 'pt': 12, 'en': 1}
+Países en prueba: 20 · normas nacionales: 34 · institucionales: 91
 Sin fuga entre particiones ✓
 </pre>
 </div>
@@ -8109,7 +8113,7 @@ Sin fuga entre particiones ✓
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b5eddde0">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c6e20ce3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8119,7 +8123,7 @@ Sin fuga entre particiones ✓
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ae988a69">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c48cbe15">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8153,7 +8157,7 @@ Sin fuga entre particiones ✓
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Piso aritmético (clase mayoritaria, entrenamiento): exactitud 0.365 · F1 macro 0.107
+<pre>Piso aritmético (clase mayoritaria, entrenamiento): exactitud 0.366 · F1 macro 0.107
 Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exactitud 0.504 · F1 macro 0.354
 </pre>
 </div>
@@ -8195,13 +8199,13 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 <th>2</th>
 <td>Guía pedagógica</td>
 <td>Pedagógico</td>
-<td>0.87</td>
+<td>0.84</td>
 </tr>
 <tr>
 <th>3</th>
 <td>Guía ética</td>
 <td>Ética</td>
-<td>0.69</td>
+<td>0.65</td>
 </tr>
 <tr>
 <th>6</th>
@@ -8210,46 +8214,46 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 <td>0.55</td>
 </tr>
 <tr>
-<th>0</th>
-<td>Decreto</td>
-<td>Ética</td>
-<td>0.50</td>
-</tr>
-<tr>
 <th>5</th>
 <td>Libro blanco</td>
 <td>Pedagógico</td>
-<td>0.43</td>
-</tr>
-<tr>
-<th>10</th>
-<td>Resolución rectoral</td>
-<td>Pedagógico</td>
-<td>0.42</td>
-</tr>
-<tr>
-<th>4</th>
-<td>Ley</td>
-<td>Ética</td>
-<td>0.39</td>
+<td>0.46</td>
 </tr>
 <tr>
 <th>1</th>
 <td>Estrategia nacional</td>
 <td>Administrativo</td>
-<td>0.37</td>
+<td>0.38</td>
+</tr>
+<tr>
+<th>0</th>
+<td>Decreto</td>
+<td>Ética</td>
+<td>0.38</td>
+</tr>
+<tr>
+<th>4</th>
+<td>Ley</td>
+<td>Ética</td>
+<td>0.38</td>
+</tr>
+<tr>
+<th>10</th>
+<td>Resolución rectoral</td>
+<td>Pedagógico</td>
+<td>0.38</td>
 </tr>
 <tr>
 <th>8</th>
 <td>Reglamento</td>
 <td>Protección de Datos</td>
-<td>0.32</td>
+<td>0.36</td>
 </tr>
 <tr>
 <th>7</th>
 <td>Otro</td>
-<td>Pedagógico</td>
-<td>0.27</td>
+<td>Ética</td>
+<td>0.31</td>
 </tr>
 </tbody>
 </table>
@@ -8259,7 +8263,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e5ed7724">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d21c0531">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8269,7 +8273,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9f9e0a41">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c98adc69">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8312,7 +8316,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9736c32f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8f26f58f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8350,7 +8354,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d74ecc78">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=57c6df76">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8360,7 +8364,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=285250a3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3df77ddb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8501,7 +8505,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=004c29a0">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0e2a1eea">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8511,7 +8515,7 @@ Línea base de metadata (Tipo de norma), CV 5 pliegues por grupo sobre 813: exac
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=34e8be66">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b4abea85">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8559,7 +8563,7 @@ Argentina 100     0.750     0.679
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b80d578b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=792809a7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8598,44 +8602,44 @@ con la pista léxica  287.0      0.808     0.687
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_11559_row0_col1, #T_11559_row1_col1, #T_11559_row2_col1, #T_11559_row3_col1, #T_11559_row4_col1 {
+#T_91fa0_row0_col1, #T_91fa0_row1_col1, #T_91fa0_row2_col1, #T_91fa0_row3_col1, #T_91fa0_row4_col1 {
   white-space: normal;
   text-align: left;
 }
 </style>
-<table id="T_11559">
+<table id="T_91fa0">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_11559_level0_col0">dimension</th>
-<th class="col_heading level0 col1" id="T_11559_level0_col1">terminos</th>
+<th class="col_heading level0 col0" id="T_91fa0_level0_col0">dimension</th>
+<th class="col_heading level0 col1" id="T_91fa0_level0_col1">terminos</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_11559_level0_row0">0</th>
-<td class="data row0 col0" id="T_11559_row0_col0">Administrativo</td>
-<td class="data row0 col1" id="T_11559_row0_col1">resolución, política, mediante resolución, 2025, nacional de, gestión, ecuador, resolución para, nº, su, pública, unne</td>
+<th class="row_heading level0 row0" id="T_91fa0_level0_row0">0</th>
+<td class="data row0 col0" id="T_91fa0_row0_col0">Administrativo</td>
+<td class="data row0 col1" id="T_91fa0_row0_col1">resolución, política, mediante resolución, 2025, nacional de, gestión, ecuador, resolución para, nº, su, pública, unne</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_11559_level0_row1">1</th>
-<td class="data row1 col0" id="T_11559_row1_col0">Pedagógico</td>
-<td class="data row1 col1" id="T_11559_row1_col1">guía, aprendizaje, generativa, en, orientaciones, enseñanza, aula, en la, docente, chatgpt, docencia, educación</td>
+<th class="row_heading level0 row1" id="T_91fa0_level0_row1">1</th>
+<td class="data row1 col0" id="T_91fa0_row1_col0">Pedagógico</td>
+<td class="data row1 col1" id="T_91fa0_row1_col1">guía, aprendizaje, generativa, en, orientaciones, enseñanza, aula, en la, docente, chatgpt, docencia, educación</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_11559_level0_row2">2</th>
-<td class="data row2 col0" id="T_11559_row2_col0">Protección de Datos</td>
-<td class="data row2 col1" id="T_11559_row2_col1">datos, datos personales, personales, de privacidad, privacidad, de protección, protección, protección de, de datos, tratamiento, politica, politica de</td>
+<th class="row_heading level0 row2" id="T_91fa0_level0_row2">2</th>
+<td class="data row2 col0" id="T_91fa0_row2_col0">Protección de Datos</td>
+<td class="data row2 col1" id="T_91fa0_row2_col1">datos, datos personales, personales, de privacidad, privacidad, de protección, protección, protección de, de datos, tratamiento, politica, politica de</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_11559_level0_row3">3</th>
-<td class="data row3 col0" id="T_11559_row3_col0">Técnico</td>
-<td class="data row3 col1" id="T_11559_row3_col1">sistemas de, capacidades, robótica, nacional, país, sistemas, implementación, digital, ley, national, políticas, nacional que</td>
+<th class="row_heading level0 row3" id="T_91fa0_level0_row3">3</th>
+<td class="data row3 col0" id="T_91fa0_row3_col0">Técnico</td>
+<td class="data row3 col1" id="T_91fa0_row3_col1">sistemas de, capacidades, robótica, nacional, país, sistemas, implementación, digital, ley, national, políticas, nacional que</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_11559_level0_row4">4</th>
-<td class="data row4 col0" id="T_11559_row4_col0">Ética</td>
-<td class="data row4 col1" id="T_11559_row4_col1">ética, ético, uso ético, el uso, uso, éticos, principios, ético de, integridad, de ética, transparencia, código</td>
+<th class="row_heading level0 row4" id="T_91fa0_level0_row4">4</th>
+<td class="data row4 col0" id="T_91fa0_row4_col0">Ética</td>
+<td class="data row4 col1" id="T_91fa0_row4_col1">ética, ético, uso ético, el uso, uso, éticos, principios, ético de, integridad, de ética, transparencia, código</td>
 </tr>
 </tbody>
 </table>
@@ -8644,7 +8648,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8fd7a2c3">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f5a6fab3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8654,7 +8658,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=53ee149f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c6dbfc7a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8681,14 +8685,14 @@ con la pista léxica  287.0      0.808     0.687
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Predicciones del conjunto ciego guardadas: 129 normas · confianza media 0.42
+<pre>Predicciones del conjunto ciego guardadas: 125 normas · confianza media 0.42
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5d2b4ee6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=56d4b711">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8698,7 +8702,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b12f1a41">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=df5dcc9b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8734,7 +8738,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=276fbd95">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f6871ae6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8744,7 +8748,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=74c75805">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8eb0bf1b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8828,14 +8832,14 @@ con la pista léxica  287.0      0.808     0.687
 <tbody>
 <tr>
 <th>mayoritaria</th>
-<td>129</td>
-<td>0.364</td>
-<td>[0.286, 0.450]</td>
-<td>0.107</td>
+<td>125</td>
+<td>0.360</td>
+<td>[0.281, 0.447]</td>
+<td>0.106</td>
 <td>[0.087, 0.124]</td>
-<td>0.364</td>
+<td>0.360</td>
 <td>0.000</td>
-<td>0.534</td>
+<td>0.529</td>
 <td>0.000</td>
 <td>0.000</td>
 <td>0.000</td>
@@ -8843,48 +8847,48 @@ con la pista léxica  287.0      0.808     0.687
 </tr>
 <tr>
 <th>metadata</th>
-<td>129</td>
-<td>0.457</td>
-<td>[0.374, 0.543]</td>
-<td>0.317</td>
-<td>[0.244, 0.383]</td>
-<td>0.550</td>
-<td>0.218</td>
-<td>0.574</td>
-<td>0.451</td>
-<td>0.077</td>
-<td>0.483</td>
+<td>125</td>
+<td>0.544</td>
+<td>[0.457, 0.629]</td>
+<td>0.322</td>
+<td>[0.251, 0.394]</td>
+<td>0.608</td>
+<td>0.325</td>
+<td>0.705</td>
+<td>0.596</td>
+<td>0.087</td>
+<td>0.222</td>
 <td>0.000</td>
 </tr>
 <tr>
 <th>clasico</th>
-<td>129</td>
-<td>0.612</td>
-<td>[0.526, 0.692]</td>
-<td>0.510</td>
-<td>[0.426, 0.589]</td>
-<td>0.884</td>
-<td>0.473</td>
-<td>0.713</td>
-<td>0.736</td>
-<td>0.300</td>
-<td>0.692</td>
-<td>0.111</td>
+<td>125</td>
+<td>0.688</td>
+<td>[0.602, 0.763]</td>
+<td>0.617</td>
+<td>[0.505, 0.712]</td>
+<td>0.872</td>
+<td>0.555</td>
+<td>0.779</td>
+<td>0.725</td>
+<td>0.345</td>
+<td>0.737</td>
+<td>0.500</td>
 </tr>
 <tr>
 <th>svm</th>
-<td>129</td>
-<td>0.643</td>
-<td>[0.558, 0.721]</td>
-<td>0.552</td>
-<td>[0.451, 0.638]</td>
-<td>0.876</td>
-<td>0.511</td>
-<td>0.745</td>
-<td>0.723</td>
-<td>0.378</td>
-<td>0.692</td>
-<td>0.222</td>
+<td>125</td>
+<td>0.720</td>
+<td>[0.636, 0.791]</td>
+<td>0.646</td>
+<td>[0.535, 0.741]</td>
+<td>0.880</td>
+<td>0.601</td>
+<td>0.812</td>
+<td>0.756</td>
+<td>0.414</td>
+<td>0.778</td>
+<td>0.471</td>
 </tr>
 </tbody>
 </table>
@@ -8893,7 +8897,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=bab0158f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a33dc08b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8959,27 +8963,27 @@ con la pista léxica  287.0      0.808     0.687
 <th>0</th>
 <td>clasico</td>
 <td>mayoritaria</td>
-<td>48</td>
-<td>16</td>
-<td>0.000107</td>
+<td>49</td>
+<td>8</td>
+<td>1.169950e-07</td>
 <td>chi2 con corrección de continuidad</td>
 </tr>
 <tr>
 <th>1</th>
 <td>clasico</td>
 <td>metadata</td>
-<td>34</td>
+<td>32</td>
 <td>14</td>
-<td>0.006099</td>
+<td>1.219285e-02</td>
 <td>chi2 con corrección de continuidad</td>
 </tr>
 <tr>
 <th>2</th>
 <td>clasico</td>
 <td>svm</td>
-<td>3</td>
-<td>7</td>
-<td>0.343750</td>
+<td>0</td>
+<td>4</td>
+<td>1.250000e-01</td>
 <td>binomial exacta</td>
 </tr>
 </tbody>
@@ -8989,7 +8993,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=065aca43">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9dbacd04">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9017,7 +9021,7 @@ con la pista léxica  287.0      0.808     0.687
         <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s2">"Dominio_coder2"</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">C5</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">C5</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">RES</span> <span class="o">/</span> <span class="s2">"confusion_humano_humano.csv"</span><span class="p">)</span>
         <span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s2">"Dominio_coder2"</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">C5</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">C5</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Sin archivo del 2.º codificador: κ humano-humano pendiente (data/raw/coder2_labels.csv)."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"κ humano-humano sobre Dominio: pendiente. El instrumento del investigador A codifica D1-D6 y no recodifica Dominio; hace falta data/raw/coder2_labels.csv (plantilla generada en results/coder2_labels_plantilla.csv)."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -9030,14 +9034,14 @@ con la pista léxica  287.0      0.808     0.687
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Sin archivo del 2.º codificador: κ humano-humano pendiente (data/raw/coder2_labels.csv).
+<pre>κ humano-humano sobre Dominio: pendiente. El instrumento del investigador A codifica D1-D6 y no recodifica Dominio; hace falta data/raw/coder2_labels.csv (plantilla generada en results/coder2_labels_plantilla.csv).
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d514ec72">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b3ffb568">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9047,7 +9051,7 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e3c51d61">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a7422e91">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9075,7 +9079,7 @@ con la pista léxica  287.0      0.808     0.687
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Errores del modelo clásico en prueba: 50 de 129 · en 35 la segunda dimensión coincide con la referencia (top-2 rescata 70% de los errores)
+<pre>Errores del modelo clásico en prueba: 39 de 125 · en 23 la segunda dimensión coincide con la referencia (top-2 rescata 59% de los errores)
 </pre>
 </div>
 </div>
@@ -9118,43 +9122,43 @@ con la pista léxica  287.0      0.808     0.687
 <tbody>
 <tr>
 <th>Pedagógico</th>
-<td>31</td>
-<td>10</td>
-<td>4</td>
-<td>1</td>
-<td>1</td>
+<td>37</td>
+<td>6</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
 </tr>
 <tr>
 <th>Ética</th>
-<td>4</td>
-<td>32</td>
-<td>1</td>
-<td>0</td>
+<td>7</td>
+<td>33</td>
 <td>3</td>
+<td>0</td>
+<td>0</td>
 </tr>
 <tr>
 <th>Administrativo</th>
 <td>3</td>
-<td>4</td>
 <td>6</td>
-<td>4</td>
-<td>3</td>
+<td>5</td>
+<td>1</td>
+<td>2</td>
 </tr>
 <tr>
 <th>Protección de Datos</th>
 <td>0</td>
-<td>0</td>
-<td>3</td>
-<td>9</td>
+<td>2</td>
+<td>1</td>
+<td>7</td>
 <td>0</td>
 </tr>
 <tr>
 <th>Técnico</th>
-<td>2</td>
+<td>3</td>
 <td>1</td>
-<td>6</td>
-<td>0</td>
 <td>1</td>
+<td>1</td>
+<td>4</td>
 </tr>
 </tbody>
 </table>
@@ -9164,7 +9168,389 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3c04ad80">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=299e7634">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="6.2-La-codificaci%C3%B3n-del-investigador-de-GENIAL:-confianza-humana,-multidimensionalidad-y-normas-nuevas">6.2 La codificación del investigador de GENIAL: confianza humana, multidimensionalidad y normas nuevas<a class="anchor-link" href="#6.2-La-codificaci%C3%B3n-del-investigador-de-GENIAL:-confianza-humana,-multidimensionalidad-y-normas-nuevas">¶</a></h3><p>El instrumento no recodifica <code>Dominio</code>, pero aporta tres cosas que la referencia original no tiene: (a) el <strong>nivel de confianza</strong> del codificador en cada norma, (b) las <strong>etiquetas secundarias</strong> en D3 (tipo de disposición) y D4 (finalidad), que señalan normas multidimensionales, y (c) <strong>normas incorporadas después del corte</strong> del corpus, que sirven como prueba de robustez fuera de la versión congelada. También se cruza <code>Dominio</code> con D3 y D4 para ver cuánto del framework de cinco dimensiones queda recogido en el instrumento de seis.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c9566882">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">instr_res</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">if</span> <span class="n">instr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"clasico"</span> <span class="ow">in</span> <span class="n">ramas</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">ramas</span><span class="p">[</span><span class="s2">"clasico"</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">instr</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">"id_norma"</span><span class="p">)</span>
+    <span class="n">r</span><span class="p">[</span><span class="s2">"acierto"</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">]</span> <span class="o">==</span> <span class="n">r</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">];</span> <span class="n">r</span><span class="p">[</span><span class="s2">"top2_ok"</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">"acierto"</span><span class="p">]</span> <span class="o">|</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"pred_2"</span><span class="p">]</span> <span class="o">==</span> <span class="n">r</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Exactitud del modelo clásico según la confianza declarada por el codificador humano:"</span><span class="p">)</span>
+    <span class="n">por_conf</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"Confianza"</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="p">(</span><span class="s2">"acierto"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span> <span class="n">exactitud</span><span class="o">=</span><span class="p">(</span><span class="s2">"acierto"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">),</span> <span class="n">top2</span><span class="o">=</span><span class="p">(</span><span class="s2">"top2_ok"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">))</span><span class="o">.</span><span class="n">reindex</span><span class="p">([</span><span class="s2">"Alta"</span><span class="p">,</span> <span class="s2">"Media"</span><span class="p">,</span> <span class="s2">"Baja"</span><span class="p">])</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">por_conf</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Exactitud según si el codificador asignó etiquetas secundarias en D3 o D4 (norma multidimensional):"</span><span class="p">)</span>
+    <span class="n">por_multi</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"multidimensional"</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="p">(</span><span class="s2">"acierto"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span> <span class="n">exactitud</span><span class="o">=</span><span class="p">(</span><span class="s2">"acierto"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">),</span> <span class="n">top2</span><span class="o">=</span><span class="p">(</span><span class="s2">"top2_ok"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">por_multi</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">~</span><span class="n">r</span><span class="p">[</span><span class="s2">"acierto"</span><span class="p">]]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Errores del modelo en las </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">}</span><span class="s2"> normas con codificación del instrumento: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="si">}</span><span class="s2"> · con etiquetas secundarias humanas: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s1">'multidimensional'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">err</span><span class="p">[</span><span class="s1">'multidimensional'</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">) · rescatados por top-2: </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">err</span><span class="p">[</span><span class="s1">'pred_2'</span><span class="p">]</span><span class="o">==</span><span class="n">err</span><span class="p">[</span><span class="s1">'Dominio'</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">V de Cramér (corregida) entre Dominio y D4 finalidad: </span><span class="si">{</span><span class="n">coder</span><span class="o">.</span><span class="n">cramers_v</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'Dominio'</span><span class="p">],</span><span class="w"> </span><span class="n">r</span><span class="p">[</span><span class="s1">'D4_principal'</span><span class="p">])</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> · entre Dominio y D3 tipo de disposición: </span><span class="si">{</span><span class="n">coder</span><span class="o">.</span><span class="n">cramers_v</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'Dominio'</span><span class="p">],</span><span class="w"> </span><span class="n">r</span><span class="p">[</span><span class="s1">'D3_principal'</span><span class="p">])</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">"D4_principal"</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">C5</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">);</span> <span class="n">ct</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">RES</span> <span class="o">/</span> <span class="s2">"dominio_x_D4_finalidad.csv"</span><span class="p">);</span> <span class="n">display</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span>
+    <span class="c1"># plantilla para la recodificación de Dominio (κ humano-humano)</span>
+    <span class="n">plantilla</span> <span class="o">=</span> <span class="n">test</span><span class="p">[[</span><span class="s2">"id_norma"</span><span class="p">,</span> <span class="s2">"País"</span><span class="p">,</span> <span class="s2">"Título de la Norma"</span><span class="p">,</span> <span class="s2">"Observaciones"</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">();</span> <span class="n">plantilla</span><span class="p">[</span><span class="s2">"Dominio_coder2"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span> <span class="n">plantilla</span><span class="p">[</span><span class="s2">"Dominio_alt_coder2"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">plantilla</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">RES</span> <span class="o">/</span> <span class="s2">"coder2_labels_plantilla.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Plantilla para κ humano-humano escrita: results/coder2_labels_plantilla.csv (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">plantilla</span><span class="p">)</span><span class="si">}</span><span class="s2"> normas; el codificador llena Dominio_coder2 y el archivo se copia a data/raw/coder2_labels.csv)"</span><span class="p">)</span>
+    <span class="n">instr_res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"por_confianza"</span><span class="p">:</span> <span class="n">por_conf</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">),</span> <span class="s2">"por_multidimensional"</span><span class="p">:</span> <span class="n">por_multi</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">),</span>
+                 <span class="s2">"errores"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">err</span><span class="p">)),</span> <span class="s2">"errores_multidimensionales"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s2">"multidimensional"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+                 <span class="s2">"V_dominio_D4"</span><span class="p">:</span> <span class="n">coder</span><span class="o">.</span><span class="n">cramers_v</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">"D4_principal"</span><span class="p">]),</span> <span class="s2">"V_dominio_D3"</span><span class="p">:</span> <span class="n">coder</span><span class="o">.</span><span class="n">cramers_v</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">"D3_principal"</span><span class="p">])}</span>
+    <span class="c1"># normas nuevas (fuera de la versión congelada): robustez del modelo entrenado</span>
+    <span class="k">if</span> <span class="n">instr_nuevas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">instr_nuevas</span><span class="p">):</span>
+        <span class="n">nv</span> <span class="o">=</span> <span class="n">instr_nuevas</span><span class="o">.</span><span class="n">copy</span><span class="p">();</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"texto"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">build_text</span><span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"columns"</span><span class="p">][</span><span class="s2">"text_parts"</span><span class="p">])</span>
+        <span class="n">proba</span> <span class="o">=</span> <span class="n">pipe_cls</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">nv</span><span class="p">[</span><span class="s2">"texto"</span><span class="p">]);</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">classic</span><span class="o">.</span><span class="n">top2</span><span class="p">(</span><span class="n">proba</span><span class="p">,</span> <span class="n">pipe_cls</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+        <span class="n">nv</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">],</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"pred_2"</span><span class="p">],</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"conf"</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">conf</span>
+        <span class="n">acc_nv</span> <span class="o">=</span> <span class="p">(</span><span class="n">nv</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">]</span> <span class="o">==</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">();</span> <span class="n">top2_nv</span> <span class="o">=</span> <span class="p">((</span><span class="n">nv</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">]</span> <span class="o">==</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">])</span> <span class="o">|</span> <span class="p">(</span><span class="n">nv</span><span class="p">[</span><span class="s2">"pred_2"</span><span class="p">]</span> <span class="o">==</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">]))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">wilson_ci</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">nv</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">]</span> <span class="o">==</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="nb">len</span><span class="p">(</span><span class="n">nv</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Normas nuevas fuera de la versión congelada (n = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">nv</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nv</span><span class="p">[</span><span class="s1">'País'</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="si">}</span><span class="s2"> países, </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">nv</span><span class="p">[</span><span class="s1">'Dominio'</span><span class="p">]</span><span class="o">==</span><span class="s1">'Técnico'</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> técnicas): exactitud </span><span class="si">{</span><span class="n">acc_nv</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> IC95 [</span><span class="si">{</span><span class="n">lo</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">hi</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">] · top-2 </span><span class="si">{</span><span class="n">top2_nv</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> · confianza media </span><span class="si">{</span><span class="n">conf</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">nv</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">nv</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">C5</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+        <span class="n">nv</span><span class="p">[[</span><span class="s2">"ID"</span><span class="p">,</span> <span class="s2">"País"</span><span class="p">,</span> <span class="s2">"Dominio"</span><span class="p">,</span> <span class="s2">"pred"</span><span class="p">,</span> <span class="s2">"pred_2"</span><span class="p">,</span> <span class="s2">"conf"</span><span class="p">,</span> <span class="s2">"Confianza"</span><span class="p">]]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">RES</span> <span class="o">/</span> <span class="s2">"pred_normas_nuevas.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">instr_res</span><span class="p">[</span><span class="s2">"normas_nuevas"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nv</span><span class="p">)),</span> <span class="s2">"exactitud"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">acc_nv</span><span class="p">),</span> <span class="s2">"ic95"</span><span class="p">:</span> <span class="p">[</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">],</span> <span class="s2">"top2"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">top2_nv</span><span class="p">)}</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Instrumento del investigador no disponible: sección omitida."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Exactitud del modelo clásico según la confianza declarada por el codificador humano:
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>n</th>
+<th>exactitud</th>
+<th>top2</th>
+</tr>
+<tr>
+<th>Confianza</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>Alta</th>
+<td>91</td>
+<td>0.758</td>
+<td>0.912</td>
+</tr>
+<tr>
+<th>Media</th>
+<td>22</td>
+<td>0.409</td>
+<td>0.682</td>
+</tr>
+<tr>
+<th>Baja</th>
+<td>6</td>
+<td>0.667</td>
+<td>0.833</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+Exactitud según si el codificador asignó etiquetas secundarias en D3 o D4 (norma multidimensional):
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>n</th>
+<th>exactitud</th>
+<th>top2</th>
+</tr>
+<tr>
+<th>multidimensional</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>False</th>
+<td>19</td>
+<td>0.895</td>
+<td>1.00</td>
+</tr>
+<tr>
+<th>True</th>
+<td>100</td>
+<td>0.650</td>
+<td>0.84</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Errores del modelo en las 119 normas con codificación del instrumento: 37 · con etiquetas secundarias humanas: 35 (95%) · rescatados por top-2: 21
+
+V de Cramér (corregida) entre Dominio y D4 finalidad: 0.28 · entre Dominio y D3 tipo de disposición: 0.34
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th>D4_principal</th>
+<th>Evaluacion y retroalimentacion</th>
+<th>Gobernanza y gestion</th>
+<th>Innovacion pedagogica</th>
+<th>Integridad academica</th>
+<th>No determinado</th>
+<th>Personalizacion del aprendizaje</th>
+<th>Proteccion de derechos</th>
+</tr>
+<tr>
+<th>Dominio</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>Pedagógico</th>
+<td>4</td>
+<td>3</td>
+<td>23</td>
+<td>7</td>
+<td>3</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<th>Ética</th>
+<td>1</td>
+<td>9</td>
+<td>2</td>
+<td>17</td>
+<td>2</td>
+<td>0</td>
+<td>9</td>
+</tr>
+<tr>
+<th>Administrativo</th>
+<td>0</td>
+<td>7</td>
+<td>3</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<th>Protección de Datos</th>
+<td>0</td>
+<td>3</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<th>Técnico</th>
+<td>0</td>
+<td>4</td>
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+Plantilla para κ humano-humano escrita: results/coder2_labels_plantilla.csv (125 normas; el codificador llena Dominio_coder2 y el archivo se copia a data/raw/coder2_labels.csv)
+
+Normas nuevas fuera de la versión congelada (n = 23, 11 países, 7 técnicas): exactitud 0.391 IC95 [0.222, 0.592] · top-2 0.565 · confianza media 0.33
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th>pred</th>
+<th>Administrativo</th>
+<th>Pedagógico</th>
+<th>Protección de Datos</th>
+<th>Técnico</th>
+<th>Ética</th>
+</tr>
+<tr>
+<th>Dominio</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>Pedagógico</th>
+<td>3</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<th>Ética</th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<th>Administrativo</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr>
+<th>Protección de Datos</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>Técnico</th>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>5</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c999972c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9174,12 +9560,12 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=775c90d6">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f1907052">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">curva</span> <span class="o">=</span> <span class="n">imn</span><span class="o">.</span><span class="n">routing_curve</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"y_true"</span><span class="p">:</span> <span class="s2">"y"</span><span class="p">})</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">cv</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">],</span> <span class="n">conf</span><span class="o">=</span><span class="n">cv</span><span class="p">[</span><span class="s2">"conf"</span><span class="p">]),</span> <span class="n">cv</span><span class="p">[</span><span class="s2">"y_true"</span><span class="p">])</span>
@@ -9222,12 +9608,12 @@ con la pista léxica  287.0      0.808     0.687
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1522b022">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=be843822">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">routed</span> <span class="o">=</span> <span class="n">imn</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"y_true"</span><span class="p">:</span> <span class="s2">"y"</span><span class="p">})[[</span><span class="s2">"id_norma"</span><span class="p">,</span> <span class="s2">"pred"</span><span class="p">,</span> <span class="s2">"pred_2"</span><span class="p">,</span> <span class="s2">"conf"</span><span class="p">]],</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"id_norma"</span><span class="p">,</span> <span class="s2">"País"</span><span class="p">,</span> <span class="s2">"idioma"</span><span class="p">]],</span> <span class="n">cfg</span><span class="p">)</span>
@@ -9257,7 +9643,7 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 </div>
 </div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[18]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[19]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <div>
 <style scoped="">
@@ -9461,7 +9847,7 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3bd00591">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=01b5c920">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9471,12 +9857,12 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8cb48259">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7c952cf5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">sintesis</span> <span class="o">=</span> <span class="p">{</span>
@@ -9490,6 +9876,7 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
     <span class="s2">"fiabilidad"</span><span class="p">:</span> <span class="n">fiab</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">)</span> <span class="k">if</span> <span class="n">c2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
     <span class="s2">"operacion"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"umbral"</span><span class="p">:</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"routing"</span><span class="p">][</span><span class="s2">"confidence_threshold"</span><span class="p">],</span> <span class="s2">"pct_enrutado"</span><span class="p">:</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"pct_enrutado"</span><span class="p">],</span> <span class="s2">"exactitud_auto"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">auto</span><span class="p">[</span><span class="s2">"Dominio"</span><span class="p">],</span> <span class="n">auto</span><span class="p">[</span><span class="s2">"pred"</span><span class="p">])),</span> <span class="s2">"horas_ahorradas"</span><span class="p">:</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"horas_ahorradas"</span><span class="p">],</span> <span class="s2">"horas_total"</span><span class="p">:</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"horas_manual_total"</span><span class="p">]},</span>
     <span class="s2">"llm_disponible"</span><span class="p">:</span> <span class="s2">"llm"</span> <span class="ow">in</span> <span class="n">ramas</span><span class="p">,</span>
+    <span class="s2">"instrumento_investigador"</span><span class="p">:</span> <span class="n">instr_res</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sintesis</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">RES</span> <span class="o">/</span> <span class="s2">"sintesis_resultados.json"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">),</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">sintesis</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"corpus"</span><span class="p">,</span> <span class="s2">"piso_mayoritaria"</span><span class="p">,</span> <span class="s2">"metadata_cv"</span><span class="p">,</span> <span class="s2">"clasico_cv"</span><span class="p">,</span> <span class="s2">"operacion"</span><span class="p">,</span> <span class="s2">"llm_disponible"</span><span class="p">]},</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
@@ -9508,14 +9895,14 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 <pre>{
  "corpus": {
   "n": 813,
-  "train": 669,
+  "train": 673,
   "fewshot": 15,
-  "test": 129,
-  "origen_test": "muestreo estratificado por dimensión e idioma (sin 2.º codificador todavía)"
+  "test": 125,
+  "origen_test": "normas del instrumento de codificación ciega del investigador A de GENIAL: 119 en la versión congelada (125 con duplicados por URL); 23 normas nuevas fuera de la versión congelada"
  },
  "piso_mayoritaria": {
-  "accuracy": 0.36472346786248133,
-  "f1_macro": 0.10690032858707559
+  "accuracy": 0.3655274888558692,
+  "f1_macro": 0.10707290533188248
  },
  "metadata_cv": {
   "accuracy": 0.5043050430504306,
@@ -9557,7 +9944,7 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=af5c2e23">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fd2fc4fd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9567,12 +9954,12 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1c96d28c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=514905ae">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">display</span>
@@ -9581,12 +9968,22 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 <span class="n">debiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pc</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">0.50</span><span class="p">];</span> <span class="n">bajo_min</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pc</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">0.40</span><span class="p">]</span>
 <span class="n">lineas</span> <span class="o">=</span> <span class="p">[</span>
  <span class="sa">f</span><span class="s2">"**1. El modelo aprende y supera a las dos líneas base con significancia.** En validación cruzada por grupo (n = 813) la regresión logística alcanza F1 macro </span><span class="si">{</span><span class="n">cvr</span><span class="p">[</span><span class="s1">'f1_macro'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> [IC95 </span><span class="si">{</span><span class="n">cvr</span><span class="p">[</span><span class="s1">'f1_macro_ci'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">cvr</span><span class="p">[</span><span class="s1">'f1_macro_ci'</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">] frente a </span><span class="si">{</span><span class="n">sintesis</span><span class="p">[</span><span class="s1">'metadata_cv'</span><span class="p">][</span><span class="s1">'f1_macro'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> de la línea base de metadata y </span><span class="si">{</span><span class="n">sintesis</span><span class="p">[</span><span class="s1">'piso_mayoritaria'</span><span class="p">][</span><span class="s1">'f1_macro'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> de la clase mayoritaria. En el conjunto ciego, McNemar rechaza la igualdad frente a ambas (p = </span><span class="si">{</span><span class="n">sintesis</span><span class="p">[</span><span class="s1">'mcnemar'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'valor p'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> y p = </span><span class="si">{</span><span class="n">sintesis</span><span class="p">[</span><span class="s1">'mcnemar'</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">'valor p'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)."</span><span class="p">,</span>
- <span class="sa">f</span><span class="s2">"**2. No alcanza el umbral de excelencia (0.70) y queda en el borde del mínimo (0.60).** El IC95 del F1 macro en CV incluye 0.60 pero no 0.70. Las clases minoritarias quedan bajo el nivel de excelencia por clase (0.50): "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pc</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">debiles</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"; </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bajo_min</span><span class="p">)</span><span class="si">}</span><span class="s2"> incumple además el mínimo de 0.40"</span> <span class="k">if</span> <span class="n">bajo_min</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span> <span class="o">+</span> <span class="s2">". Sin `class_weight` balanceado Técnico prácticamente desaparece (F1 0.03): el desbalance 4.7:1 es la restricción dominante, como anticipó el EDA."</span><span class="p">,</span>
+ <span class="sa">f</span><span class="s2">"**2. No alcanza el umbral de excelencia (0.70) y queda en el borde del mínimo (0.60).** El IC95 del F1 macro en CV incluye 0.60 pero no 0.70; en el conjunto ciego (</span><span class="si">{</span><span class="n">blind</span><span class="p">[</span><span class="s1">'clasico'</span><span class="p">][</span><span class="s1">'n'</span><span class="p">]</span><span class="si">}</span><span class="s2"> normas del investigador) el F1 macro es </span><span class="si">{</span><span class="n">blind</span><span class="p">[</span><span class="s1">'clasico'</span><span class="p">][</span><span class="s1">'F1 macro'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">blind</span><span class="p">[</span><span class="s1">'clasico'</span><span class="p">][</span><span class="s1">'IC95 F1 macro'</span><span class="p">]</span><span class="si">}</span><span class="s2">, compatible con la CV pero con un intervalo ancho. Las clases minoritarias quedan bajo el nivel de excelencia por clase (0.50): "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pc</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">debiles</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"; </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bajo_min</span><span class="p">)</span><span class="si">}</span><span class="s2"> incumple además el mínimo de 0.40"</span> <span class="k">if</span> <span class="n">bajo_min</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span> <span class="o">+</span> <span class="s2">". Sin `class_weight` balanceado Técnico prácticamente desaparece (F1 0.03): el desbalance 4.7:1 es la restricción dominante, como anticipó el EDA."</span><span class="p">,</span>
  <span class="sa">f</span><span class="s2">"**3. La segunda dimensión rescata la mayoría de los errores.** Top-2 accuracy </span><span class="si">{</span><span class="n">cvr</span><span class="p">[</span><span class="s1">'top2'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> en CV y </span><span class="si">{</span><span class="n">blind</span><span class="p">[</span><span class="s1">'clasico'</span><span class="p">][</span><span class="s1">'top-2'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> en prueba ciega: cuando el modelo se equivoca, la alternativa que propone es la etiqueta de referencia en ~7 de cada 10 casos. Eso convierte la salida en una herramienta de asistencia (dos candidatas en vez de cinco) y alimenta el diagnóstico de multi-etiqueta pedido por la tutora."</span><span class="p">,</span>
  <span class="sa">f</span><span class="s2">"**4. La señal es en parte léxica.** Con la palabra que nombra la dimensión presente en el texto la exactitud es 0.81; sin ella, 0.54. El modelo generaliza, pero menos de lo que sugiere la cifra global; las normas nacionales (F1 0.56) y las no hispanohablantes (pt 0.39, en 0.27) son el punto débil."</span><span class="p">,</span>
  <span class="sa">f</span><span class="s2">"**5. La operación 'automatizar con ≥ 85 % de exactitud' no es viable con este modelo.** Para garantizar esa exactitud en el tramo automático hay que enrutar ~</span><span class="si">{</span><span class="n">op</span><span class="p">[</span><span class="s1">'pct_enrutado'</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % de las normas a revisión (meta: ≤ 30 %); el ahorro sería de </span><span class="si">{</span><span class="n">op</span><span class="p">[</span><span class="s1">'horas_ahorradas'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> de </span><span class="si">{</span><span class="n">op</span><span class="p">[</span><span class="s1">'horas_total'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> horas-persona por pasada. La configuración recomendada para el observatorio es, por tanto, **codificación asistida**: el modelo propone top-2 con probabilidad, el codificador decide, y todas las normas de países con &lt; 20 registros e idiomas minoritarios pasan por revisión."</span><span class="p">,</span>
  <span class="sa">f</span><span class="s2">"**6. Pendientes que cambian la lectura.** (a) La rama LLM few-shot no se ejecutó aquí (sin clave de API): la comparación TF-IDF vs LLM sigue abierta y se cierra al correr la sección 5. (b) Sin el archivo del segundo codificador, el techo humano (κ humano-humano) no está medido; con un κ modelo-referencia de </span><span class="si">{</span><span class="n">cvr</span><span class="p">[</span><span class="s1">'kappa'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (acuerdo moderado), la pregunta decisiva es cuánto acuerdan dos humanos sobre las mismas normas. (c) La ablación SVM lineal obtiene F1 </span><span class="si">{</span><span class="n">blind</span><span class="p">[</span><span class="s1">'svm'</span><span class="p">][</span><span class="s1">'F1 macro'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> en prueba ciega frente a </span><span class="si">{</span><span class="n">blind</span><span class="p">[</span><span class="s1">'clasico'</span><span class="p">][</span><span class="s1">'F1 macro'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> de la RL, sin diferencia significativa (McNemar p = </span><span class="si">{</span><span class="n">sintesis</span><span class="p">[</span><span class="s1">'mcnemar'</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s1">'valor p'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">); la elección de la RL se mantiene por su calibración de probabilidades, que la SVM no ofrece de forma nativa."</span><span class="p">,</span>
 <span class="p">]</span>
+<span class="n">ir</span> <span class="o">=</span> <span class="n">sintesis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"instrumento_investigador"</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ir</span><span class="p">:</span>
+    <span class="n">pc_</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s2">"Confianza"</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ir</span><span class="p">[</span><span class="s2">"por_confianza"</span><span class="p">]};</span> <span class="n">pm_</span> <span class="o">=</span> <span class="p">{</span><span class="nb">bool</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"multidimensional"</span><span class="p">]):</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ir</span><span class="p">[</span><span class="s2">"por_multidimensional"</span><span class="p">]}</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"**7. La codificación del investigador de GENIAL valida la lectura de multi-etiqueta.** Sobre las normas que él leyó a ciegas, el modelo acierta </span><span class="si">{</span><span class="n">pc_</span><span class="p">[</span><span class="s1">'Alta'</span><span class="p">][</span><span class="s1">'exactitud'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> cuando el codificador declaró confianza alta y </span><span class="si">{</span><span class="n">pc_</span><span class="p">[</span><span class="s1">'Media'</span><span class="p">][</span><span class="s1">'exactitud'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> cuando declaró confianza media (n = </span><span class="si">{</span><span class="n">pc_</span><span class="p">[</span><span class="s1">'Alta'</span><span class="p">][</span><span class="s1">'n'</span><span class="p">]</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="n">pc_</span><span class="p">[</span><span class="s1">'Media'</span><span class="p">][</span><span class="s1">'n'</span><span class="p">]</span><span class="si">}</span><span class="s2">): los errores del modelo se concentran donde el humano también dudó. "</span>
+           <span class="sa">f</span><span class="s2">"En las normas a las que el codificador asignó etiquetas secundarias (multidimensionales, </span><span class="si">{</span><span class="n">pm_</span><span class="p">[</span><span class="kc">True</span><span class="p">][</span><span class="s1">'n'</span><span class="p">]</span><span class="si">}</span><span class="s2"> de </span><span class="si">{</span><span class="n">pm_</span><span class="p">[</span><span class="kc">True</span><span class="p">][</span><span class="s1">'n'</span><span class="p">]</span><span class="o">+</span><span class="n">pm_</span><span class="p">[</span><span class="kc">False</span><span class="p">][</span><span class="s1">'n'</span><span class="p">]</span><span class="si">}</span><span class="s2">) la exactitud es </span><span class="si">{</span><span class="n">pm_</span><span class="p">[</span><span class="kc">True</span><span class="p">][</span><span class="s1">'exactitud'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">pm_</span><span class="p">[</span><span class="kc">False</span><span class="p">][</span><span class="s1">'exactitud'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> en las unidimensionales, y </span><span class="si">{</span><span class="n">ir</span><span class="p">[</span><span class="s1">'errores_multidimensionales'</span><span class="p">]</span><span class="si">}</span><span class="s2"> de los </span><span class="si">{</span><span class="n">ir</span><span class="p">[</span><span class="s1">'errores'</span><span class="p">]</span><span class="si">}</span><span class="s2"> errores caen en normas multidimensionales. "</span>
+           <span class="sa">f</span><span class="s2">"La asociación entre `Dominio` y el instrumento es moderada (V de Cramér </span><span class="si">{</span><span class="n">ir</span><span class="p">[</span><span class="s1">'V_dominio_D3'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> con D3, </span><span class="si">{</span><span class="n">ir</span><span class="p">[</span><span class="s1">'V_dominio_D4'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> con D4): el framework de seis dimensiones no es una partición del de cinco, lo que refuerza que la etiqueta única es una simplificación."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ir</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"normas_nuevas"</span><span class="p">):</span>
+        <span class="n">nn</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="s2">"normas_nuevas"</span><span class="p">]</span>
+        <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Sobre las </span><span class="si">{</span><span class="n">nn</span><span class="p">[</span><span class="s1">'n'</span><span class="p">]</span><span class="si">}</span><span class="s2"> normas incorporadas a GENIAL después del corte (Caribe anglófono en su mayoría, 7 técnicas) la exactitud cae a </span><span class="si">{</span><span class="n">nn</span><span class="p">[</span><span class="s1">'exactitud'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> [IC95 </span><span class="si">{</span><span class="n">nn</span><span class="p">[</span><span class="s1">'ic95'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nn</span><span class="p">[</span><span class="s1">'ic95'</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]: fuera de la distribución de entrenamiento —otro idioma, otra región, la clase más débil— el modelo no es fiable y la revisión humana obligatoria para esos segmentos queda justificada empíricamente."</span>
+    <span class="n">lineas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
 <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lineas</span><span class="p">)))</span>
 </pre></div>
 </div>
@@ -9600,12 +9997,13 @@ Motivo de enrutamiento: {'baja confianza': 662, 'país subrepresentado': 146, 'i
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<p><strong>1. El modelo aprende y supera a las dos líneas base con significancia.</strong> En validación cruzada por grupo (n = 813) la regresión logística alcanza F1 macro 0.587 [IC95 0.549, 0.623] frente a 0.354 de la línea base de metadata y 0.107 de la clase mayoritaria. En el conjunto ciego, McNemar rechaza la igualdad frente a ambas (p = 0.0001 y p = 0.0061).</p>
-<p><strong>2. No alcanza el umbral de excelencia (0.70) y queda en el borde del mínimo (0.60).</strong> El IC95 del F1 macro en CV incluye 0.60 pero no 0.70. Las clases minoritarias quedan bajo el nivel de excelencia por clase (0.50): Administrativo 0.41, Técnico 0.35; Técnico incumple además el mínimo de 0.40. Sin <code>class_weight</code> balanceado Técnico prácticamente desaparece (F1 0.03): el desbalance 4.7:1 es la restricción dominante, como anticipó el EDA.</p>
-<p><strong>3. La segunda dimensión rescata la mayoría de los errores.</strong> Top-2 accuracy 0.852 en CV y 0.884 en prueba ciega: cuando el modelo se equivoca, la alternativa que propone es la etiqueta de referencia en ~7 de cada 10 casos. Eso convierte la salida en una herramienta de asistencia (dos candidatas en vez de cinco) y alimenta el diagnóstico de multi-etiqueta pedido por la tutora.</p>
+<p><strong>1. El modelo aprende y supera a las dos líneas base con significancia.</strong> En validación cruzada por grupo (n = 813) la regresión logística alcanza F1 macro 0.587 [IC95 0.549, 0.623] frente a 0.354 de la línea base de metadata y 0.107 de la clase mayoritaria. En el conjunto ciego, McNemar rechaza la igualdad frente a ambas (p = 0.0000 y p = 0.0122).</p>
+<p><strong>2. No alcanza el umbral de excelencia (0.70) y queda en el borde del mínimo (0.60).</strong> El IC95 del F1 macro en CV incluye 0.60 pero no 0.70; en el conjunto ciego (125 normas del investigador) el F1 macro es 0.617 [0.505, 0.712], compatible con la CV pero con un intervalo ancho. Las clases minoritarias quedan bajo el nivel de excelencia por clase (0.50): Administrativo 0.41, Técnico 0.35; Técnico incumple además el mínimo de 0.40. Sin <code>class_weight</code> balanceado Técnico prácticamente desaparece (F1 0.03): el desbalance 4.7:1 es la restricción dominante, como anticipó el EDA.</p>
+<p><strong>3. La segunda dimensión rescata la mayoría de los errores.</strong> Top-2 accuracy 0.852 en CV y 0.872 en prueba ciega: cuando el modelo se equivoca, la alternativa que propone es la etiqueta de referencia en ~7 de cada 10 casos. Eso convierte la salida en una herramienta de asistencia (dos candidatas en vez de cinco) y alimenta el diagnóstico de multi-etiqueta pedido por la tutora.</p>
 <p><strong>4. La señal es en parte léxica.</strong> Con la palabra que nombra la dimensión presente en el texto la exactitud es 0.81; sin ella, 0.54. El modelo generaliza, pero menos de lo que sugiere la cifra global; las normas nacionales (F1 0.56) y las no hispanohablantes (pt 0.39, en 0.27) son el punto débil.</p>
 <p><strong>5. La operación 'automatizar con ≥ 85 % de exactitud' no es viable con este modelo.</strong> Para garantizar esa exactitud en el tramo automático hay que enrutar ~84 % de las normas a revisión (meta: ≤ 30 %); el ahorro sería de 22 de 136 horas-persona por pasada. La configuración recomendada para el observatorio es, por tanto, <strong>codificación asistida</strong>: el modelo propone top-2 con probabilidad, el codificador decide, y todas las normas de países con &lt; 20 registros e idiomas minoritarios pasan por revisión.</p>
-<p><strong>6. Pendientes que cambian la lectura.</strong> (a) La rama LLM few-shot no se ejecutó aquí (sin clave de API): la comparación TF-IDF vs LLM sigue abierta y se cierra al correr la sección 5. (b) Sin el archivo del segundo codificador, el techo humano (κ humano-humano) no está medido; con un κ modelo-referencia de 0.50 (acuerdo moderado), la pregunta decisiva es cuánto acuerdan dos humanos sobre las mismas normas. (c) La ablación SVM lineal obtiene F1 0.552 en prueba ciega frente a 0.510 de la RL, sin diferencia significativa (McNemar p = 0.34); la elección de la RL se mantiene por su calibración de probabilidades, que la SVM no ofrece de forma nativa.</p>
+<p><strong>6. Pendientes que cambian la lectura.</strong> (a) La rama LLM few-shot no se ejecutó aquí (sin clave de API): la comparación TF-IDF vs LLM sigue abierta y se cierra al correr la sección 5. (b) Sin el archivo del segundo codificador, el techo humano (κ humano-humano) no está medido; con un κ modelo-referencia de 0.50 (acuerdo moderado), la pregunta decisiva es cuánto acuerdan dos humanos sobre las mismas normas. (c) La ablación SVM lineal obtiene F1 0.646 en prueba ciega frente a 0.617 de la RL, sin diferencia significativa (McNemar p = 0.12); la elección de la RL se mantiene por su calibración de probabilidades, que la SVM no ofrece de forma nativa.</p>
+<p><strong>7. La codificación del investigador de GENIAL valida la lectura de multi-etiqueta.</strong> Sobre las normas que él leyó a ciegas, el modelo acierta 76% cuando el codificador declaró confianza alta y 41% cuando declaró confianza media (n = 91 y 22): los errores del modelo se concentran donde el humano también dudó. En las normas a las que el codificador asignó etiquetas secundarias (multidimensionales, 100 de 119) la exactitud es 0.65 frente a 0.89 en las unidimensionales, y 35 de los 37 errores caen en normas multidimensionales. La asociación entre <code>Dominio</code> y el instrumento es moderada (V de Cramér 0.34 con D3, 0.28 con D4): el framework de seis dimensiones no es una partición del de cinco, lo que refuerza que la etiqueta única es una simplificación. Sobre las 23 normas incorporadas a GENIAL después del corte (Caribe anglófono en su mayoría, 7 técnicas) la exactitud cae a 0.39 [IC95 0.22, 0.59]: fuera de la distribución de entrenamiento —otro idioma, otra región, la clase más débil— el modelo no es fiable y la revisión humana obligatoria para esos segmentos queda justificada empíricamente.</p>
 </div>
 </div>
 </div>

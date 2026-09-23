@@ -54,27 +54,37 @@ df["Investigador"] = df["Investigador"].map({n: f"C{i+1:02d}" for i, n in enumer
 print(df.shape, "| idioma:", df["idioma"].value_counts().to_dict())
 df["Dominio"].value_counts().reindex(C5).to_frame("n").T"""))
 
-C.append(md("## 2. Conjunto de prueba a ciegas y particiones (E2)\n\nRegla: el conjunto de prueba son las normas **codificadas a ciegas por el segundo codificador de GENIAL** (`data/raw/coder2_labels.csv`, columnas `id_norma` o `Título de la Norma`, `Dominio_coder2`, opcional `Dominio_alt_coder2`). Si ese archivo no existe, se usa el muestreo estratificado por dimensión e idioma de `split.make_splits`. Los duplicados por URL nunca se reparten entre entrenamiento y prueba; el pool few-shot (15 normas) se excluye de ambos."))
-C.append(code(r"""coder2_path = ROOT / "data/raw/coder2_labels.csv"
-if coder2_path.exists():
-    c2 = pd.read_csv(coder2_path)
-    if "id_norma" not in c2.columns:   # empareja por título normalizado
-        key = lambda s: s.astype(str).str.strip().str.lower().str.replace(r"\s+", " ", regex=True)
-        c2 = c2.merge(df[["id_norma", "Título de la Norma"]].assign(_k=key(df["Título de la Norma"])), left_on=key(c2["Título de la Norma"]), right_on="_k", how="inner").drop(columns="_k")
-    test_ids = set(c2["id_norma"])
-    # el conjunto de prueba se completa con los duplicados por URL de esas normas para no partir grupos
+C.append(md("## 2. Conjunto de prueba a ciegas y particiones (E2)\n\nRegla: el conjunto de prueba son las normas **que el investigador de GENIAL codificó a ciegas** con el instrumento del Framework Dimensional (`data/raw/codificacion_investigador_A.xlsx`, hoja `Codificación`, 142 normas, seis dimensiones D1-D6 con etiquetas secundarias y nivel de confianza). Las normas se emparejan con la versión congelada del corpus por título + país (desempate por URL y observaciones); las que GENIAL incorporó después del corte se apartan como **normas nuevas** y se usan en la sección 6.2 como prueba de robustez fuera de la versión congelada.\n\nEl instrumento **no recodifica `Dominio`** (la muestra como contexto), así que no permite calcular κ humano-humano sobre la dimensión; para eso el cuaderno acepta además `data/raw/coder2_labels.csv` (`id_norma`, `Dominio_coder2`, opcional `Dominio_alt_coder2`). Si no existe ninguno de los dos archivos, se usa el muestreo estratificado de `split.make_splits`. Los duplicados por URL nunca se reparten entre entrenamiento y prueba; el pool few-shot (15 normas) se excluye de ambos."))
+C.append(code(r"""from genial_clf import coder
+instr_path = ROOT / "data/raw/codificacion_investigador_A.xlsx"
+coder2_path = ROOT / "data/raw/coder2_labels.csv"
+instr, instr_nuevas, c2 = None, None, None
+
+def particion_desde_ids(test_ids):
     grupos_test = set(df.loc[df["id_norma"].isin(test_ids), "grupo_url"])
-    test = df[df["grupo_url"].isin(grupos_test)].copy()
-    resto = df[~df["grupo_url"].isin(grupos_test)].copy()
+    test = df[df["grupo_url"].isin(grupos_test)].copy(); resto = df[~df["grupo_url"].isin(grupos_test)].copy()
     rng = np.random.default_rng(SEED); fs_ids = []
     for c in C5:
         pool = resto[(resto["Dominio"] == c) & resto["n_palabras"].between(25, 90)]["id_norma"].to_numpy()
         fs_ids += list(rng.choice(pool, cfg["split"]["fewshot_per_class"], replace=False))
-    fewshot = resto[resto["id_norma"].isin(fs_ids)].copy(); train = resto[~resto["id_norma"].isin(fs_ids)].copy()
-    origen_test = f"normas codificadas por el 2.º codificador ({len(test_ids)} normas; {len(test)} con duplicados por URL)"
+    return resto[~resto["id_norma"].isin(fs_ids)].copy(), resto[resto["id_norma"].isin(fs_ids)].copy(), test
+
+if instr_path.exists():
+    instr, instr_nuevas = coder.load_instrument(instr_path, df)
+    train, fewshot, test = particion_desde_ids(set(instr["id_norma"]))
+    origen_test = f"normas del instrumento de codificación ciega del investigador A de GENIAL: {len(instr)} en la versión congelada ({len(test)} con duplicados por URL); {len(instr_nuevas)} normas nuevas fuera de la versión congelada"
+elif coder2_path.exists():
+    c2 = pd.read_csv(coder2_path)
+    if "id_norma" not in c2.columns:
+        key = lambda s: s.astype(str).str.strip().str.lower().str.replace(r"\s+", " ", regex=True)
+        c2 = c2.merge(df[["id_norma", "Título de la Norma"]].assign(_k=key(df["Título de la Norma"])), left_on=key(c2["Título de la Norma"]), right_on="_k", how="inner").drop(columns="_k")
+    train, fewshot, test = particion_desde_ids(set(c2["id_norma"]))
+    origen_test = f"normas codificadas por el 2.º codificador ({c2['id_norma'].nunique()} normas; {len(test)} con duplicados por URL)"
 else:
-    sp = split.make_splits(df, cfg); train, fewshot, test = sp["train"], sp["fewshot"], sp["test"]; c2 = None
-    origen_test = "muestreo estratificado por dimensión e idioma (sin 2.º codificador todavía)"
+    sp = split.make_splits(df, cfg); train, fewshot, test = sp["train"], sp["fewshot"], sp["test"]
+    origen_test = "muestreo estratificado por dimensión e idioma (sin codificación externa)"
+if instr is not None and coder2_path.exists():   # recodificación de Dominio disponible además del instrumento
+    c2 = pd.read_csv(coder2_path); c2 = c2[c2["id_norma"].isin(test["id_norma"])]
 split.write_splits({"train": train, "fewshot": fewshot, "test": test}, SPL, cfg)
 print("Conjunto de prueba:", origen_test)
 print(f"entrenamiento {len(train)} · few-shot {len(fewshot)} · prueba {len(test)}")
@@ -214,7 +224,7 @@ C.append(code(r"""if c2 is not None:
         pd.crosstab(d["Dominio"], d["Dominio_coder2"]).reindex(index=C5, columns=C5).fillna(0).astype(int).to_csv(RES / "confusion_humano_humano.csv")
         display(pd.crosstab(d["Dominio"], d["Dominio_coder2"]).reindex(index=C5, columns=C5).fillna(0).astype(int))
 else:
-    print("Sin archivo del 2.º codificador: κ humano-humano pendiente (data/raw/coder2_labels.csv).")"""))
+    print("κ humano-humano sobre Dominio: pendiente. El instrumento del investigador A codifica D1-D6 y no recodifica Dominio; hace falta data/raw/coder2_labels.csv (plantilla generada en results/coder2_labels_plantilla.csv).")"""))
 C.append(md("### 6.1 Diagnóstico de multi-etiqueta y hoja de tipificación de errores\n\nCada error del conjunto de prueba se clasifica a mano en *error genuino*, *segunda dimensión defendible* o *etiqueta original discutible*. El cuaderno genera la hoja de trabajo con la referencia, la predicción, la alternativa y —si existe— la etiqueta del segundo codificador; la tipificación la completan los codificadores."))
 C.append(code(r"""if "clasico" in ramas:
     r = ramas["clasico"]
@@ -224,6 +234,42 @@ C.append(code(r"""if "clasico" in ramas:
     print(f"Errores del modelo clásico en prueba: {len(hoja)} de {len(r)} · en {int(hoja['segunda_acierta'].sum())} la segunda dimensión coincide con la referencia (top-2 rescata {hoja['segunda_acierta'].mean():.0%} de los errores)")
     if c2 is not None: print(f"· en {int((hoja['pred'] == hoja['Dominio_coder2']).sum())} errores el modelo coincide con el 2.º codificador (candidatos a «etiqueta original discutible»)")
     display(pd.crosstab(r["Dominio"], r["pred"]).reindex(index=C5, columns=C5).fillna(0).astype(int))"""))
+
+C.append(md("### 6.2 La codificación del investigador de GENIAL: confianza humana, multidimensionalidad y normas nuevas\n\nEl instrumento no recodifica `Dominio`, pero aporta tres cosas que la referencia original no tiene: (a) el **nivel de confianza** del codificador en cada norma, (b) las **etiquetas secundarias** en D3 (tipo de disposición) y D4 (finalidad), que señalan normas multidimensionales, y (c) **normas incorporadas después del corte** del corpus, que sirven como prueba de robustez fuera de la versión congelada. También se cruza `Dominio` con D3 y D4 para ver cuánto del framework de cinco dimensiones queda recogido en el instrumento de seis."))
+C.append(code(r"""instr_res = None
+if instr is not None and "clasico" in ramas:
+    r = ramas["clasico"].merge(instr, on="id_norma")
+    r["acierto"] = r["pred"] == r["Dominio"]; r["top2_ok"] = r["acierto"] | (r["pred_2"] == r["Dominio"])
+    print("Exactitud del modelo clásico según la confianza declarada por el codificador humano:")
+    por_conf = r.groupby("Confianza").agg(n=("acierto", "size"), exactitud=("acierto", "mean"), top2=("top2_ok", "mean")).reindex(["Alta", "Media", "Baja"])
+    display(por_conf.round(3))
+    print("\nExactitud según si el codificador asignó etiquetas secundarias en D3 o D4 (norma multidimensional):")
+    por_multi = r.groupby("multidimensional").agg(n=("acierto", "size"), exactitud=("acierto", "mean"), top2=("top2_ok", "mean"))
+    display(por_multi.round(3))
+    err = r[~r["acierto"]]
+    print(f"Errores del modelo en las {len(r)} normas con codificación del instrumento: {len(err)} · con etiquetas secundarias humanas: {int(err['multidimensional'].sum())} ({err['multidimensional'].mean():.0%}) · rescatados por top-2: {int((err['pred_2']==err['Dominio']).sum())}")
+    print(f"\nV de Cramér (corregida) entre Dominio y D4 finalidad: {coder.cramers_v(r['Dominio'], r['D4_principal']):.2f} · entre Dominio y D3 tipo de disposición: {coder.cramers_v(r['Dominio'], r['D3_principal']):.2f}")
+    ct = pd.crosstab(r["Dominio"], r["D4_principal"]).reindex(index=C5).fillna(0).astype(int); ct.to_csv(RES / "dominio_x_D4_finalidad.csv"); display(ct)
+    # plantilla para la recodificación de Dominio (κ humano-humano)
+    plantilla = test[["id_norma", "País", "Título de la Norma", "Observaciones"]].copy(); plantilla["Dominio_coder2"] = ""; plantilla["Dominio_alt_coder2"] = ""
+    plantilla.to_csv(RES / "coder2_labels_plantilla.csv", index=False)
+    print(f"\nPlantilla para κ humano-humano escrita: results/coder2_labels_plantilla.csv ({len(plantilla)} normas; el codificador llena Dominio_coder2 y el archivo se copia a data/raw/coder2_labels.csv)")
+    instr_res = {"por_confianza": por_conf.reset_index().to_dict("records"), "por_multidimensional": por_multi.reset_index().to_dict("records"),
+                 "errores": int(len(err)), "errores_multidimensionales": int(err["multidimensional"].sum()),
+                 "V_dominio_D4": coder.cramers_v(r["Dominio"], r["D4_principal"]), "V_dominio_D3": coder.cramers_v(r["Dominio"], r["D3_principal"])}
+    # normas nuevas (fuera de la versión congelada): robustez del modelo entrenado
+    if instr_nuevas is not None and len(instr_nuevas):
+        nv = instr_nuevas.copy(); nv["texto"] = data.build_text(nv, cfg["columns"]["text_parts"])
+        proba = pipe_cls.predict_proba(nv["texto"]); p1, p2, conf = classic.top2(proba, pipe_cls.classes_)
+        nv["pred"], nv["pred_2"], nv["conf"] = p1, p2, conf
+        acc_nv = (nv["pred"] == nv["Dominio"]).mean(); top2_nv = ((nv["pred"] == nv["Dominio"]) | (nv["pred_2"] == nv["Dominio"])).mean()
+        lo, hi = evaluate.wilson_ci(int((nv["pred"] == nv["Dominio"]).sum()), len(nv))
+        print(f"\nNormas nuevas fuera de la versión congelada (n = {len(nv)}, {nv['País'].nunique()} países, {int((nv['Dominio']=='Técnico').sum())} técnicas): exactitud {acc_nv:.3f} IC95 [{lo:.3f}, {hi:.3f}] · top-2 {top2_nv:.3f} · confianza media {conf.mean():.2f}")
+        display(pd.crosstab(nv["Dominio"], nv["pred"]).reindex(index=C5).fillna(0).astype(int))
+        nv[["ID", "País", "Dominio", "pred", "pred_2", "conf", "Confianza"]].to_csv(RES / "pred_normas_nuevas.csv", index=False)
+        instr_res["normas_nuevas"] = {"n": int(len(nv)), "exactitud": float(acc_nv), "ic95": [lo, hi], "top2": float(top2_nv)}
+else:
+    print("Instrumento del investigador no disponible: sección omitida.")"""))
 
 C.append(md("## 7. Operación: umbral de confianza, enrutamiento y agregación al IMN (E7)\n\nLa curva enrutamiento-exactitud se estima con las probabilidades fuera de muestra de la validación cruzada (813 normas), que es la distribución operativa. La regla de gobernanza añade revisión obligatoria para países con menos de 20 normas e idiomas minoritarios."))
 C.append(code(r"""curva = imn.routing_curve(cv.rename(columns={"y_true": "y"}).assign(pred=cv["pred"], conf=cv["conf"]), cv["y_true"])
@@ -263,6 +309,7 @@ C.append(code(r"""sintesis = {
     "fiabilidad": fiab.to_dict("records") if c2 is not None else None,
     "operacion": {"umbral": cfg["routing"]["confidence_threshold"], "pct_enrutado": carga["pct_enrutado"], "exactitud_auto": float(accuracy_score(auto["Dominio"], auto["pred"])), "horas_ahorradas": carga["horas_ahorradas"], "horas_total": carga["horas_manual_total"]},
     "llm_disponible": "llm" in ramas,
+    "instrumento_investigador": instr_res,
 }
 json.dump(sintesis, open(RES / "sintesis_resultados.json", "w"), ensure_ascii=False, indent=1, default=float)
 print(json.dumps({k: sintesis[k] for k in ["corpus", "piso_mayoritaria", "metadata_cv", "clasico_cv", "operacion", "llm_disponible"]}, ensure_ascii=False, indent=1, default=float))"""))
@@ -274,12 +321,22 @@ mejor = max((r for r in sintesis["prueba_ciega"] if r["rama"] not in ("mayoritar
 debiles = [c for c, v in pc.items() if v < 0.50]; bajo_min = [c for c, v in pc.items() if v < 0.40]
 lineas = [
  f"**1. El modelo aprende y supera a las dos líneas base con significancia.** En validación cruzada por grupo (n = 813) la regresión logística alcanza F1 macro {cvr['f1_macro']:.3f} [IC95 {cvr['f1_macro_ci'][0]:.3f}, {cvr['f1_macro_ci'][1]:.3f}] frente a {sintesis['metadata_cv']['f1_macro']:.3f} de la línea base de metadata y {sintesis['piso_mayoritaria']['f1_macro']:.3f} de la clase mayoritaria. En el conjunto ciego, McNemar rechaza la igualdad frente a ambas (p = {sintesis['mcnemar'][0]['valor p']:.4f} y p = {sintesis['mcnemar'][1]['valor p']:.4f}).",
- f"**2. No alcanza el umbral de excelencia (0.70) y queda en el borde del mínimo (0.60).** El IC95 del F1 macro en CV incluye 0.60 pero no 0.70. Las clases minoritarias quedan bajo el nivel de excelencia por clase (0.50): " + ", ".join(f"{c} {pc[c]:.2f}" for c in debiles) + (f"; {', '.join(bajo_min)} incumple además el mínimo de 0.40" if bajo_min else "") + ". Sin `class_weight` balanceado Técnico prácticamente desaparece (F1 0.03): el desbalance 4.7:1 es la restricción dominante, como anticipó el EDA.",
+ f"**2. No alcanza el umbral de excelencia (0.70) y queda en el borde del mínimo (0.60).** El IC95 del F1 macro en CV incluye 0.60 pero no 0.70; en el conjunto ciego ({blind['clasico']['n']} normas del investigador) el F1 macro es {blind['clasico']['F1 macro']:.3f} {blind['clasico']['IC95 F1 macro']}, compatible con la CV pero con un intervalo ancho. Las clases minoritarias quedan bajo el nivel de excelencia por clase (0.50): " + ", ".join(f"{c} {pc[c]:.2f}" for c in debiles) + (f"; {', '.join(bajo_min)} incumple además el mínimo de 0.40" if bajo_min else "") + ". Sin `class_weight` balanceado Técnico prácticamente desaparece (F1 0.03): el desbalance 4.7:1 es la restricción dominante, como anticipó el EDA.",
  f"**3. La segunda dimensión rescata la mayoría de los errores.** Top-2 accuracy {cvr['top2']:.3f} en CV y {blind['clasico']['top-2']:.3f} en prueba ciega: cuando el modelo se equivoca, la alternativa que propone es la etiqueta de referencia en ~7 de cada 10 casos. Eso convierte la salida en una herramienta de asistencia (dos candidatas en vez de cinco) y alimenta el diagnóstico de multi-etiqueta pedido por la tutora.",
  f"**4. La señal es en parte léxica.** Con la palabra que nombra la dimensión presente en el texto la exactitud es 0.81; sin ella, 0.54. El modelo generaliza, pero menos de lo que sugiere la cifra global; las normas nacionales (F1 0.56) y las no hispanohablantes (pt 0.39, en 0.27) son el punto débil.",
  f"**5. La operación 'automatizar con ≥ 85 % de exactitud' no es viable con este modelo.** Para garantizar esa exactitud en el tramo automático hay que enrutar ~{op['pct_enrutado']*100:.0f} % de las normas a revisión (meta: ≤ 30 %); el ahorro sería de {op['horas_ahorradas']:.0f} de {op['horas_total']:.0f} horas-persona por pasada. La configuración recomendada para el observatorio es, por tanto, **codificación asistida**: el modelo propone top-2 con probabilidad, el codificador decide, y todas las normas de países con < 20 registros e idiomas minoritarios pasan por revisión.",
  f"**6. Pendientes que cambian la lectura.** (a) La rama LLM few-shot no se ejecutó aquí (sin clave de API): la comparación TF-IDF vs LLM sigue abierta y se cierra al correr la sección 5. (b) Sin el archivo del segundo codificador, el techo humano (κ humano-humano) no está medido; con un κ modelo-referencia de {cvr['kappa']:.2f} (acuerdo moderado), la pregunta decisiva es cuánto acuerdan dos humanos sobre las mismas normas. (c) La ablación SVM lineal obtiene F1 {blind['svm']['F1 macro']:.3f} en prueba ciega frente a {blind['clasico']['F1 macro']:.3f} de la RL, sin diferencia significativa (McNemar p = {sintesis['mcnemar'][2]['valor p']:.2f}); la elección de la RL se mantiene por su calibración de probabilidades, que la SVM no ofrece de forma nativa.",
 ]
+ir = sintesis.get("instrumento_investigador")
+if ir:
+    pc_ = {d["Confianza"]: d for d in ir["por_confianza"]}; pm_ = {bool(d["multidimensional"]): d for d in ir["por_multidimensional"]}
+    txt = (f"**7. La codificación del investigador de GENIAL valida la lectura de multi-etiqueta.** Sobre las normas que él leyó a ciegas, el modelo acierta {pc_['Alta']['exactitud']:.0%} cuando el codificador declaró confianza alta y {pc_['Media']['exactitud']:.0%} cuando declaró confianza media (n = {pc_['Alta']['n']} y {pc_['Media']['n']}): los errores del modelo se concentran donde el humano también dudó. "
+           f"En las normas a las que el codificador asignó etiquetas secundarias (multidimensionales, {pm_[True]['n']} de {pm_[True]['n']+pm_[False]['n']}) la exactitud es {pm_[True]['exactitud']:.2f} frente a {pm_[False]['exactitud']:.2f} en las unidimensionales, y {ir['errores_multidimensionales']} de los {ir['errores']} errores caen en normas multidimensionales. "
+           f"La asociación entre `Dominio` y el instrumento es moderada (V de Cramér {ir['V_dominio_D3']:.2f} con D3, {ir['V_dominio_D4']:.2f} con D4): el framework de seis dimensiones no es una partición del de cinco, lo que refuerza que la etiqueta única es una simplificación.")
+    if ir.get("normas_nuevas"):
+        nn = ir["normas_nuevas"]
+        txt += f" Sobre las {nn['n']} normas incorporadas a GENIAL después del corte (Caribe anglófono en su mayoría, 7 técnicas) la exactitud cae a {nn['exactitud']:.2f} [IC95 {nn['ic95'][0]:.2f}, {nn['ic95'][1]:.2f}]: fuera de la distribución de entrenamiento —otro idioma, otra región, la clase más débil— el modelo no es fiable y la revisión humana obligatoria para esos segmentos queda justificada empíricamente."
+    lineas.append(txt)
 display(Markdown("\n\n".join(lineas)))"""))
 
 nb = new_notebook(cells=C, metadata={"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}, "language_info": {"name": "python", "version": "3.11"}})
