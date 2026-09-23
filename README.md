@@ -60,7 +60,8 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 ├── notebooks/02_experimento.ipynb       experimento ejecutado (generado por make_results_notebook.py) + README_experimento.md
 ├── results/                             agregados versionados: sintesis_resultados.json, ablaciones, comparación pareada, McNemar, curva, IMN, figuras
 ├── docs/                                documento técnico (PDF), decisiones metodológicas, protocolo de codificación ciega
-│   └── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
+│   ├── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
+│   └── presentacion_final/              presentación final (.pptx/.pdf) y guion del video (.docx/.pdf)
 └── tests/test_pipeline.py               pruebas unitarias (partición sin fuga, métricas, parseo, enrutamiento)
 ```
 
@@ -159,6 +160,7 @@ F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 �
 ## 11. Documentación
 
 - `notebooks/02_experimento.ipynb` / `.html` — experimento ejecutado (secciones 1-9); `notebooks/README_experimento.md` — cómo reproducirlo, formato del archivo del segundo codificador y ejecución local de la rama LLM.
+- `docs/presentacion_final/` — presentación final (18 diapositivas, .pptx/.pdf, con notas del orador) y guion del video de 15 minutos (.docx/.pdf).
 - `docs/semana2/` — entregables de la Semana 2: informe del EDA, análisis comparativo de ocho técnicas y Ficha de Decisión Técnica y Arquitectura (la decisión: Regresión Logística sobre TF-IDF frente a LLM few-shot).
 - `notebooks/EDA_corpus_GENIAL.ipynb` — cuaderno ejecutado del EDA (pandas, matplotlib, seaborn); hallazgo principal: las observaciones están en español aunque el título esté en portugués o inglés, por lo que `idioma` se deriva del título.
 
