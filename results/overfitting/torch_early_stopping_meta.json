@@ -1,0 +1,8 @@
+{
+ "run": "torch_early_stopping",
+ "params": {
+  "patience": 15
+ },
+ "n_epochs": 61,
+ "segundos": 0.33
+}

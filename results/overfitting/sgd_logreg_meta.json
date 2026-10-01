@@ -1,0 +1,11 @@
+{
+ "run": "sgd_logreg",
+ "params": {
+  "alpha": 0.0001,
+  "penalty": "l2",
+  "epochs": 80,
+  "class_weight": "balanced"
+ },
+ "n_epochs": 80,
+ "segundos": 0.96
+}

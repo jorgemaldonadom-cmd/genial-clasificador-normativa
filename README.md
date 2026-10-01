@@ -52,12 +52,14 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 │   ├── llm.py          prompt few-shot, llamada a la API, parseo de top-2, repeticiones, estabilidad
 │   ├── evaluate.py     F1, matriz de confusión, McNemar, IC de Wilson y bootstrap, kappa, desagregación
 │   ├── reliability.py  kappa humano-humano, adjudicación, hoja de tipificación de errores
+│   ├── tracking.py     tracking de métricas por época, curvas de aprendizaje/validación, diagnóstico overfitting/underfitting (Semana 3)
 │   ├── coder.py        lectura del instrumento de codificación ciega de GENIAL (D1-D6), emparejamiento con el corpus
 │   └── imn.py          umbral de confianza, enrutamiento, carga residual, tabla IMN con trazabilidad
 ├── scripts/run_pipeline.py              ejecución por etapas
 ├── prompts/clasificador_v0.1.md         prompt versionado con política de idioma
 ├── notebooks/EDA_corpus_GENIAL.ipynb    EDA ejecutado (Semana 2) + exportación HTML + figuras/ + eda_resumen.json
 ├── notebooks/02_experimento.ipynb       experimento ejecutado (generado por make_results_notebook.py) + README_experimento.md
+├── notebooks/overfitting_analysis.ipynb diagnóstico de overfitting/underfitting ejecutado (Semana 3; generado por make_overfitting_notebook.py)
 ├── results/                             agregados versionados: sintesis_resultados.json, ablaciones, comparación pareada, McNemar, curva, IMN, figuras
 ├── docs/                                documento técnico (PDF), decisiones metodológicas, protocolo de codificación ciega
 │   ├── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
@@ -160,6 +162,7 @@ F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 �
 ## 11. Documentación
 
 - `notebooks/02_experimento.ipynb` / `.html` — experimento ejecutado (secciones 1-9); `notebooks/README_experimento.md` — cómo reproducirlo, formato del archivo del segundo codificador y ejecución local de la rama LLM.
+- `docs/semana3/diagnostic_report.pdf` — reporte técnico de la Semana 3 (diagnóstico de overfitting/underfitting); cuaderno `notebooks/overfitting_analysis.ipynb` (+ .html) y módulo `src/genial_clf/tracking.py` (tracker por época, entrenadores scikit-learn/PyTorch, curvas con CV por grupo, diagnóstico, figuras a 300 DPI).
 - `docs/presentacion_final/` — presentación final (18 diapositivas, .pptx/.pdf, con notas del orador) y guion del video de 15 minutos (.docx/.pdf).
 - `docs/semana2/` — entregables de la Semana 2: informe del EDA, análisis comparativo de ocho técnicas y Ficha de Decisión Técnica y Arquitectura (la decisión: Regresión Logística sobre TF-IDF frente a LLM few-shot).
 - `notebooks/EDA_corpus_GENIAL.ipynb` — cuaderno ejecutado del EDA (pandas, matplotlib, seaborn); hallazgo principal: las observaciones están en español aunque el título esté en portugués o inglés, por lo que `idioma` se deriva del título.

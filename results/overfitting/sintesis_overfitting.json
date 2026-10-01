@@ -1,0 +1,561 @@
+{
+ "dif_cv": -0.0030741096655045874,
+ "menor_gap": {
+  "configuración": "E1 + E3: C = 0.01, 2 000 feat., min_df = 2",
+  "train_f1": 0.7670022726282455,
+  "val_f1": 0.5189522868084337,
+  "gap_f1": 0.24804998581981175,
+  "val_f1_std": 0.019089031627907604,
+  "train_acc": 0.7878937313350484,
+  "val_acc": 0.5572028745163073,
+  "Δ val F1 vs base": -0.028070725935413376,
+  "Δ gap vs base": -0.14725293832015218
+ },
+ "mejor_val": {
+  "configuración": "Base: C = 1, 5 000 feat., 1-2 gramas",
+  "train_f1": 0.942325936883811,
+  "val_f1": 0.5470230127438471,
+  "gap_f1": 0.39530292413996393,
+  "val_f1_std": 0.022569347208813755,
+  "train_acc": 0.9476250250015518,
+  "val_acc": 0.594350469872858,
+  "Δ val F1 vs base": 0.0,
+  "Δ gap vs base": 0.0
+ },
+ "base_cv": {
+  "train_f1": 0.942325936883811,
+  "val_f1": 0.5470230127438471,
+  "train_acc": 0.9476250250015518,
+  "val_acc": 0.594350469872858,
+  "train_f1_std": 0.005249223780846552,
+  "val_f1_std": 0.022569347208813755,
+  "train_acc_std": 0.006465822199740167,
+  "val_acc_std": 0.028651098378524677,
+  "gap_f1": 0.39530292413996393,
+  "gap_acc": 0.35327455512869377
+ },
+ "diagnostico_torch": {
+  "diagnóstico": "overfitting",
+  "epoca_min_val_loss": 46,
+  "val_loss_min": 1.1701349020004272,
+  "val_loss_final": 1.1988563537597656,
+  "rebote_val_loss": 0.024545419259127454,
+  "train_loss_final": 0.1462930142879486,
+  "gap_loss_final": 1.052563339471817,
+  "train_acc_final": 1.0,
+  "val_acc_final": 0.5555555820465088,
+  "gap_acc_final": 0.4444444179534912,
+  "gap_acc_max": 0.44627565145492554,
+  "gap_f1_final": 0.4994418957080997,
+  "val_f1_final": 0.5005581042919003,
+  "val_f1_max": 0.5353216374269005,
+  "pendiente_gap_ultimo_tercio": 0.00011551945149397689,
+  "n_epocas": 150
+ },
+ "diagnostico_sgd": {
+  "diagnóstico": "overfitting",
+  "epoca_min_val_loss": 80,
+  "val_loss_min": 1.0404643437024599,
+  "val_loss_final": 1.0404643437024599,
+  "rebote_val_loss": 0.0,
+  "train_loss_final": 0.17832774745098803,
+  "gap_loss_final": 0.8621365962514719,
+  "train_acc_final": 1.0,
+  "val_acc_final": 0.5851851851851851,
+  "gap_acc_final": 0.41481481481481486,
+  "gap_acc_max": 0.4462756436734132,
+  "gap_f1_final": 0.47695959175749514,
+  "val_f1_final": 0.5230404082425049,
+  "val_f1_max": 0.5552308844329812,
+  "pendiente_gap_ultimo_tercio": -1.5108640086165365e-18,
+  "n_epocas": 80
+ },
+ "diagnostico_tamano": {
+  "n_max": 538,
+  "train_final": 0.9428234880443813,
+  "val_final": 0.5462239969448314,
+  "gap_final": 0.39659949109954995,
+  "pendiente_val_por_100_global": 3.8242631246086076,
+  "pendiente_val_por_100_tramo_final": 1.0034299580776476,
+  "ganancia_val_total_puntos": 17.357753455063197,
+  "val_std_final": 0.018724531880144703,
+  "convergen": false,
+  "lectura": "gap grande y validación aún creciente → varianza alta: más datos y/o más regularización"
+ },
+ "mejor_C": 0.01,
+ "E1_cv": {
+  "train_f1": 0.8352395129164636,
+  "val_f1": 0.5322704475873155,
+  "train_acc": 0.8517790759426447,
+  "val_acc": 0.5809286898839138,
+  "train_f1_std": 0.015734261339197867,
+  "val_f1_std": 0.032603792568416806,
+  "train_acc_std": 0.014922766525283564,
+  "val_acc_std": 0.0394931200917754,
+  "gap_f1": 0.30296906532914814,
+  "gap_acc": 0.2708503860587309
+ },
+ "E1_weight_decay": [
+  {
+   "weight_decay": 0.0001,
+   "train_acc": 1.0,
+   "val_acc": 0.5555555820465088,
+   "gap_acc": 0.4444444179534912,
+   "val_f1_max": 0.5353216374269005,
+   "val_loss_min": 1.1701349020004272,
+   "rebote": 0.024545419259127454
+  },
+  {
+   "weight_decay": 0.001,
+   "train_acc": 0.9851301312446594,
+   "val_acc": 0.6074073910713196,
+   "gap_acc": 0.37772274017333984,
+   "val_f1_max": 0.5483376758728504,
+   "val_loss_min": 1.1887105703353882,
+   "rebote": 0.0
+  },
+  {
+   "weight_decay": 0.01,
+   "train_acc": 0.8903345465660095,
+   "val_acc": 0.585185170173645,
+   "gap_acc": 0.3051493763923645,
+   "val_f1_max": 0.567008547008547,
+   "val_loss_min": 1.4053173065185547,
+   "rebote": 0.0
+  },
+  {
+   "weight_decay": 0.05,
+   "train_acc": 0.8605948090553284,
+   "val_acc": 0.6074073910713196,
+   "gap_acc": 0.2531874179840088,
+   "val_f1_max": 0.5817418692418692,
+   "val_loss_min": 1.5427155494689941,
+   "rebote": 0.0017502964940907528
+  }
+ ],
+ "E2_early_stopping": [
+  {
+   "configuración": "150 épocas (sin early stopping)",
+   "épocas": 150,
+   "val_loss": 1.1988563537597656,
+   "val_acc": 0.5555555820465088,
+   "val_f1": 0.5005581042919003,
+   "train_acc": 1.0,
+   "gap_acc": 0.4444444179534912
+  },
+  {
+   "configuración": "early stopping (paciencia 15) → época 46",
+   "épocas": 46,
+   "val_loss": 1.1701349020004272,
+   "val_acc": 0.5481481552124023,
+   "val_f1": 0.5053968253968254,
+   "train_acc": 0.9925650358200073,
+   "gap_acc": 0.444416880607605
+  }
+ ],
+ "E3": [
+  {
+   "configuración": "max_features = 1000",
+   "train_f1": 0.8644075548067081,
+   "val_f1": 0.5262104935155629,
+   "gap_f1": 0.33819706129114513,
+   "val_f1_std": 0.03896294540315615,
+   "train_acc": 0.8688697919181191,
+   "val_acc": 0.5676616915422885
+  },
+  {
+   "configuración": "max_features = 2000, min_df = 2",
+   "train_f1": 0.9006219914366982,
+   "val_f1": 0.538540034374297,
+   "gap_f1": 0.3620819570624012,
+   "val_f1_std": 0.02679009991554038,
+   "train_acc": 0.9049016835527721,
+   "val_acc": 0.5780541735765616
+  },
+  {
+   "configuración": "unigramas, max_features = 2000",
+   "train_f1": 0.9176880400119733,
+   "val_f1": 0.5514812606710822,
+   "gap_f1": 0.3662067793408912,
+   "val_f1_std": 0.024264464703005275,
+   "train_acc": 0.916044444137912,
+   "val_acc": 0.5972692095080154
+  },
+  {
+   "configuración": "unigramas, min_df = 2, C = 0.01",
+   "train_f1": 0.7562606641416536,
+   "val_f1": 0.5177883499440833,
+   "gap_f1": 0.2384723141975703,
+   "val_f1_std": 0.04423825472267677,
+   "train_acc": 0.7726617514190537,
+   "val_acc": 0.5556661138750691
+  }
+ ],
+ "E4": [
+  {
+   "esquema": "StratifiedKFold (ingenua)",
+   "F1 macro val (media)": 0.5439489030783425,
+   "DE": 0.048980929793836794
+  },
+  {
+   "esquema": "StratifiedGroupKFold (por URL)",
+   "F1 macro val (media)": 0.5470230127438471,
+   "DE": 0.020186637826681078
+  }
+ ],
+ "combinada_cv": {
+  "train_f1": 0.7670022726282455,
+  "val_f1": 0.5189522868084337,
+  "train_acc": 0.7878937313350484,
+  "val_acc": 0.5572028745163073,
+  "train_f1_std": 0.006139761974719514,
+  "val_f1_std": 0.019089031627907604,
+  "train_acc_std": 0.007457894218070339,
+  "val_acc_std": 0.017103893724558828,
+  "gap_f1": 0.24804998581981175,
+  "gap_acc": 0.23069085681874102
+ },
+ "tabla_antes_despues": [
+  {
+   "configuración": "Base: C = 1, 5 000 feat., 1-2 gramas",
+   "train_f1": 0.942325936883811,
+   "val_f1": 0.5470230127438471,
+   "gap_f1": 0.39530292413996393,
+   "val_f1_std": 0.022569347208813755,
+   "train_acc": 0.9476250250015518,
+   "val_acc": 0.594350469872858,
+   "Δ val F1 vs base": 0.0,
+   "Δ gap vs base": 0.0
+  },
+  {
+   "configuración": "E1: C = 0.01",
+   "train_f1": 0.8352395129164636,
+   "val_f1": 0.5322704475873155,
+   "gap_f1": 0.30296906532914814,
+   "val_f1_std": 0.032603792568416806,
+   "train_acc": 0.8517790759426447,
+   "val_acc": 0.5809286898839138,
+   "Δ val F1 vs base": -0.014752565156531672,
+   "Δ gap vs base": -0.0923338588108158
+  },
+  {
+   "configuración": "E3: 2 000 feat., min_df = 2",
+   "train_f1": 0.9006219914366982,
+   "val_f1": 0.538540034374297,
+   "gap_f1": 0.3620819570624012,
+   "val_f1_std": 0.02679009991554038,
+   "train_acc": 0.9049016835527721,
+   "val_acc": 0.5780541735765616,
+   "Δ val F1 vs base": -0.008482978369550143,
+   "Δ gap vs base": -0.033220967077562724
+  },
+  {
+   "configuración": "E3: 1 000 feat.",
+   "train_f1": 0.8644075548067081,
+   "val_f1": 0.5262104935155629,
+   "gap_f1": 0.33819706129114513,
+   "val_f1_std": 0.03896294540315615,
+   "train_acc": 0.8688697919181191,
+   "val_acc": 0.5676616915422885,
+   "Δ val F1 vs base": -0.0208125192282842,
+   "Δ gap vs base": -0.0571058628488188
+  },
+  {
+   "configuración": "E1 + E3: C = 0.01, 2 000 feat., min_df = 2",
+   "train_f1": 0.7670022726282455,
+   "val_f1": 0.5189522868084337,
+   "gap_f1": 0.24804998581981175,
+   "val_f1_std": 0.019089031627907604,
+   "train_acc": 0.7878937313350484,
+   "val_acc": 0.5572028745163073,
+   "Δ val F1 vs base": -0.028070725935413376,
+   "Δ gap vs base": -0.14725293832015218
+  }
+ ],
+ "gap_por_clase": [
+  {
+   "clase": "Pedagógico",
+   "train_f1": 0.9526728797906635,
+   "val_f1": 0.6493698614047452,
+   "gap": 0.30330301838591833,
+   "n_train": 246
+  },
+  {
+   "clase": "Ética",
+   "train_f1": 0.9562782728058876,
+   "val_f1": 0.6493315619008502,
+   "gap": 0.30694671090503745,
+   "n_train": 219
+  },
+  {
+   "clase": "Administrativo",
+   "train_f1": 0.9318202236367196,
+   "val_f1": 0.36036036036036034,
+   "gap": 0.5714598632763592,
+   "n_train": 100
+  },
+  {
+   "clase": "Protección de Datos",
+   "train_f1": 0.9206642546607602,
+   "val_f1": 0.793992673992674,
+   "gap": 0.12667158066808615,
+   "n_train": 58
+  },
+  {
+   "clase": "Técnico",
+   "train_f1": 0.9501940535250245,
+   "val_f1": 0.282060606060606,
+   "gap": 0.6681334474644185,
+   "n_train": 50
+  }
+ ],
+ "patrones": [
+  {
+   "patrón": "OVERFITTING · gap creciente entre training y validation loss",
+   "evidencia observada": "PyTorch: gap de pérdida final 1.05 (train 0.15 vs val 1.20); SGD: 0.86",
+   "¿se cumple?": "sí"
+  },
+  {
+   "patrón": "OVERFITTING · training accuracy muy alta, validation accuracy estancada",
+   "evidencia observada": "PyTorch: train acc 1.00 vs val acc 0.56 (gap 0.44); SGD: 1.00 vs 0.59",
+   "¿se cumple?": "sí"
+  },
+  {
+   "patrón": "OVERFITTING · validation loss aumenta mientras training loss disminuye",
+   "evidencia observada": "PyTorch: val loss mínima en la época 46 y rebote de 2.5 % hasta la época 150",
+   "¿se cumple?": "no"
+  },
+  {
+   "patrón": "UNDERFITTING · ambas curvas convergen a valores altos de loss",
+   "evidencia observada": "train loss final 0.15: el entrenamiento se ajusta casi perfectamente",
+   "¿se cumple?": "no"
+  },
+  {
+   "patrón": "UNDERFITTING · training accuracy baja y no mejora",
+   "evidencia observada": "train acc final 1.00",
+   "¿se cumple?": "no"
+  },
+  {
+   "patrón": "UNDERFITTING · gap pequeño pero rendimiento pobre",
+   "evidencia observada": "gap 0.44: no es pequeño",
+   "¿se cumple?": "no"
+  },
+  {
+   "patrón": "ÓPTIMO · gap pequeño y estable, curvas convergen, rendimiento satisfactorio",
+   "evidencia observada": "gap F1 en CV 0.40; val F1 0.55 < meta 0.70",
+   "¿se cumple?": "no"
+  },
+  {
+   "patrón": "CURVA POR TAMAÑO · validación aún creciente con más datos",
+   "evidencia observada": "pendiente +3.8 pp de F1 por 100 normas (global), +1.0 pp en el último tramo; ganancia total +17 pp entre n = 53 y n = 538; gap final 0.40",
+   "¿se cumple?": "sí"
+  }
+ ],
+ "curva_C": [
+  {
+   "param": 0.01,
+   "train_mean": 0.8352395129164636,
+   "train_std": 0.014073151172077324,
+   "val_mean": 0.5322704475873155,
+   "val_std": 0.029161718602912976,
+   "gap": 0.30296906532914814
+  },
+  {
+   "param": 0.03,
+   "train_mean": 0.8436405813711844,
+   "train_std": 0.014681884679818482,
+   "val_mean": 0.5335080194991906,
+   "val_std": 0.02576994043729008,
+   "gap": 0.3101325618719938
+  },
+  {
+   "param": 0.1,
+   "train_mean": 0.859440455928856,
+   "train_std": 0.012690147131015862,
+   "val_mean": 0.5417315814564334,
+   "val_std": 0.015948335362165385,
+   "gap": 0.3177088744724226
+  },
+  {
+   "param": 0.3,
+   "train_mean": 0.8856892844602298,
+   "train_std": 0.009109850112892242,
+   "val_mean": 0.5454084747964848,
+   "val_std": 0.03050681840550495,
+   "gap": 0.34028080966374497
+  },
+  {
+   "param": 1.0,
+   "train_mean": 0.942325936883811,
+   "train_std": 0.004695048481232539,
+   "val_mean": 0.5470230127438471,
+   "val_std": 0.020186637826681078,
+   "gap": 0.39530292413996393
+  },
+  {
+   "param": 3.0,
+   "train_mean": 0.9892623919066343,
+   "train_std": 0.0018982527382341915,
+   "val_mean": 0.5465551424703147,
+   "val_std": 0.029634653367571883,
+   "gap": 0.44270724943631967
+  },
+  {
+   "param": 10.0,
+   "train_mean": 0.999327375041377,
+   "train_std": 0.0013452499172459831,
+   "val_mean": 0.5379130705753301,
+   "val_std": 0.039986861676814894,
+   "gap": 0.4614143044660469
+  },
+  {
+   "param": 30.0,
+   "train_mean": 1.0,
+   "train_std": 0.0,
+   "val_mean": 0.5445652543220383,
+   "val_std": 0.041970080372077646,
+   "gap": 0.4554347456779617
+  },
+  {
+   "param": 100.0,
+   "train_mean": 1.0,
+   "train_std": 0.0,
+   "val_mean": 0.5418651990811485,
+   "val_std": 0.04014870748341272,
+   "gap": 0.4581348009188515
+  }
+ ],
+ "curva_F": [
+  {
+   "param": 250,
+   "train_mean": 0.7555299163878209,
+   "train_std": 0.009312402301755006,
+   "val_mean": 0.5027424609689849,
+   "val_std": 0.034159439938199476,
+   "gap": 0.25278745541883596
+  },
+  {
+   "param": 500,
+   "train_mean": 0.8252179997393014,
+   "train_std": 0.004492477514306425,
+   "val_mean": 0.5191119971267982,
+   "val_std": 0.047594570894194395,
+   "gap": 0.3061060026125032
+  },
+  {
+   "param": 1000,
+   "train_mean": 0.8644075548067081,
+   "train_std": 0.006593062841593523,
+   "val_mean": 0.5262104935155629,
+   "val_std": 0.03484951781002804,
+   "gap": 0.33819706129114513
+  },
+  {
+   "param": 2000,
+   "train_mean": 0.8992360892769149,
+   "train_std": 0.0054011813237212535,
+   "val_mean": 0.5438293024952672,
+   "val_std": 0.02524608808364978,
+   "gap": 0.3554067867816477
+  },
+  {
+   "param": 5000,
+   "train_mean": 0.942325936883811,
+   "train_std": 0.004695048481232539,
+   "val_mean": 0.5470230127438471,
+   "val_std": 0.020186637826681078,
+   "gap": 0.39530292413996393
+  },
+  {
+   "param": 10000,
+   "train_mean": 0.9609815278139712,
+   "train_std": 0.0016220870239943266,
+   "val_mean": 0.5472115491769595,
+   "val_std": 0.03295293447000486,
+   "gap": 0.4137699786370117
+  },
+  {
+   "param": 20000,
+   "train_mean": 0.9732011992927176,
+   "train_std": 0.004695747781305961,
+   "val_mean": 0.5450473681473922,
+   "val_std": 0.0287475977842682,
+   "gap": 0.42815383114532546
+  }
+ ],
+ "curva_tamano": [
+  {
+   "n_train": 53,
+   "train_mean": 1.0,
+   "train_std": 0.0,
+   "val_mean": 0.3726464623941994,
+   "val_std": 0.030243835066196108,
+   "gap": 0.6273535376058006
+  },
+  {
+   "n_train": 122,
+   "train_mean": 0.9991829077644606,
+   "train_std": 0.0016341844710787256,
+   "val_mean": 0.39253903803118284,
+   "val_std": 0.03136705475800276,
+   "gap": 0.6066438697332778
+  },
+  {
+   "n_train": 192,
+   "train_mean": 0.9885755217091795,
+   "train_std": 0.006175680774582059,
+   "val_mean": 0.45542999686148294,
+   "val_std": 0.021995229163356632,
+   "gap": 0.5331455248476966
+  },
+  {
+   "n_train": 261,
+   "train_mean": 0.9744324613806127,
+   "train_std": 0.002237377872496234,
+   "val_mean": 0.4755086225952686,
+   "val_std": 0.012236511004372631,
+   "gap": 0.4989238387853441
+  },
+  {
+   "n_train": 330,
+   "train_mean": 0.9727395491198172,
+   "train_std": 0.006120349130606492,
+   "val_mean": 0.5019964484368448,
+   "val_std": 0.018301375021784076,
+   "gap": 0.4707431006829724
+  },
+  {
+   "n_train": 399,
+   "train_mean": 0.9662316206833015,
+   "train_std": 0.00697923332709161,
+   "val_mean": 0.5322587305845733,
+   "val_std": 0.018555197279407413,
+   "gap": 0.4339728900987282
+  },
+  {
+   "n_train": 468,
+   "train_mean": 0.9569851709219158,
+   "train_std": 0.0032385508457721036,
+   "val_mean": 0.542858695377899,
+   "val_std": 0.019329649394914883,
+   "gap": 0.4141264755440168
+  },
+  {
+   "n_train": 538,
+   "train_mean": 0.9428234880443813,
+   "train_std": 0.004499330665781573,
+   "val_mean": 0.5462239969448314,
+   "val_std": 0.018724531880144703,
+   "gap": 0.39659949109954995
+  }
+ ],
+ "punto_8020": {
+  "train_acc": 0.9535315985130112,
+  "val_acc": 0.6148148148148148,
+  "train_f1": 0.9481230883424147,
+  "val_f1": 0.5508928465450205
+ },
+ "n_train": 538,
+ "n_val": 135,
+ "n_feat": 5000
+}

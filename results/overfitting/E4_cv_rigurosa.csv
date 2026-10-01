@@ -1,0 +1,3 @@
+esquema,F1 macro val (media),DE
+StratifiedKFold (ingenua),0.5439489030783425,0.048980929793836794
+StratifiedGroupKFold (por URL),0.5470230127438471,0.020186637826681078

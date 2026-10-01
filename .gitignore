@@ -31,3 +31,6 @@ __pycache__/
 
 # clave de API local (nunca se versiona)
 data/raw/anthropic_key.txt
+
+# Semana 3: historiales y tablas agregadas (sin texto de normas)
+!results/overfitting/

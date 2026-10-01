@@ -1,0 +1,9 @@
+patrón,evidencia observada,¿se cumple?
+OVERFITTING · gap creciente entre training y validation loss,PyTorch: gap de pérdida final 1.05 (train 0.15 vs val 1.20); SGD: 0.86,sí
+"OVERFITTING · training accuracy muy alta, validation accuracy estancada",PyTorch: train acc 1.00 vs val acc 0.56 (gap 0.44); SGD: 1.00 vs 0.59,sí
+OVERFITTING · validation loss aumenta mientras training loss disminuye,PyTorch: val loss mínima en la época 46 y rebote de 2.5 % hasta la época 150,no
+UNDERFITTING · ambas curvas convergen a valores altos de loss,train loss final 0.15: el entrenamiento se ajusta casi perfectamente,no
+UNDERFITTING · training accuracy baja y no mejora,train acc final 1.00,no
+UNDERFITTING · gap pequeño pero rendimiento pobre,gap 0.44: no es pequeño,no
+"ÓPTIMO · gap pequeño y estable, curvas convergen, rendimiento satisfactorio",gap F1 en CV 0.40; val F1 0.55 < meta 0.70,no
+CURVA POR TAMAÑO · validación aún creciente con más datos,"pendiente +3.8 pp de F1 por 100 normas (global), +1.0 pp en el último tramo; ganancia total +17 pp entre n = 53 y n = 538; gap final 0.40",sí

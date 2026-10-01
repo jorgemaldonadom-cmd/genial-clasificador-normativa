@@ -1,0 +1,11 @@
+{
+ "run": "torch_softmax",
+ "params": {
+  "lr": 0.01,
+  "weight_decay": 0.0001,
+  "epochs": 150,
+  "optimizador": "Adam"
+ },
+ "n_epochs": 150,
+ "segundos": 3.63
+}
