@@ -45,6 +45,6 @@ evaluation:
   ci_level: 0.95
 
 routing:
-  confidence_threshold: 0.60          # valor inicial; se calibra en el Sprint 3 con la curva enrutamiento-exactitud
+  confidence_threshold: 0.50          # calibrado en el Sprint 3 con la curva enrutamiento-exactitud (≥ 85 % de exactitud en el tramo automático)
   mandatory_review_min_country_n: 20  # países con menos normas que este umbral van siempre a revisión humana
-  mandatory_review_languages: ["en", "fr"]
+  mandatory_review_languages: ["en", "fr", "pt"]   # pt añadido tras la auditoría de equidad (Semana 4): Brasil pasaba al tramo automático con exactitud 0.33

@@ -188,9 +188,9 @@
  "fiabilidad": null,
  "operacion": {
   "umbral": 0.5,
-  "pct_enrutado": 0.8388683886838868,
-  "exactitud_auto": 0.8778625954198473,
-  "horas_ahorradas": 21.833333333333332,
+  "pct_enrutado": 0.8437884378843789,
+  "exactitud_auto": 0.889763779527559,
+  "horas_ahorradas": 21.166666666666668,
   "horas_total": 135.5
  },
  "llm_disponible": false,

@@ -56,6 +56,7 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 │   ├── coder.py        lectura del instrumento de codificación ciega de GENIAL (D1-D6), emparejamiento con el corpus
 │   └── imn.py          umbral de confianza, enrutamiento, carga residual, tabla IMN con trazabilidad
 ├── scripts/run_pipeline.py              ejecución por etapas
+├── scripts/fairness_grupos.py           auditoría de equidad por idioma, región, tamaño de país, ámbito y codificador anonimizado
 ├── prompts/clasificador_v0.1.md         prompt versionado con política de idioma
 ├── notebooks/EDA_corpus_GENIAL.ipynb    EDA ejecutado (Semana 2) + exportación HTML + figuras/ + eda_resumen.json
 ├── notebooks/02_experimento.ipynb       experimento ejecutado (generado por make_results_notebook.py) + README_experimento.md
@@ -63,6 +64,8 @@ Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el d
 ├── results/                             agregados versionados: sintesis_resultados.json, ablaciones, comparación pareada, McNemar, curva, IMN, figuras
 ├── docs/                                documento técnico (PDF), decisiones metodológicas, protocolo de codificación ciega
 │   ├── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
+│   ├── semana4/                         workshop de impacto social y responsabilidad (PDF/DOCX)
+│   ├── model_card.md · datasheet_corpus.md   documentación de accountability (Semana 4)
 │   └── presentacion_final/              presentación final (.pptx/.pdf) y guion del video (.docx/.pdf)
 └── tests/test_pipeline.py               pruebas unitarias (partición sin fuga, métricas, parseo, enrutamiento)
 ```
@@ -162,8 +165,9 @@ F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 �
 ## 11. Documentación
 
 - `notebooks/02_experimento.ipynb` / `.html` — experimento ejecutado (secciones 1-9); `notebooks/README_experimento.md` — cómo reproducirlo, formato del archivo del segundo codificador y ejecución local de la rama LLM.
+- `docs/semana4/Grupo_9_S4_Impacto_Social_y_Responsabilidad.pdf` — workshop de impacto social y responsabilidad (stakeholders, riesgos éticos, mitigación, framework de responsabilidad, compliance); `docs/model_card.md` y `docs/datasheet_corpus.md`; auditoría de equidad por jurisdicción `scripts/fairness_grupos.py` → `results/fairness/`, figura `results/figuras/12_fairness_grupos.png`.
 - `docs/semana3/diagnostic_report.pdf` — reporte técnico de la Semana 3 (diagnóstico de overfitting/underfitting); cuaderno `notebooks/overfitting_analysis.ipynb` (+ .html) y módulo `src/genial_clf/tracking.py` (tracker por época, entrenadores scikit-learn/PyTorch, curvas con CV por grupo, diagnóstico, figuras a 300 DPI).
-- `docs/presentacion_final/` — presentación final (18 diapositivas, .pptx/.pdf, con notas del orador) y guion del video de 15 minutos (.docx/.pdf).
+- `docs/presentacion_final/` — presentación final (19 diapositivas, .pptx/.pdf, con notas del orador) y guion del video de 15 minutos (.docx/.pdf).
 - `docs/semana2/` — entregables de la Semana 2: informe del EDA, análisis comparativo de ocho técnicas y Ficha de Decisión Técnica y Arquitectura (la decisión: Regresión Logística sobre TF-IDF frente a LLM few-shot).
 - `notebooks/EDA_corpus_GENIAL.ipynb` — cuaderno ejecutado del EDA (pandas, matplotlib, seaborn); hallazgo principal: las observaciones están en español aunque el título esté en portugués o inglés, por lo que `idioma` se deriva del título.
 

@@ -1,0 +1,49 @@
+{
+ "Idioma del título": {
+  "grupos": 3,
+  "exactitud_min": 0.36,
+  "exactitud_max": 0.6615168539325843,
+  "razón_min": 0.5442038216560509,
+  "cumple_4/5": false,
+  "grupo_peor": "en",
+  "grupo_mejor": "es"
+ },
+ "Tamaño del país en el corpus": {
+  "grupos": 3,
+  "exactitud_min": 0.5616438356164384,
+  "exactitud_max": 0.6615384615384615,
+  "razón_min": 0.864730406754721,
+  "cumple_4/5": true,
+  "grupo_peor": "< 20 normas",
+  "grupo_mejor": "20-49 normas"
+ },
+ "Región": {
+  "grupos": 3,
+  "exactitud_min": 0.37777777777777777,
+  "exactitud_max": 0.6710334788937409,
+  "razón_min": 0.5629790310918293,
+  "cumple_4/5": false,
+  "grupo_peor": "Caribe",
+  "grupo_mejor": "Hispanoamérica continental"
+ },
+ "Ámbito": {
+  "grupos": 2,
+  "exactitud_min": 0.552,
+  "exactitud_max": 0.6714031971580817,
+  "razón_min": 0.8221587301587302,
+  "cumple_4/5": true,
+  "grupo_peor": "Nacional",
+  "grupo_mejor": "Institucional"
+ },
+ "Codificador (anonimizado)": {
+  "grupos": 10,
+  "exactitud_min": 0.2857142857142857,
+  "exactitud_max": 0.7051282051282052,
+  "razón_min": 0.4261904761904762,
+  "cumple_4/5": false,
+  "grupo_peor": "Codificador I",
+  "grupo_mejor": "Codificador B"
+ },
+ "enrutado_global": 0.8437884378843789,
+ "exactitud_global": 0.6346863468634686
+}

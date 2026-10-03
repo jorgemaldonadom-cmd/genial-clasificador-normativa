@@ -37,3 +37,4 @@ data/raw/anthropic_key.txt
 
 # macOS
 .DS_Store
+!results/fairness/
