@@ -1,0 +1,10 @@
+# Dependencias mínimas de la aplicación Streamlit (despliegue en Streamlit Community Cloud).
+# Para el pipeline completo (entrenamiento, optimización, cuadernos) use ../requirements.txt
+streamlit>=1.40
+scikit-learn==1.8.0
+pandas==3.0.2
+numpy==2.4.4
+scipy==1.17.1
+joblib>=1.4
+plotly>=5.24
+PyYAML>=6.0

@@ -1,6 +1,6 @@
 # Model Card · Clasificador de dimensión normativa GENIAL (RL + TF-IDF) · v0.3 (octubre de 2026)
 
-Formato basado en Mitchell et al. (2019). Cifras tomadas de `results/sintesis_resultados.json`, `results/overfitting/sintesis_overfitting.json` y `results/fairness/fairness_grupos.csv`.
+Formato basado en Mitchell et al. (2019). Cifras tomadas de `results/metrics/sintesis_resultados.json`, `results/metrics/overfitting/sintesis_overfitting.json` y `results/metrics/fairness/fairness_grupos.csv`.
 
 ## 1. Detalles del modelo
 - **Desarrolladores:** Jorge Javier Maldonado Mahauad y Melissa Figallo (Grupo 9, Maestría en IA, UEES), en colaboración con el proyecto GENIAL (Erasmus+). Tutora académica: Gladys María Villegas Rugel.

@@ -1,182 +1,262 @@
 # genial-clasificador-normativa
 
-**Clasificación automática de normativa sobre inteligencia artificial en la educación superior de América Latina y el Caribe: hacia un Índice de Madurez Normativa (IMN) escalable.**
+**Clasificación automática de normativa sobre inteligencia artificial en la educación superior de América Latina y el Caribe: hacia un Índice de Madurez Normativa (IMN) escalable**
 
-Proyecto Integrador · Maestría en Inteligencia Artificial · Universidad de Especialidades Espíritu Santo (UEES) · Grupo 9
-Jorge Javier Maldonado Mahauad · Melissa Figallo · septiembre-octubre de 2026
-En colaboración con el proyecto [GENIAL](https://genial-project.eu) (Erasmus+).
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
+[![scikit-learn 1.8](https://img.shields.io/badge/scikit--learn-1.8-f89939.svg)](https://scikit-learn.org/)
+[![Streamlit](https://img.shields.io/badge/app-Streamlit-ff4b4b.svg)](app/app.py)
+[![Tests](https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa/actions/workflows/tests.yml/badge.svg)](https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-7A1F3D.svg)](CHANGELOG.md)
 
-> Estado: **experimento ejecutado (Sprint 3).** Rama clásica, líneas base, ablaciones, prueba ciega y especificación operativa están en `notebooks/02_experimento.ipynb` (ejecutado) y en `results/`. Pendientes: rama LLM *few-shot* (requiere clave de API; instrucciones en `notebooks/README_experimento.md`) y κ humano-humano sobre `Dominio` (el instrumento del investigador codifica D1-D6; plantilla en `results/coder2_labels_plantilla.csv`). Cierre del proyecto: 25 de octubre de 2026.
----
+Proyecto Integrador (MIAR0545) · Maestría en Inteligencia Artificial · Universidad de Especialidades Espíritu Santo (UEES) · **Grupo 9** · Jorge Javier Maldonado Mahauad y Melissa Figallo · Tutora: Gladys María Villegas Rugel · septiembre-octubre de 2026 · En colaboración con el proyecto [GENIAL](https://genial-project.eu) (Erasmus+).
 
-## 1. Propósito
+> **Resultado en una línea.** Un clasificador lineal (TF-IDF + regresión logística ponderada) asigna la dimensión de una norma a partir de su título y observaciones con F1 macro **0.63** [0.53, 0.72] y κ **0.54** frente a un codificador humano en una prueba ciega de 125 normas (p < 0.001 frente a la clase mayoritaria), y se despliega como **codificación asistida** con revisión humana obligatoria para idiomas y países subrepresentados.
 
-El observatorio regional del proyecto GENIAL codifica manualmente cada norma sobre IA en educación superior en una de cinco dimensiones (Pedagógico, Ética, Administrativo, Protección de Datos, Técnico). Ese conteo alimenta el Índice de Madurez Normativa (IMN) por país. La codificación manual no escala, depende de un único investigador por norma y no tiene fiabilidad intercodificador medida.
+## Tabla de contenidos
 
-Este proyecto construye y evalúa un clasificador automático que asigna la dimensión a partir del texto de cada norma (título + observaciones), comparando **dos técnicas sobre idéntico conjunto de prueba a ciegas**:
+1. [Descripción del problema](#1-descripción-del-problema)
+2. [Dataset](#2-dataset)
+3. [Metodología](#3-metodología)
+4. [Resultados](#4-resultados)
+5. [Instalación y ejecución](#5-instalación-y-ejecución)
+6. [Interfaz de usuario](#6-interfaz-de-usuario)
+7. [Estructura del repositorio](#7-estructura-del-repositorio)
+8. [Consideraciones éticas](#8-consideraciones-éticas)
+9. [Autores y roles](#9-autores-y-roles)
+10. [Licencia](#10-licencia)
+11. [Agradecimientos](#11-agradecimientos)
+12. [Vídeos](#12-vídeos)
+13. [Documentación](#13-documentación)
+14. [Cómo citar](#14-cómo-citar)
 
-| Rama | Técnica | Datos etiquetados que consume |
-|---|---|---|
-| Clásica | TF-IDF (1-2 gramas, 5 000 *features*) + Regresión Logística con `class_weight='balanced'` | ≈ 700 normas |
-| LLM *few-shot* | Modelo de lenguaje de gran escala con las definiciones de las dimensiones y 15 ejemplos en el *prompt*, sin ajuste de pesos | 15 normas |
+## 1. Descripción del problema
 
-El desempeño de ambas se reporta **contra el acuerdo humano-humano** medido por doble codificación ciega del mismo conjunto, y el resultado se integra en un flujo asistido con umbral de confianza y revisión humana obligatoria para países e idiomas subrepresentados.
+El observatorio regional del proyecto GENIAL codifica manualmente cada norma sobre IA en educación superior en una de cinco dimensiones —**Pedagógico, Ética, Administrativo, Protección de Datos, Técnico**— y ese conteo alimenta el Índice de Madurez Normativa por país. La codificación manual (≈ 10 min por norma) no escala al ritmo al que aparecen normas, depende de un único codificador por norma y carece de fiabilidad intercodificador medida.
 
-## 2. Los dos flujos
+**Objetivo:** construir y evaluar un clasificador automático de la dimensión a partir del texto de la norma, compararlo con líneas base sobre un conjunto de prueba **a ciegas** codificado por un investigador del consorcio, e integrarlo en un flujo de codificación asistida con una regla de gobernanza explícita (umbral de confianza calibrado, revisión humana obligatoria para países con pocas normas e idiomas distintos del español).
 
-**El experimento** decide, con evidencia, qué técnica clasifica mejor:
+**Por qué importa:** sin salvaguardas, un índice calculado con etiquetas automáticas subestimaría sistemáticamente la madurez normativa de las jurisdicciones pequeñas y no hispanohablantes, justo las que el observatorio quiere visibilizar.
 
-![Flujo del experimento](docs/fig_experimento.png)
+## 2. Dataset
 
-**La operación** describe cómo se usa la técnica ganadora sin que el índice quede a merced del modelo:
+| | |
+|---|---|
+| Fuente | Corpus consolidado del observatorio GENIAL (Erasmus+), no publicado; uso autorizado por escrito |
+| Tamaño | **813 normas × 13 columnas**, 27 países (28 jurisdicciones), 2024-2026 |
+| Texto de entrada | `título + observaciones` (mediana 44 palabras) |
+| Variable objetivo | `Dominio`: Pedagógico 294 · Ética 265 · Administrativo 120 · Protección de Datos 71 · Técnico 63 (desbalance 4.7 : 1) |
+| Idiomas | español 712 · portugués 76 · inglés 25 |
+| Integridad | SHA-256 `f9797147…3f33` verificado por el pipeline |
+| Particiones | entrenamiento 673 · pool *few-shot* 15 · **prueba ciega 125** (las normas del instrumento de codificación independiente del investigador A) |
+| Fuga de información | `Investigador` (V de Cramér 0.99 con `País`, dato personal), `Tipo de norma` y `Fecha` excluidas por diseño; duplicados por URL agrupados en toda validación |
 
-![Flujo de operación](docs/fig_operacion.png)
+El corpus y el instrumento **no se versionan**; en el repositorio hay una muestra pública de 40 normas (`data/samples/`), el hash, los agregados y los modelos entrenados. Detalles: [`data/README.md`](data/README.md), [`docs/analisis_datos.md`](docs/analisis_datos.md), [`docs/datasheet_corpus.md`](docs/datasheet_corpus.md).
 
-Cada rama emite su primera **y** su segunda dimensión (top-2). Eso permite el diagnóstico de multi-etiqueta sin cambiar la tarea: cada error se tipifica como *error genuino*, *segunda dimensión defendible* o *etiqueta original discutible*.
-
-## 3. Estructura del repositorio
+## 3. Metodología
 
 ```
-├── README.md · LICENSE (MIT, código) · DATA_LICENSE.md (datos) · CITATION.cff
-├── requirements.txt · config.yaml
-├── data/
-│   ├── README.md                        procedencia, hash SHA-256 del corpus congelado, diccionario de datos
-│   ├── samples/sample_corpus_40.csv     40 normas reales anonimizadas (8 por dimensión, 13 columnas)
-│   ├── samples/fewshot_examples_template.csv
-│   └── raw/ · processed/ · splits/      vacíos en el repositorio; el corpus autorizado se coloca en data/raw/
-├── src/genial_clf/
-│   ├── data.py         carga + verificación de hash, corrección experta, idioma, duplicados, campo de texto
-│   ├── split.py        muestreo estratificado por dimensión e idioma; archivos ciegos
-│   ├── baselines.py    clase mayoritaria y línea base de metadata (Tipo de norma)
-│   ├── classic.py      TF-IDF + Regresión Logística, validación cruzada por grupo (StratifiedGroupKFold), top-2, términos
-│   ├── llm.py          prompt few-shot, llamada a la API, parseo de top-2, repeticiones, estabilidad
-│   ├── evaluate.py     F1, matriz de confusión, McNemar, IC de Wilson y bootstrap, kappa, desagregación
-│   ├── reliability.py  kappa humano-humano, adjudicación, hoja de tipificación de errores
-│   ├── tracking.py     tracking de métricas por época, curvas de aprendizaje/validación, diagnóstico overfitting/underfitting (Semana 3)
-│   ├── coder.py        lectura del instrumento de codificación ciega de GENIAL (D1-D6), emparejamiento con el corpus
-│   └── imn.py          umbral de confianza, enrutamiento, carga residual, tabla IMN con trazabilidad
-├── scripts/run_pipeline.py              ejecución por etapas
-├── scripts/fairness_grupos.py           auditoría de equidad por idioma, región, tamaño de país, ámbito y codificador anonimizado
-├── prompts/clasificador_v0.1.md         prompt versionado con política de idioma
-├── notebooks/EDA_corpus_GENIAL.ipynb    EDA ejecutado (Semana 2) + exportación HTML + figuras/ + eda_resumen.json
-├── notebooks/02_experimento.ipynb       experimento ejecutado (generado por make_results_notebook.py) + README_experimento.md
-├── notebooks/overfitting_analysis.ipynb diagnóstico de overfitting/underfitting ejecutado (Semana 3; generado por make_overfitting_notebook.py)
-├── results/                             agregados versionados: sintesis_resultados.json, ablaciones, comparación pareada, McNemar, curva, IMN, figuras
-├── docs/                                documento técnico (PDF), decisiones metodológicas, protocolo de codificación ciega
-│   ├── semana2/                         EDA, análisis comparativo de algoritmos y ficha de decisión técnica (PDF)
-│   ├── semana4/                         workshop de impacto social y responsabilidad (PDF/DOCX)
-│   ├── model_card.md · datasheet_corpus.md   documentación de accountability (Semana 4)
-│   └── presentacion_final/              presentación final (.pptx/.pdf) y guion del video (.docx/.pdf)
-└── tests/test_pipeline.py               pruebas unitarias (partición sin fuga, métricas, parseo, enrutamiento)
+corpus → hash · limpieza · idioma · duplicados → particiones (ciega = instrumento del investigador)
+      → líneas base (mayoritaria, metadatos) → TF-IDF 1-2 g + RL balanceada (CV por grupo de URL)
+      → diagnóstico de overfitting → Optuna + sensibilidad → regla 1-DE → best_model
+      → evaluación ciega (IC, McNemar, κ) → auditoría de equidad → regla de gobernanza → app Streamlit
 ```
 
-## 4. Instalación
+* **Modelo**: `TfidfVectorizer(1-2 gramas) → LogisticRegression(class_weight='balanced')`. Elegido en la comparación de ocho técnicas de la Semana 2 por desempeño, interpretabilidad y coste (160 KB, < 2 s de entrenamiento).
+* **Validación**: `StratifiedGroupKFold` (5 pliegues) estratificada por dimensión y agrupada por URL; intervalos de Wilson y *bootstrap* (2 000); McNemar pareado entre ramas.
+* **Optimización** (Workshop S5): Optuna TPE, 60 ensayos; importancia fANOVA, dependencia parcial, interacción `C × max_features`, tabla de sensibilidad; selección por **regla de una desviación estándar con menor sobreajuste** → `best_model` (`C = 0.157`, 2 000 *features*). [`docs/optimizacion.md`](docs/optimizacion.md).
+* **Umbral de confianza calibrado por modelo**: menor umbral con ≥ 85 % de exactitud en el tramo automático sobre predicciones fuera de muestra (0.50 para `model_v1`, 0.29 para `best_model`).
+* **Rama LLM *few-shot*** (opcional): *prompt* versionado, 15 ejemplos, temperatura 0, tres ejecuciones; requiere clave de API fuera del repositorio.
+* **Equidad**: desempeño por idioma, tamaño del país, región, ámbito y codificador anonimizado; regla de los cuatro quintos como referencia.
 
-Requisitos: Python ≥ 3.11 y `pip`. Sin GPU: el modelo clásico entrena en segundos; el LLM se consume por API.
+Arquitectura y decisiones: [`docs/arquitectura.md`](docs/arquitectura.md).
+
+## 4. Resultados
+
+**Prueba ciega (n = 125, etiquetas del investigador A de GENIAL):**
+
+| Modelo | Exactitud [IC 95 %] | F1 macro [IC 95 %] | Top-2 | κ | F1 Ped / Ética / Adm / PD / Téc |
+|---|---|---|---:|---:|---|
+| Clase mayoritaria | 0.360 [0.281, 0.447] | 0.106 | 0.360 | 0.00 | — |
+| Metadatos (tipo de norma) | 0.544 [0.457, 0.629] | 0.322 | 0.608 | 0.32 | — |
+| `model_v1` (base) | 0.688 [0.602, 0.763] | 0.617 [0.505, 0.712] | 0.872 | 0.56 | 0.78 / 0.73 / 0.35 / 0.74 / 0.50 |
+| **`best_model` (regla 1-DE)** | 0.672 [0.586, 0.748] | **0.631 [0.530, 0.724]** | 0.864 | 0.54 | 0.74 / 0.71 / 0.33 / 0.80 / 0.57 |
+
+McNemar: `model_v1` vs mayoritaria p < 0.001; vs metadatos p = 0.012; `model_v1` vs `best_model` p = 0.75 (n.s.). Validación cruzada por grupo (n = 813, base): exactitud 0.635 [0.601, 0.667], F1 macro 0.587 [0.549, 0.623], κ 0.50.
+
+**Lo que explican los errores.** 35 de 37 errores ciegos revisados eran normas **multidimensionales**; el modelo acierta el 76 % cuando el codificador tuvo confianza *Alta* y el 41 % cuando fue *Media*. 23 de 39 errores se rescatan con la segunda dimensión.
+
+**Optimización.** El F1 de validación es insensible a los hiperparámetros salvo `class_weight` (importancia 0.77); el mejor ensayo gana +0.6 pp (dentro del ruido). La regla 1-DE reduce el *gap* entrenamiento − validación de 0.40 a 0.27 sin perder F1.
+
+**Equidad.** Exactitud por idioma es 0.66 · pt 0.47 · en 0.36; por región Hispanoamérica 0.67 · Brasil 0.47 · Caribe 0.38 (no cumplen la regla 4/5). La regla de gobernanza envía el 100 % de esas normas a revisión humana.
+
+**Operación.** Con ≥ 85 % de exactitud automática, el 14-15 % de las normas queda en el tramo automático; sobre el corpus completo, 21 de 136 horas-persona por pasada. El valor operativo está en el top-2 y la explicación por términos: **codificación asistida**, no sustitución.
+
+| | |
+|---|---|
+| ![](results/figures/17_antes_despues_optimizacion.png) | ![](results/figures/12_fairness_grupos.png) |
+
+Cuadernos ejecutados: [`01_exploracion`](notebooks/01_exploracion.ipynb) · [`02_preprocesamiento`](notebooks/02_preprocesamiento.ipynb) · [`03_modelado`](notebooks/03_modelado.ipynb) · [`04_optimizacion`](notebooks/04_optimizacion.ipynb) · [`05_evaluacion`](notebooks/05_evaluacion.ipynb). Métricas en [`results/metrics/`](results/metrics/), figuras en [`results/figures/`](results/figures/), informes semanales en [`results/reports/`](results/reports/).
+
+## 5. Instalación y ejecución
+
+Requisitos: Python ≥ 3.11, Git. Probado en macOS y Linux.
 
 ```bash
 git clone https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa.git
 cd genial-clasificador-normativa
-python -m venv .venv && source .venv/bin/activate      # en Windows: .venv\Scripts\activate
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python -m pytest -q                                    # 8 pruebas sobre la muestra pública
 ```
 
-Para la rama LLM se necesita una clave de API en el entorno:
+**Solo la aplicación** (no necesita el corpus; los modelos están versionados):
 
 ```bash
-export ANTHROPIC_API_KEY="..."
+pip install -r app/requirements.txt
+streamlit run app/app.py                              # http://localhost:8501
 ```
 
-(Alternativa documentada: un modelo abierto, p. ej. Qwen, servido en un *endpoint* compatible; se ajusta `llm.provider` y `llm.model` en `config.yaml`.)
-
-## 5. Colocar el corpus autorizado
-
-El corpus completo **no está en el repositorio** (véase `DATA_LICENSE.md`). Con la autorización del consorcio GENIAL, copie el archivo consolidado a `data/raw/consolidado_limpio.xlsx`. El *pipeline* verifica que sea exactamente la versión congelada:
-
-```
-SHA-256  f9797147e7026f796d453fa84d09c4bf32c48ae75c3744912806a72db3ff7f33
-```
-
-Si el hash no coincide, la etapa `prepare` se detiene: todos los resultados del proyecto se refieren a esa versión.
-
-## 6. Uso
+**Pipeline completo** (requiere `data/raw/consolidado_limpio.xlsx` con autorización de GENIAL y, opcionalmente, `data/raw/codificacion_investigador_A.xlsx`):
 
 ```bash
-python scripts/run_pipeline.py prepare     # E1  corpus depurado + idioma + duplicados -> data/processed, results/reporte_calidad.md
-python scripts/run_pipeline.py split       # E2  fewshot_examples.csv, test_blind.csv, test_labels_hidden.csv, train.csv
-python scripts/run_pipeline.py baselines   # E3  clase mayoritaria y línea base de metadata
-python scripts/run_pipeline.py classic     # E4  validación cruzada + predicción del conjunto ciego (pred_clasico.csv)
-python scripts/run_pipeline.py llm         # E5  rama LLM (3 ejecuciones, temperatura 0); --dry-run no llama a la API
-python scripts/run_pipeline.py evaluate    # E5  comparación pareada: abre test_labels_hidden.csv SOLO aquí
+python src/train.py --prepare          # prepara corpus y particiones, entrena model_v1 y best_model
+python scripts/optimizar.py            # Optuna + sensibilidad (~6 min); después: python src/train.py --config best
+python src/evaluate.py                 # evaluación ciega → results/metrics/evaluacion_final.*
+python scripts/fairness_grupos.py      # auditoría de equidad
+python -m pytest -q                    # pruebas
 ```
 
-`python scripts/run_pipeline.py all --dry-run` ejecuta todo con la rama LLM simulada (útil para verificar la instalación).
+O, sin terminal, **`notebooks/00_ejecutar_todo.ipynb`**: cuaderno maestro que ejecuta todo paso a paso, omite lo ya calculado y lanza la aplicación en la última celda. Los cuadernos 01-05 documentan cada etapa.
 
-**Regla de ceguera.** Ninguna etapa anterior a `evaluate` lee `test_labels_hidden.csv`. Las predicciones del LLM y del modelo clásico, y la codificación del segundo codificador humano, se producen sin acceso a las etiquetas.
+**Clave de API (rama LLM, opcional):** variable de entorno `ANTHROPIC_API_KEY`, o `data/raw/anthropic_key.txt`, o `.env`; nunca dentro de un cuaderno. Configuración general en [`config.yaml`](config.yaml).
 
-## 7. Métricas y umbrales (fijados antes de ejecutar)
+## 6. Interfaz de usuario
 
-| Métrica | Mínimo aceptable | Excelencia |
-|---|---|---|
-| F1 macro (mejor rama) | ≥ 0.60 y superior a ambas líneas base con McNemar *p* < 0.05 | ≥ 0.70, IC inferior > 0.60 |
-| F1 por clase | ninguna < 0.40 | ninguna < 0.50; Técnico ≥ 0.50 |
-| Recall de Técnico y Protección de Datos | ≥ 50 % | ≥ 60 % |
-| κ modelo-humano | ≥ 0.60 | ≥ κ humano-humano medido sobre el mismo conjunto |
-| Normas enrutadas a revisión humana | ≤ 40 % | ≤ 30 % con exactitud ≥ 85 % en el tramo automático |
+**Aplicación en línea:** _enlace de Streamlit Community Cloud (se publica con la versión 1.0; véase `docs/manual_usuario.md`)_.
 
-Piso aritmético (clase mayoritaria, sin entrenar nada): 36.2 % de exactitud y 0.106 de F1 macro. Toda métrica se reporta con intervalo de confianza; toda comparación entre ramas, con valor *p* de McNemar (diseño pareado); todo se desagrega por idioma y por país.
+Aplicación Streamlit con cuatro pestañas: **Clasificar una norma** (formulario con validación, ejemplos precargados, botón, indicador de progreso, dimensión propuesta, segunda candidata, gráfico de probabilidades, aviso de revisión humana con motivos, términos influyentes), **Lote (CSV)** (plantilla, hasta 500 filas, validación por fila, gráfico de distribución, exportar CSV), **Acerca del modelo** (ficha, métricas, limitaciones) e **Historial** de sesión. Interfaz en español e inglés; diseño adaptable.
 
-## 8. Archivos de salida
-
-| Archivo | Contenido |
+| Clasificar una norma | Revisión humana (portugués) |
 |---|---|
-| `results/reporte_calidad.md` | distribución por dimensión, idioma y país; duplicados; variables excluidas |
-| `data/splits/fewshot_examples.csv` | 15 ejemplos (3 por dimensión) con etiqueta |
-| `data/splits/test_blind.csv` / `test_labels_hidden.csv` | conjunto de prueba sin etiqueta / etiquetas separadas |
-| `results/pred_{mayoritaria,metadata,clasico,llm}.csv` | `id_norma, pred, pred_2, conf` por rama |
-| `results/pred_llm_runs.csv` (+ `.meta.json`) | las tres ejecuciones del LLM con modelo y temperatura registrados |
-| `results/comparacion_pareada.md` | F1, IC, κ, top-2, McNemar, métricas por idioma, curva enrutamiento-exactitud |
-| `results/clasico_terminos_por_dimension.csv` | interpretabilidad de la rama clásica |
+| ![](app/assets/02_resultado.png) | ![](app/assets/03_revision_humana.png) |
 
-## 9. Licencias y permisos
+| Lote CSV | Acerca del modelo |
+|---|---|
+| ![](app/assets/04_lote_csv.png) | ![](app/assets/05_acerca.png) |
 
-| Componente | Licencia / condición | Verificado |
+Manual: [`docs/manual_usuario.md`](docs/manual_usuario.md). Pruebas de la interfaz: [`tests/test_app.py`](tests/test_app.py) (`streamlit.testing`).
+
+## 7. Estructura del repositorio
+
+```
+├── README.md · LICENSE (MIT) · DATA_LICENSE.md · CITATION.cff · CHANGELOG.md
+├── requirements.txt · config.yaml · .gitignore
+├── .github/workflows/tests.yml        integración continua (pytest)
+├── app/
+│   ├── app.py                         aplicación Streamlit
+│   ├── requirements.txt               dependencias mínimas para el despliegue
+│   └── assets/                        capturas de pantalla
+├── data/
+│   ├── README.md                      procedencia, hash, distribución, cómo colocar el corpus
+│   ├── raw/                           corpus e instrumento autorizados (NO versionados)
+│   ├── processed/ · splits/           generados por el pipeline (NO versionados)
+│   └── samples/                       muestra pública de 40 normas y plantilla few-shot
+├── docs/
+│   ├── planificacion.md · analisis_datos.md · arquitectura.md
+│   ├── optimizacion.md · consideraciones_eticas.md · manual_usuario.md
+│   ├── model_card.md · datasheet_corpus.md · protocolo_codificacion_ciega.md
+│   └── decisiones_metodologicas_v1.md · fig_experimento.png · fig_operacion.png
+├── models/
+│   ├── best_model.pkl (+ .json)       modelo de producción (regla 1-DE, umbral 0.29)
+│   ├── model_v1.pkl (+ .json)         modelo base (umbral 0.50)
+│   ├── entrenamiento.json · README.md
+├── notebooks/
+│   ├── 00_ejecutar_todo.ipynb         cuaderno maestro paso a paso
+│   ├── 01_exploracion.ipynb           EDA (Semana 2)
+│   ├── 02_preprocesamiento.ipynb · 03_modelado.ipynb
+│   ├── 04_optimizacion.ipynb · 05_evaluacion.ipynb
+│   ├── make_final_notebooks.py        generador de los cuadernos 00 y 02-05
+│   ├── figuras/ · eda_resumen.json
+│   └── anexos/                        experimento del Sprint 3 y diagnóstico de overfitting (Semana 3)
+├── prompts/clasificador_v0.1.md       prompt versionado de la rama LLM
+├── results/
+│   ├── figures/                       figuras 10-18 (+ overfitting/)
+│   ├── metrics/                       CSV/JSON de todas las evaluaciones (optimizacion/, fairness/, overfitting/)
+│   └── reports/                       entregables semanales (PDF/DOCX/PPTX) y documento técnico
+├── scripts/
+│   ├── run_pipeline.py                CLI del experimento del Sprint 3
+│   ├── optimizar.py                   Optuna + análisis de sensibilidad
+│   └── fairness_grupos.py             auditoría de equidad
+├── src/
+│   ├── __init__.py · utils.py · data_processing.py · model.py · train.py · evaluate.py
+│   └── genial_clf/                    paquete: data, split, coder, classic, baselines, evaluate,
+│                                      reliability, imn, llm, optimize, tracking, config
+└── tests/
+    ├── test_data_processing.py · test_model.py · test_app.py   (14 pruebas)
+    └── test_pipeline.py               pruebas del paquete genial_clf (Sprint 3)
+```
+
+Convenciones de código: PEP 8, *docstrings* en todos los módulos y funciones públicas, `logging` en lugar de `print` en el código de biblioteca, configuración centralizada en `config.yaml`, semilla fija (2026). Flujo Git: `main` (versiones etiquetadas `v0.1` … `v1.0.0`) y `dev` para trabajo en curso; historial en [`CHANGELOG.md`](CHANGELOG.md).
+
+## 8. Consideraciones éticas
+
+El sistema clasifica documentos públicos, no personas, pero sus salidas afectan a jurisdicciones y a codificadores. Resumen (completo en [`docs/consideraciones_eticas.md`](docs/consideraciones_eticas.md)):
+
+* **Sesgos**: geográfico (5 países = 67 % de las normas), de idioma, de clase, de etiqueta única y de codificador. Mitigados con ponderación de clases, validación por grupo, top-2 y revisión obligatoria.
+* **Equidad**: brechas por idioma y región que no cumplen la regla 4/5; se **contienen** con la regla de gobernanza (100 % de esas normas con respaldo humano) y se reauditan con cada versión.
+* **Privacidad**: el nombre del codificador es dato personal: excluido del modelo, anonimizado, nunca enviado a un LLM; corpus e instrumento fuera del repositorio; claves de API fuera del control de versiones.
+* **Transparencia**: modelo lineal con términos explicativos, probabilidades y motivos de revisión visibles; *model card* y *datasheet*; todas las cifras con intervalos.
+* **Responsabilidad**: decisión final humana; declaración de compromiso del equipo; riesgo mínimo bajo el AI Act de la UE.
+* **Limitaciones**: n = 125 en prueba, etiqueta única, κ humano-humano pendiente, rama LLM no ejecutada en esta versión.
+
+## 9. Autores y roles
+
+| Autor | Rol | Contacto |
 |---|---|---|
-| Código de este repositorio | MIT (`LICENSE`) | sí |
-| Muestra `data/samples/sample_corpus_40.csv` | uso académico con atribución al proyecto GENIAL (Erasmus+); investigador anonimizado (`DATA_LICENSE.md`) | sí, autorización de la coordinación |
-| Corpus completo (813 normas) | **no redistribuible**; uso autorizado al equipo para este trabajo; solo se publica su hash y sus estadísticas agregadas | sí, autorización escrita (Sprint 1) |
-| Normas originales | documentos públicos; el corpus registra la URL oficial de cada una | sí |
-| Dependencias | scikit-learn (BSD-3), pandas (BSD-3), numpy (BSD-3), scipy (BSD-3), PyYAML (MIT), openpyxl (MIT), lingua-language-detector (Apache-2.0), anthropic (MIT), pytest (MIT), tabulate (MIT) | sí |
-| Datasets alternativos (plan B) | MultiEURLEX CC-BY-4.0 (Hugging Face `coastalcph/multi_eurlex`); OECD.AI Policy Navigator, acceso público con atribución | sí |
+| **Jorge Javier Maldonado Mahauad** | Dirección científica, ingeniería de datos y modelado, optimización, repositorio, aplicación | jorge.maldonado@ucuenca.edu.ec |
+| **Melissa Figallo** | Análisis de errores, documentación ética, validación de la aplicación, vídeo | — |
+| Gladys María Villegas Rugel | Tutora académica (UEES) | — |
+| Investigador A (GENIAL) | Codificación ciega del conjunto de prueba | — |
 
-## 10. Resultados (validación cruzada por grupo, n = 813; conjunto ciego = normas leídas por el investigador de GENIAL, n = 125)
+## 10. Licencia
 
-| Rama | F1 macro CV [IC95] | Exactitud CV | Top-2 CV | F1 macro ciego [IC95] |
-|---|---|---|---|---|
-| Clase mayoritaria | 0.107 | 0.365 | — | 0.106 [0.087, 0.124] |
-| Metadata (Tipo de norma) | 0.354 | 0.504 | — | 0.322 [0.251, 0.394] |
-| **TF-IDF + Regresión Logística** | **0.587 [0.549, 0.623]** | 0.635 [0.601, 0.667] | 0.852 | 0.617 [0.505, 0.712] |
-| SVM lineal (ablación) | 0.578 | 0.645 | — | 0.646 [0.535, 0.741] |
-| LLM few-shot | pendiente (ejecución local) | | | |
+Código bajo licencia [MIT](LICENSE). Los datos del corpus GENIAL tienen condiciones propias ([`DATA_LICENSE.md`](DATA_LICENSE.md)): la muestra de `data/samples/` puede usarse con fines académicos citando al proyecto; el corpus completo no se redistribuye.
 
-F1 por dimensión (CV): Pedagógico 0.71 · Ética 0.67 · Administrativo 0.41 · Protección de Datos 0.80 · Técnico 0.35. El modelo supera a ambas líneas base con significancia (McNemar *p* < 0.01) pero **no alcanza el umbral de excelencia (0.70)**; el desbalance de clases y la señal léxica explican la mayor parte del déficit. Con top-2 en 0.85-0.88 y una curva de enrutamiento que exige revisar ~84 % de las normas para garantizar 85 % de exactitud automática, la recomendación operativa es **codificación asistida** (dos candidatas + probabilidad, decisión humana), no automatización. La codificación ciega del investigador de GENIAL (instrumento de seis dimensiones, 142 normas) define el conjunto de prueba y muestra que los errores del modelo se concentran donde el humano declaró confianza media (exactitud 0.41 frente a 0.76 con confianza alta) y en normas con etiquetas secundarias (35 de 37 errores); sobre 23 normas nuevas del Caribe anglófono la exactitud cae a 0.39. Lectura completa en la sección 9 del cuaderno; cifras en `results/sintesis_resultados.json`.
+## 11. Agradecimientos
 
-## 11. Documentación
+Al consorcio del proyecto **GENIAL** (Erasmus+, Unión Europea) por el acceso al corpus del observatorio y al investigador que realizó la codificación ciega; a la tutora Gladys María Villegas Rugel y al equipo docente de la Maestría en Inteligencia Artificial de la UEES; a la Universidad de Cuenca. Herramientas: scikit-learn, Optuna, Streamlit, Plotly, pandas, lingua.
 
-- `notebooks/02_experimento.ipynb` / `.html` — experimento ejecutado (secciones 1-9); `notebooks/README_experimento.md` — cómo reproducirlo, formato del archivo del segundo codificador y ejecución local de la rama LLM.
-- `docs/semana4/Grupo_9_S4_Impacto_Social_y_Responsabilidad.pdf` — workshop de impacto social y responsabilidad (stakeholders, riesgos éticos, mitigación, framework de responsabilidad, compliance); `docs/model_card.md` y `docs/datasheet_corpus.md`; auditoría de equidad por jurisdicción `scripts/fairness_grupos.py` → `results/fairness/`, figura `results/figuras/12_fairness_grupos.png`.
-- `docs/semana3/diagnostic_report.pdf` — reporte técnico de la Semana 3 (diagnóstico de overfitting/underfitting); cuaderno `notebooks/overfitting_analysis.ipynb` (+ .html) y módulo `src/genial_clf/tracking.py` (tracker por época, entrenadores scikit-learn/PyTorch, curvas con CV por grupo, diagnóstico, figuras a 300 DPI).
-- `docs/presentacion_final/` — presentación final (19 diapositivas, .pptx/.pdf, con notas del orador) y guion del video de 15 minutos (.docx/.pdf).
-- `docs/semana2/` — entregables de la Semana 2: informe del EDA, análisis comparativo de ocho técnicas y Ficha de Decisión Técnica y Arquitectura (la decisión: Regresión Logística sobre TF-IDF frente a LLM few-shot).
-- `notebooks/EDA_corpus_GENIAL.ipynb` — cuaderno ejecutado del EDA (pandas, matplotlib, seaborn); hallazgo principal: las observaciones están en español aunque el título esté en portugués o inglés, por lo que `idioma` se deriva del título.
+## 12. Vídeos
 
-- `docs/Grupo_9_Documento_Tecnico_Presentacion_Proyecto.pdf` — documento técnico completo (estado del arte, datasets, métricas, stakeholders, alcance, cronograma Scrum, recursos, hitos, anexos).
-- `docs/decisiones_metodologicas_v1.md` — las cuatro condiciones metodológicas del tutor y su resolución.
-- `docs/protocolo_codificacion_ciega.md` — protocolo para el segundo y tercer codificador.
+| Vídeo | Enlace |
+|---|---|
+| *Pitch* del proyecto (5 min, con demostración de la aplicación) | _pendiente de publicación (YouTube, no listado)_ |
+| Respuestas a las preguntas del comité | _pendiente de publicación_ |
+| Presentación técnica (15 min, Sprint 3) | guion y diapositivas en [`results/reports/presentacion_final/`](results/reports/presentacion_final/) |
 
-## 12. Cómo citar
+## 13. Documentación
 
-Véase `CITATION.cff`. Texto sugerido:
+| Documento | Contenido |
+|---|---|
+| [`docs/planificacion.md`](docs/planificacion.md) | problema, objetivos, alcance, cronograma, roles, KPIs, riesgos |
+| [`docs/analisis_datos.md`](docs/analisis_datos.md) | EDA, calidad, fuga de información, particiones |
+| [`docs/arquitectura.md`](docs/arquitectura.md) | componentes, flujo, decisiones de diseño, despliegue |
+| [`docs/optimizacion.md`](docs/optimizacion.md) | Workshop S5: Optuna, importancia, sensibilidad, antes/después |
+| [`docs/consideraciones_eticas.md`](docs/consideraciones_eticas.md) | sesgos, equidad, privacidad, transparencia, impacto, responsabilidad, uso dual, limitaciones |
+| [`docs/manual_usuario.md`](docs/manual_usuario.md) | uso de la aplicación con capturas |
+| [`docs/model_card.md`](docs/model_card.md) · [`docs/datasheet_corpus.md`](docs/datasheet_corpus.md) | fichas del modelo y del corpus |
+| [`results/reports/`](results/reports/) | documento técnico (Sprint 2), entregables de las Semanas 2-4, presentación y guion |
 
-> J. J. Maldonado Mahauad y M. Figallo, «Clasificación automática de normativa sobre inteligencia artificial en la educación superior de América Latina y el Caribe: hacia un Índice de Madurez Normativa escalable», Proyecto Integrador, Maestría en Inteligencia Artificial, UEES, 2026. Repositorio: https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa. Corpus: Proyecto GENIAL (Erasmus+).
+## 14. Cómo citar
+
+```bibtex
+@software{maldonado_figallo_2026_genial,
+  author  = {Maldonado Mahauad, Jorge Javier and Figallo, Melissa},
+  title   = {genial-clasificador-normativa: clasificación automática de normativa sobre IA en educación superior de ALC},
+  year    = {2026},
+  version = {1.0.0},
+  url     = {https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa}
+}
+```
+
+Véase también [`CITATION.cff`](CITATION.cff).

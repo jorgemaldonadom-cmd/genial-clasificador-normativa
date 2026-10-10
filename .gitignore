@@ -2,11 +2,9 @@
 data/raw/*
 data/processed/*
 data/splits/*
-results/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/splits/.gitkeep
-!results/.gitkeep
 
 # Python
 __pycache__/
@@ -19,22 +17,18 @@ __pycache__/
 .env
 *.key
 
-# Agregados sin texto de normas: sí se versionan
-!results/sintesis_resultados.json
-!results/ablaciones_cv.csv
-!results/comparacion_pareada.csv
-!results/mcnemar.csv
-!results/curva_enrutamiento.csv
-!results/imn_propuesta.csv
-!results/reporte_calidad.md
-!results/figuras/
 
 # clave de API local (nunca se versiona)
 data/raw/anthropic_key.txt
 
-# Semana 3: historiales y tablas agregadas (sin texto de normas)
-!results/overfitting/
 
 # macOS
 .DS_Store
-!results/fairness/
+
+# results/: solo agregados sin texto de normas (predicciones por norma y hojas con texto quedan fuera)
+results/metrics/pred_*.csv
+results/metrics/clasico_cv_predicciones.csv
+results/metrics/hoja_tipificacion_errores_clasico.csv
+results/metrics/fuga_lexica_candidatos.csv
+results/metrics/coder2_labels_plantilla.csv
+results/metrics/pred_llm*

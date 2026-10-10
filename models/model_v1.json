@@ -1,0 +1,124 @@
+{
+ "guardado": "2026-10-10T23:33:17+00:00",
+ "clases": [
+  "Administrativo",
+  "Pedagógico",
+  "Protección de Datos",
+  "Técnico",
+  "Ética"
+ ],
+ "parametros": {
+  "C": 1.0,
+  "class_weight": "balanced",
+  "max_features": 5000,
+  "ngram_range": [
+   1,
+   2
+  ],
+  "min_df": 1,
+  "sublinear_tf": true,
+  "n_vocab": 5000
+ },
+ "nombre": "model_v1",
+ "origen_parametros": "configuración base del documento técnico",
+ "n_entrenamiento": 673,
+ "cv_por_grupo": {
+  "val_f1": 0.5470230127438471,
+  "val_std": 0.020186637826681078,
+  "train_f1": 0.942325936883811,
+  "gap": 0.39530292413996393
+ },
+ "f1_entrenamiento": 0.9223208566262884,
+ "umbral_confianza": 0.5,
+ "calibracion_umbral": {
+  "criterio": "exactitud del tramo automático ≥ 0.85 con ≥ 10% de normas automáticas (CV por grupo, train)",
+  "objetivo_alcanzado": true,
+  "umbral": 0.5,
+  "fraccion_automatica": 0.13967310549777118,
+  "exactitud_automatica": 0.8723404255319149,
+  "curva": [
+   {
+    "umbral": 0.2,
+    "fraccion_automatica": 1.0,
+    "exactitud_automatica": 0.5943536404160475
+   },
+   {
+    "umbral": 0.25,
+    "fraccion_automatica": 0.9791976225854383,
+    "exactitud_automatica": 0.6009104704097117
+   },
+   {
+    "umbral": 0.3,
+    "fraccion_automatica": 0.8068350668647846,
+    "exactitud_automatica": 0.6500920810313076
+   },
+   {
+    "umbral": 0.35,
+    "fraccion_automatica": 0.5274888558692422,
+    "exactitud_automatica": 0.7267605633802817
+   },
+   {
+    "umbral": 0.4,
+    "fraccion_automatica": 0.34175334323922735,
+    "exactitud_automatica": 0.8
+   },
+   {
+    "umbral": 0.45,
+    "fraccion_automatica": 0.22436849925705796,
+    "exactitud_automatica": 0.847682119205298
+   },
+   {
+    "umbral": 0.5,
+    "fraccion_automatica": 0.13967310549777118,
+    "exactitud_automatica": 0.8723404255319149
+   },
+   {
+    "umbral": 0.55,
+    "fraccion_automatica": 0.08469539375928678,
+    "exactitud_automatica": 0.8771929824561403
+   },
+   {
+    "umbral": 0.6,
+    "fraccion_automatica": 0.0638930163447251,
+    "exactitud_automatica": 0.8604651162790697
+   },
+   {
+    "umbral": 0.65,
+    "fraccion_automatica": 0.04606240713224369,
+    "exactitud_automatica": 0.8064516129032258
+   },
+   {
+    "umbral": 0.7,
+    "fraccion_automatica": 0.03268945022288262,
+    "exactitud_automatica": 0.8181818181818182
+   },
+   {
+    "umbral": 0.75,
+    "fraccion_automatica": 0.0237741456166419,
+    "exactitud_automatica": 0.8125
+   },
+   {
+    "umbral": 0.8,
+    "fraccion_automatica": 0.017830609212481426,
+    "exactitud_automatica": 0.8333333333333334
+   },
+   {
+    "umbral": 0.85,
+    "fraccion_automatica": 0.005943536404160475,
+    "exactitud_automatica": 0.5
+   },
+   {
+    "umbral": 0.9,
+    "fraccion_automatica": 0.0014858841010401188,
+    "exactitud_automatica": 0.0
+   },
+   {
+    "umbral": 0.95,
+    "fraccion_automatica": 0.0,
+    "exactitud_automatica": NaN
+   }
+  ]
+ },
+ "corpus_sha256": "f9797147e7026f796d453fa84d09c4bf32c48ae75c3744912806a72db3ff7f33",
+ "nota": "entrenado solo con train.csv; el conjunto ciego no interviene"
+}

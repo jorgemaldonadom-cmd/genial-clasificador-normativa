@@ -45,6 +45,8 @@ evaluation:
   ci_level: 0.95
 
 routing:
-  confidence_threshold: 0.50          # calibrado en el Sprint 3 con la curva enrutamiento-exactitud (≥ 85 % de exactitud en el tramo automático)
+  confidence_threshold: 0.50          # valor por defecto (calibrado en el Sprint 3 para el modelo base); cada modelo guardado lleva su propio umbral
+  target_auto_accuracy: 0.85          # criterio de calibración del umbral por modelo: exactitud mínima del tramo automático (CV por grupo, fuera de muestra)
+  min_auto_fraction: 0.10             # ... y al menos esta fracción de normas debe quedar en el tramo automático
   mandatory_review_min_country_n: 20  # países con menos normas que este umbral van siempre a revisión humana
   mandatory_review_languages: ["en", "fr", "pt"]   # pt añadido tras la auditoría de equidad (Semana 4): Brasil pasaba al tramo automático con exactitud 0.33

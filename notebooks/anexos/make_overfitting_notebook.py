@@ -30,14 +30,14 @@ from sklearn.metrics import f1_score, accuracy_score, classification_report
 from sklearn.utils.class_weight import compute_class_weight
 from genial_clf import tracking as T
 cfg = yaml.safe_load(open(ROOT / "config.yaml", encoding="utf-8")); SEED = cfg["seed"]; C5 = cfg["classes"]
-FIG = ROOT / "results/figuras/overfitting"; FIG.mkdir(parents=True, exist_ok=True)
-RES = ROOT / "results/overfitting"; RES.mkdir(parents=True, exist_ok=True)
+FIG = ROOT / "results/figures/overfitting"; FIG.mkdir(parents=True, exist_ok=True)
+RES = ROOT / "results/metrics/overfitting"; RES.mkdir(parents=True, exist_ok=True)
 np.random.seed(SEED); print("raíz:", ROOT)"""))
 
 # ---------------------------------------------------------------- 1
 C.append(md("""## 1. Carga y exploración del dataset
 
-El conjunto de entrenamiento del proyecto contiene 673 normas con su texto (`título + observaciones`), la dimensión (`Dominio`), el idioma detectado y el grupo de URL (duplicados). La exploración completa está en `EDA_corpus_GENIAL.ipynb`; aquí se recuerda lo que condiciona el diagnóstico: **pocos ejemplos, cinco clases desbalanceadas (4.9:1 en este subconjunto) y textos cortos**, con una representación TF-IDF de 5 000 dimensiones, es decir, más características que ejemplos."""))
+El conjunto de entrenamiento del proyecto contiene 673 normas con su texto (`título + observaciones`), la dimensión (`Dominio`), el idioma detectado y el grupo de URL (duplicados). La exploración completa está en `01_exploracion.ipynb`; aquí se recuerda lo que condiciona el diagnóstico: **pocos ejemplos, cinco clases desbalanceadas (4.9:1 en este subconjunto) y textos cortos**, con una representación TF-IDF de 5 000 dimensiones, es decir, más características que ejemplos."""))
 C.append(code(r"""train = pd.read_csv(ROOT / "data/splits/train.csv")
 print(train.shape); display(train[["id_norma", "País", "Dominio", "idioma", "n_palabras", "grupo_url"]].head())
 dist = train["Dominio"].value_counts().reindex(C5)
@@ -123,7 +123,7 @@ except ImportError:
 # ---------------------------------------------------------------- 4
 C.append(md("""## 4. Curvas de aprendizaje
 
-Todas las figuras se guardan a **300 DPI** en `results/figuras/overfitting/`, con título, etiquetas de ejes, leyenda, colores contrastantes (azul = entrenamiento, naranja = validación), rejilla y anotaciones en los puntos críticos (mínimo de la pérdida de validación, máximo de validación, gap final, mejor hiperparámetro).
+Todas las figuras se guardan a **300 DPI** en `results/figures/overfitting/`, con título, etiquetas de ejes, leyenda, colores contrastantes (azul = entrenamiento, naranja = validación), rejilla y anotaciones en los puntos críticos (mínimo de la pérdida de validación, máximo de validación, gap final, mejor hiperparámetro).
 
 ### 4.1 Curvas básicas A y B: pérdida y exactitud/F1 por época"""))
 C.append(code(r"""dx_torch = T.diagnose_epochs(h_torch); dx_sgd = T.diagnose_epochs(h_sgd)
@@ -301,4 +301,4 @@ sintesis = {"dif_cv": float(dif_cv), "menor_gap": menor_gap.to_dict(), "mejor_va
 json.dump(sintesis, open(RES / "sintesis_overfitting.json", "w"), ensure_ascii=False, indent=1, default=float); print("síntesis guardada en results/overfitting/sintesis_overfitting.json")"""))
 
 nb = new_notebook(cells=C, metadata={"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}, "language_info": {"name": "python", "version": "3.11"}})
-nbf.write(nb, "notebooks/overfitting_analysis.ipynb"); print("notebook escrito")
+nbf.write(nb, "notebooks/anexos/overfitting_analysis.ipynb"); print("notebook escrito")

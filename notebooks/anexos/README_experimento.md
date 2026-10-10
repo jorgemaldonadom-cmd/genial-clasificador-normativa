@@ -1,6 +1,6 @@
-# Cómo ejecutar `02_experimento.ipynb`
+# Cómo ejecutar `experimento_sprint3.ipynb`
 
-El cuaderno reproduce el experimento completo y regenera `results/` y `results/figuras/`. Tarda menos de dos minutos sin la rama LLM.
+El cuaderno reproduce el experimento completo y regenera `results/metrics/` y `results/figures/`. Tarda menos de dos minutos sin la rama LLM.
 
 ## 1. Requisitos
 
@@ -37,11 +37,11 @@ La clave de API **no se pega en el cuaderno** (el cuaderno se versiona). La secc
 2. el archivo `data/raw/anthropic_key.txt`, con la clave como única línea (opción recomendada sin terminal: crear el archivo con TextEdit en formato texto plano);
 3. el archivo `.env` en la raíz del repositorio con la línea `ANTHROPIC_API_KEY=sk-ant-...`.
 
-Los tres lugares están fuera del control de versiones (`.gitignore`). Con la clave en su sitio, abrir `notebooks/02_experimento.ipynb` en Jupyter o VS Code y ejecutar *Kernel → Restart & Run All*; o desde terminal:
+Los tres lugares están fuera del control de versiones (`.gitignore`). Con la clave en su sitio, abrir `notebooks/anexos/experimento_sprint3.ipynb` en Jupyter o VS Code y ejecutar *Kernel → Restart & Run All*; o desde terminal:
 
 ```bash
 export ANTHROPIC_API_KEY="..."        # opcional si ya existe data/raw/anthropic_key.txt
-jupyter nbconvert --to notebook --execute notebooks/02_experimento.ipynb --inplace --ExecutePreprocessor.timeout=1800
+jupyter nbconvert --to notebook --execute notebooks/anexos/experimento_sprint3.ipynb --inplace --ExecutePreprocessor.timeout=1800
 ```
 
 La sección 5 detecta la clave, ejecuta tres pasadas a temperatura 0 con `prompts/clasificador_v0.1.md`, guarda `results/pred_llm.csv`, `results/pred_llm_runs.csv` y `results/pred_llm_runs.csv.meta.json` (modelo y versión exacta), y la sección 6 incorpora la rama a la comparación pareada y a McNemar. Costo estimado: < USD 2 por ejecución completa del conjunto de prueba (≈ 130 normas × 3 pasadas). Modelo y proveedor se cambian en `config.yaml` (`llm.model`, `llm.provider`).
@@ -59,10 +59,10 @@ Si ya existe `results/pred_llm.csv` de una ejecución anterior y no hay clave en
 | `results/dominio_x_D4_finalidad.csv` · `pred_normas_nuevas.csv` · `coder2_labels_plantilla.csv` | sección 6.2 (instrumento del investigador) |
 | `results/hoja_tipificacion_errores_clasico.csv` | hoja de trabajo para tipificar cada error (multi-etiqueta) |
 | `results/curva_enrutamiento.csv` · `imn_propuesta.csv` | operación: umbral, carga residual, IMN por país con margen |
-| `results/figuras/10_cv_confusion_f1.png` · `11_curva_enrutamiento.png` | figuras del informe |
+| `results/figures/10_cv_confusion_f1.png` · `11_curva_enrutamiento.png` | figuras del informe |
 | `notebooks/02_experimento.html` | exportación estática del cuaderno ejecutado |
 
-`results/` está en `.gitignore` salvo los agregados sin texto de normas (síntesis, ablaciones, comparación, curva, IMN, figuras), que sí se versionan.
+`results/metrics/` está en `.gitignore` salvo los agregados sin texto de normas (síntesis, ablaciones, comparación, curva, IMN, figuras), que sí se versionan.
 
 ## 5. Regenerar el cuaderno desde su generador
 
@@ -70,6 +70,6 @@ El cuaderno se construye con `notebooks/make_results_notebook.py` (para que text
 
 ```bash
 python notebooks/make_results_notebook.py
-jupyter nbconvert --to notebook --execute notebooks/02_experimento.ipynb --inplace
-jupyter nbconvert --to html notebooks/02_experimento.ipynb
+jupyter nbconvert --to notebook --execute notebooks/anexos/experimento_sprint3.ipynb --inplace
+jupyter nbconvert --to html notebooks/anexos/experimento_sprint3.ipynb
 ```

@@ -1,0 +1,168 @@
+{
+ "n_trials": 60,
+ "segundos": 323.7,
+ "mejor": {
+  "C": 3.041348095884574,
+  "max_features": 8000,
+  "ngram_max": 2,
+  "min_df": 1,
+  "class_weight": "balanced",
+  "sublinear_tf": true
+ },
+ "mejor_val_f1": 0.5529558906552795,
+ "base": {
+  "C": 1.0,
+  "max_features": 5000,
+  "ngram_max": 2,
+  "min_df": 1,
+  "class_weight": "balanced",
+  "sublinear_tf": true
+ },
+ "base_cv": {
+  "val_f1": 0.5470230127438471,
+  "val_std": 0.020186637826681078,
+  "train_f1": 0.942325936883811,
+  "gap": 0.39530292413996393
+ },
+ "mejor_cv": {
+  "val_f1": 0.5529558906552795,
+  "val_std": 0.0390050738760343,
+  "train_f1": 0.9943360711964573,
+  "gap": 0.4413801805411778
+ },
+ "regla_1se": {
+  "C": 0.15671405527982937,
+  "max_features": 2000,
+  "ngram_max": 2,
+  "min_df": 1,
+  "class_weight": "balanced",
+  "sublinear_tf": true
+ },
+ "regla_1se_cv": {
+  "val_f1": 0.5398867950153117,
+  "val_std": 0.02031277040846335,
+  "train_f1": 0.8128932055797431,
+  "gap": 0.2730064105644314
+ },
+ "importancia": [
+  {
+   "hiperparámetro": "class_weight",
+   "importancia": 0.7687228879789372
+  },
+  {
+   "hiperparámetro": "C",
+   "importancia": 0.18066365373370757
+  },
+  {
+   "hiperparámetro": "max_features",
+   "importancia": 0.02879869068472603
+  },
+  {
+   "hiperparámetro": "min_df",
+   "importancia": 0.012991617639612119
+  },
+  {
+   "hiperparámetro": "sublinear_tf",
+   "importancia": 0.006512687618816295
+  },
+  {
+   "hiperparámetro": "ngram_max",
+   "importancia": 0.0023104623442007626
+  }
+ ],
+ "sensibilidad": [
+  {
+   "hiperparámetro": "class_weight",
+   "valores explorados": "balanced, None",
+   "valor óptimo": "balanced",
+   "F1 val. mín": 0.450368552252132,
+   "F1 val. máx": 0.5529558906552795,
+   "variación (pp)": 10.258733840314749,
+   "gap mín": 0.4413801805411778,
+   "gap máx": 0.5400539750287655
+  },
+  {
+   "hiperparámetro": "max_features",
+   "valores explorados": "1000, 2000, 3000, 5000, 8000, 12000, 20000",
+   "valor óptimo": 8000,
+   "F1 val. mín": 0.5237271127335865,
+   "F1 val. máx": 0.5529558906552795,
+   "variación (pp)": 2.9228777921692983,
+   "gap mín": 0.41788926608486654,
+   "gap máx": 0.47147233150513723
+  },
+  {
+   "hiperparámetro": "min_df",
+   "valores explorados": "1, 2, 3",
+   "valor óptimo": 1,
+   "F1 val. mín": 0.5289811982624155,
+   "F1 val. máx": 0.5529558906552795,
+   "variación (pp)": 2.3974692392863983,
+   "gap mín": 0.4413801805411778,
+   "gap máx": 0.4498203690199446
+  },
+  {
+   "hiperparámetro": "sublinear_tf",
+   "valores explorados": "True, False",
+   "valor óptimo": true,
+   "F1 val. mín": 0.5302135346664466,
+   "F1 val. máx": 0.5529558906552795,
+   "variación (pp)": 2.2742355988832896,
+   "gap mín": 0.4413801805411778,
+   "gap máx": 0.46331105500562475
+  },
+  {
+   "hiperparámetro": "C",
+   "valores explorados": "0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30",
+   "valor óptimo": 3.041348095884574,
+   "F1 val. mín": 0.5304566009146596,
+   "F1 val. máx": 0.5503045564373819,
+   "variación (pp)": 1.9847955522722227,
+   "gap mín": 0.333097267659749,
+   "gap máx": 0.4668807421557365
+  },
+  {
+   "hiperparámetro": "ngram_max",
+   "valores explorados": "1, 2",
+   "valor óptimo": 2,
+   "F1 val. mín": 0.5449677156230193,
+   "F1 val. máx": 0.5529558906552795,
+   "variación (pp)": 0.7988175032260236,
+   "gap mín": 0.4413801805411778,
+   "gap máx": 0.443433811483246
+  }
+ ],
+ "espacio": {
+  "C": {
+   "log": true,
+   "min": 0.01,
+   "max": 30.0
+  },
+  "max_features": [
+   1000,
+   2000,
+   3000,
+   5000,
+   8000,
+   12000,
+   20000
+  ],
+  "ngram_max": [
+   1,
+   2
+  ],
+  "min_df": [
+   1,
+   2,
+   3
+  ],
+  "class_weight": [
+   "balanced",
+   null
+  ],
+  "sublinear_tf": [
+   true,
+   false
+  ]
+ }
+}

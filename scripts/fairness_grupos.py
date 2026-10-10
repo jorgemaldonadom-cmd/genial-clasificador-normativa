@@ -8,7 +8,7 @@ jurisdicción: el riesgo es que países pequeños o no hispanohablantes reciban 
 ella, un Índice de Madurez Normativa distorsionado.
 
 Uso:  python scripts/fairness_grupos.py
-Salidas: results/fairness/fairness_grupos.csv · results/fairness/fairness_resumen.json · results/figuras/12_fairness_grupos.png
+Salidas: results/metrics/fairness/fairness_grupos.csv · results/metrics/fairness/fairness_resumen.json · results/figures/12_fairness_grupos.png
 """
 from __future__ import annotations
 
@@ -30,10 +30,10 @@ from genial_clf.evaluate import wilson_ci  # noqa: E402
 
 cfg = yaml.safe_load(open(ROOT / "config.yaml", encoding="utf-8"))
 C5 = cfg["classes"]; R = cfg["routing"]
-OUT = ROOT / "results/fairness"; OUT.mkdir(parents=True, exist_ok=True)
-FIG = ROOT / "results/figuras"; FIG.mkdir(parents=True, exist_ok=True)
+OUT = ROOT / "results/metrics/fairness"; OUT.mkdir(parents=True, exist_ok=True)
+FIG = ROOT / "results/figures"; FIG.mkdir(parents=True, exist_ok=True)
 
-cv = pd.read_csv(ROOT / "results/clasico_cv_predicciones.csv")
+cv = pd.read_csv(ROOT / "results/metrics/clasico_cv_predicciones.csv")
 corpus = pd.read_csv(ROOT / "data/processed/corpus_depurado.csv")
 d = cv.merge(corpus[["id_norma", "Investigador", "n_palabras"]], on="id_norma")
 

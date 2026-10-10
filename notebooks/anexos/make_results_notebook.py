@@ -1,5 +1,5 @@
-"""Genera notebooks/02_experimento.ipynb (nbformat). Ejecutar desde la raíz del repo:
-    python notebooks/make_results_notebook.py && jupyter nbconvert --to notebook --execute notebooks/02_experimento.ipynb --inplace
+"""Genera notebooks/anexos/experimento_sprint3.ipynb (nbformat). Ejecutar desde la raíz del repo:
+    python notebooks/make_results_notebook.py && jupyter nbconvert --to notebook --execute notebooks/anexos/experimento_sprint3.ipynb --inplace
 """
 import nbformat as nbf
 from nbformat.v4 import new_notebook, new_markdown_cell as md, new_code_cell as code
@@ -35,7 +35,7 @@ from genial_clf import data, split, baselines, classic, llm, evaluate, reliabili
 from genial_clf.config import load_config
 cfg = load_config(ROOT / "config.yaml")
 C5 = cfg["classes"]; SEED = cfg["seed"]; np.random.seed(SEED)
-RES = ROOT / "results"; RES.mkdir(exist_ok=True); FIG = RES / "figuras"; FIG.mkdir(exist_ok=True)
+RES = ROOT / "results/metrics"; RES.mkdir(parents=True, exist_ok=True); FIG = ROOT / "results/figures"; FIG.mkdir(parents=True, exist_ok=True)
 SPL = Path(cfg["paths"]["splits_dir"]); SPL.mkdir(parents=True, exist_ok=True)
 
 ACC = "#7A1F3D"; GREY = "#B8B1AA"; INK = "#1B1A19"; MUTED = "#6E6862"; RULE = "#D8D2CB"
@@ -198,7 +198,7 @@ C.append(code(r"""if os.environ.get("ANTHROPIC_API_KEY"):
     preds_llm[preds_llm["run"] == 1][["id_norma", "pred", "pred_2"]].assign(conf=np.nan).to_csv(RES / "pred_llm.csv", index=False)
     est = llm.stability(preds_llm); print("Rama LLM ejecutada:", est, "· modelo:", cfg["llm"]["model"])
 elif (RES / "pred_llm.csv").exists():
-    print("Rama LLM: se usan predicciones guardadas de una ejecución anterior (results/pred_llm.csv).")
+    print("Rama LLM: se usan predicciones guardadas de una ejecución anterior (results/metrics/pred_llm.csv).")
 else:
     print("Rama LLM omitida: no hay ANTHROPIC_API_KEY en el entorno. Defínala y vuelva a ejecutar el cuaderno para incluirla en la comparación.")"""))
 
@@ -245,7 +245,7 @@ C.append(code(r"""if c2 is not None:
         pd.crosstab(d["Dominio"], d["Dominio_coder2"]).reindex(index=C5, columns=C5).fillna(0).astype(int).to_csv(RES / "confusion_humano_humano.csv")
         display(pd.crosstab(d["Dominio"], d["Dominio_coder2"]).reindex(index=C5, columns=C5).fillna(0).astype(int))
 else:
-    print("κ humano-humano sobre Dominio: pendiente. El instrumento del investigador A codifica D1-D6 y no recodifica Dominio; hace falta data/raw/coder2_labels.csv (plantilla generada en results/coder2_labels_plantilla.csv).")"""))
+    print("κ humano-humano sobre Dominio: pendiente. El instrumento del investigador A codifica D1-D6 y no recodifica Dominio; hace falta data/raw/coder2_labels.csv (plantilla generada en results/metrics/coder2_labels_plantilla.csv).")"""))
 C.append(md("### 6.1 Diagnóstico de multi-etiqueta y hoja de tipificación de errores\n\nCada error del conjunto de prueba se clasifica a mano en *error genuino*, *segunda dimensión defendible* o *etiqueta original discutible*. El cuaderno genera la hoja de trabajo con la referencia, la predicción, la alternativa y —si existe— la etiqueta del segundo codificador; la tipificación la completan los codificadores."))
 C.append(code(r"""if "clasico" in ramas:
     r = ramas["clasico"]
@@ -274,7 +274,7 @@ if instr is not None and "clasico" in ramas:
     # plantilla para la recodificación de Dominio (κ humano-humano)
     plantilla = test[["id_norma", "País", "Título de la Norma", "Observaciones"]].copy(); plantilla["Dominio_coder2"] = ""; plantilla["Dominio_alt_coder2"] = ""
     plantilla.to_csv(RES / "coder2_labels_plantilla.csv", index=False)
-    print(f"\nPlantilla para κ humano-humano escrita: results/coder2_labels_plantilla.csv ({len(plantilla)} normas; el codificador llena Dominio_coder2 y el archivo se copia a data/raw/coder2_labels.csv)")
+    print(f"\nPlantilla para κ humano-humano escrita: results/metrics/coder2_labels_plantilla.csv ({len(plantilla)} normas; el codificador llena Dominio_coder2 y el archivo se copia a data/raw/coder2_labels.csv)")
     instr_res = {"por_confianza": por_conf.reset_index().to_dict("records"), "por_multidimensional": por_multi.reset_index().to_dict("records"),
                  "errores": int(len(err)), "errores_multidimensionales": int(err["multidimensional"].sum()),
                  "V_dominio_D4": coder.cramers_v(r["Dominio"], r["D4_principal"]), "V_dominio_D3": coder.cramers_v(r["Dominio"], r["D3_principal"])}
@@ -361,4 +361,4 @@ if ir:
 display(Markdown("\n\n".join(lineas)))"""))
 
 nb = new_notebook(cells=C, metadata={"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}, "language_info": {"name": "python", "version": "3.11"}})
-nbf.write(nb, "notebooks/02_experimento.ipynb"); print("notebook escrito")
+nbf.write(nb, "notebooks/anexos/experimento_sprint3.ipynb"); print("notebook escrito")
