@@ -128,7 +128,7 @@ python -m pytest -q                    # pruebas
 
 O, sin terminal, **`notebooks/00_ejecutar_todo.ipynb`**: cuaderno maestro que ejecuta todo paso a paso, omite lo ya calculado y lanza la aplicación en la última celda. Los cuadernos 01-05 documentan cada etapa.
 
-**Clave de API (rama LLM, opcional):** variable de entorno `ANTHROPIC_API_KEY`, o `data/raw/anthropic_key.txt`, o `.env`; nunca dentro de un cuaderno. Configuración general en [`config.yaml`](config.yaml).
+**Clave de API (rama LLM, opcional):** Gemini (`GEMINI_API_KEY` o `data/raw/gemini_key.txt`) o Anthropic (`ANTHROPIC_API_KEY` o `data/raw/anthropic_key.txt`), o `.env`; nunca dentro de un cuaderno. El proveedor se elige en `config.yaml → llm.provider`. Configuración general en [`config.yaml`](config.yaml).
 
 ## 6. Interfaz de usuario
 

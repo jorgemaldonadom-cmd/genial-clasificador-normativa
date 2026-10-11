@@ -143,25 +143,33 @@ display(Image(filename=str(ROOT / "results/figures/12_fairness_grupos.png"), wid
 C.append(md("## Paso 6 · Pruebas automatizadas\n\n`tests/test_data_processing.py` (limpieza, texto, validación), `tests/test_model.py` (construcción, guardado, predicción, enrutamiento) y `tests/test_app.py` (la aplicación carga y responde, con `streamlit.testing`)."))
 C.append(code(r'''r = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/test_data_processing.py", "tests/test_model.py", "tests/test_app.py"], capture_output=True, text=True)
 print(r.stdout[-2500:]); print(r.stderr[-800:] if r.returncode else "")'''))
-C.append(md("## Paso 7 · Rama LLM *few-shot* (opcional)\n\nClasifica el conjunto ciego con un modelo de lenguaje a temperatura 0, tres veces, con el *prompt* versionado en `prompts/clasificador_v0.1.md` y los 15 ejemplos del pool. **Dónde va la clave de API:** la celda la busca en la variable de entorno `ANTHROPIC_API_KEY`, en `data/raw/anthropic_key.txt` (una sola línea) o en `.env` (`ANTHROPIC_API_KEY=sk-ant-…`). Los tres lugares están fuera del control de versiones; **nunca pegue la clave en el cuaderno**. Ponga `FLAGS[\"EJECUTAR_LLM\"] = True` para ejecutarla."))
-C.append(code(r'''def _buscar_api_key():
-    k = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+C.append(md("## Paso 7 · Rama LLM *few-shot* (opcional)\n\nClasifica el conjunto ciego con un modelo de lenguaje a temperatura 0, tres veces, con el *prompt* versionado en `prompts/clasificador_v0.1.md` y los 15 ejemplos del pool. Funciona con **Gemini** (`GEMINI_API_KEY`, gratuito con límites) o con **Anthropic** (`ANTHROPIC_API_KEY`). **Dónde va la clave:** la celda la busca, en este orden, en la variable de entorno, en `data/raw/gemini_key.txt` / `data/raw/anthropic_key.txt` (una sola línea con la clave) o en `.env` (`GEMINI_API_KEY=…`). Los tres lugares están fuera del control de versiones; **nunca pegue la clave en el cuaderno**. Ponga `FLAGS[\"EJECUTAR_LLM\"] = True` para ejecutarla (≈ 375 llamadas; con Gemini Flash, unos 10 minutos y dentro de la cuota gratuita)."))
+C.append(code(r'''def _buscar_api_key(var, archivo):
+    k = os.environ.get(var, "").strip()
     if k: return k, "variable de entorno"
-    for f, parse in [(ROOT / "data/raw/anthropic_key.txt", lambda s: s.strip().splitlines()[0].strip() if s.strip() else ""),
-                     (ROOT / ".env", lambda s: next((l.split("=", 1)[1].strip().strip('"').strip("'") for l in s.splitlines() if l.strip().startswith("ANTHROPIC_API_KEY")), ""))]:
+    for f, parse in [(ROOT / "data/raw" / archivo, lambda s: s.strip().splitlines()[0].strip() if s.strip() else ""),
+                     (ROOT / ".env", lambda s: next((l.split("=", 1)[1].strip().strip('"').strip("'") for l in s.splitlines() if l.strip().startswith(var)), ""))]:
         if f.exists():
             k = parse(f.read_text(encoding="utf-8"))
             if k: return k, f.name
     return None, None
+
 if FLAGS["EJECUTAR_LLM"]:
-    key, origen = _buscar_api_key()
-    if not key:
-        print("Sin clave de API: cree data/raw/anthropic_key.txt (una línea con la clave) o defina ANTHROPIC_API_KEY.")
+    proveedor = None
+    for prov, var, archivo in [("gemini", "GEMINI_API_KEY", "gemini_key.txt"), ("anthropic", "ANTHROPIC_API_KEY", "anthropic_key.txt")]:
+        key, origen = _buscar_api_key(var, archivo)
+        if key:
+            os.environ[var] = key; proveedor = prov; break
+    if not proveedor:
+        print("Sin clave de API: cree data/raw/gemini_key.txt (o anthropic_key.txt) con la clave en una sola línea, o defina GEMINI_API_KEY / ANTHROPIC_API_KEY.")
     else:
-        os.environ["ANTHROPIC_API_KEY"] = key; from genial_clf import llm
-        preds_llm = llm.classify_blind(sp["test"], sp["fewshot"], cfg, cfg["paths"]["prompt"]); llm.save(preds_llm, RES / "pred_llm_runs.csv")
+        from genial_clf import llm
+        cfg_llm = {**cfg, "llm": {**cfg["llm"], "provider": proveedor}}
+        modelo = cfg_llm["llm"]["model_gemini"] if proveedor == "gemini" else cfg_llm["llm"]["model"]
+        print(f"proveedor: {proveedor} · modelo: {modelo} · clave leída de {origen} · {len(sp['test'])} normas × {cfg['llm']['repeats']} ejecuciones")
+        preds_llm = llm.classify_blind(sp["test"], sp["fewshot"], cfg_llm, cfg["paths"]["prompt"]); llm.save(preds_llm, RES / "pred_llm_runs.csv")
         preds_llm[preds_llm["run"] == 1][["id_norma", "pred", "pred_2"]].assign(conf=np.nan).to_csv(RES / "pred_llm.csv", index=False)
-        print("rama LLM ejecutada:", llm.stability(preds_llm), "· modelo:", cfg["llm"]["model"], "· clave leída de", origen)
+        print("rama LLM ejecutada:", llm.stability(preds_llm), "· sin respuesta parseable:", int(preds_llm["pred"].isna().sum()))
 else:
     print("rama LLM omitida (FLAGS['EJECUTAR_LLM'] = False)." + (" Hay predicciones guardadas en results/metrics/pred_llm.csv." if (RES / "pred_llm.csv").exists() else ""))'''))
 C.append(md("## Paso 8 · Lanzar la aplicación web\n\nLa celda siguiente arranca Streamlit en segundo plano y abre http://localhost:8501 en el navegador. La aplicación carga `models/best_model.pkl`. Para detenerla ejecute la celda que sigue (o cierre el kernel)."))
@@ -412,7 +420,7 @@ for k, v in fr.items():
     if isinstance(v, dict): print(f"{k:30s} peor: {v['grupo_peor']} ({v['exactitud_min']:.2f}) · mejor: {v['grupo_mejor']} ({v['exactitud_max']:.2f}) · razón mín {v['razón_min']:.2f} · 4/5: {'cumple' if v['cumple_4/5'] else 'NO cumple'}")
 display(Image(filename=str(FIG / "12_fairness_grupos.png"), width=950))'''))
 C.append(md("La brecha es real (es 0.66 · pt 0.47 · en 0.36) y no se corrige con el modelo: se **contiene** con la regla de gobernanza, que envía a revisión el 100 % de las normas en esos idiomas y de los países pequeños. El coste es que la salvaguarda se paga en horas humanas justo donde el corpus es más pobre; eso es lo que la sección de impacto social documenta como límite."))
-C.append(md("## 6. Rama LLM *few-shot* (opcional)\n\nSi existe `results/metrics/pred_llm.csv` (generado por el paso 7 del cuaderno 00 o por `anexos/experimento_sprint3.ipynb`) se compara aquí con los modelos clásicos sobre las mismas normas. Si no, se indica cómo obtenerlo. La clave de API se busca en `ANTHROPIC_API_KEY`, `data/raw/anthropic_key.txt` o `.env`; nunca se escribe en el cuaderno."))
+C.append(md("## 6. Rama LLM *few-shot* (opcional)\n\nSi existe `results/metrics/pred_llm.csv` (generado por el paso 7 del cuaderno 00 o por `anexos/experimento_sprint3.ipynb`) se compara aquí con los modelos clásicos sobre las mismas normas. Si no, se indica cómo obtenerlo. La clave de API (Gemini o Anthropic) se busca en la variable de entorno, en `data/raw/gemini_key.txt` / `anthropic_key.txt` o en `.env`; nunca se escribe en el cuaderno."))
 C.append(code(r'''from genial_clf import evaluate as E
 p = RES / "pred_llm.csv"
 if p.exists():

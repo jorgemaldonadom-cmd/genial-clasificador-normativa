@@ -75,6 +75,49 @@ class AnthropicClassifier:
         raise RuntimeError("la API no respondió tras 4 intentos")
 
 
+class GeminiClassifier:
+    """Cliente mínimo para Google Gemini (SDK `google-genai`). Requiere GEMINI_API_KEY en el entorno."""
+
+    def __init__(self, model: str, temperature: float = 0.0, max_tokens: int = 40, dry_run: bool = False):
+        self.model, self.temperature, self.max_tokens, self.dry_run = model, temperature, max_tokens, dry_run
+        self._client = None
+        if not dry_run:
+            from google import genai  # importación diferida
+
+            self._client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+    def complete(self, system: str, user: str) -> str:
+        if self.dry_run:
+            return "Primera: Pedagógico\nSegunda: Ética"
+        from google.genai import types
+
+        for attempt in range(4):
+            try:
+                r = self._client.models.generate_content(
+                    model=self.model, contents=user,
+                    config=types.GenerateContentConfig(system_instruction=system, temperature=self.temperature, max_output_tokens=max(self.max_tokens, 64)),
+                )
+                return r.text or ""
+            except Exception as e:  # reintento con espera exponencial ante límites de cuota
+                wait = 2 ** attempt
+                log.warning("error en la API (%s); reintento en %ds", e, wait)
+                time.sleep(wait)
+        raise RuntimeError("la API no respondió tras 4 intentos")
+
+
+PROVIDERS = {"anthropic": (AnthropicClassifier, "ANTHROPIC_API_KEY"), "gemini": (GeminiClassifier, "GEMINI_API_KEY")}
+
+
+def make_classifier(cfg: dict, dry_run: bool = False):
+    """Instancia el cliente según `llm.provider` de config.yaml (anthropic | gemini)."""
+    provider = cfg["llm"].get("provider", "anthropic")
+    if provider not in PROVIDERS:
+        raise ValueError(f"proveedor LLM no soportado: {provider} (use anthropic o gemini)")
+    cls, _ = PROVIDERS[provider]
+    model = cfg["llm"]["model"] if provider == "anthropic" else cfg["llm"].get("model_gemini", cfg["llm"]["model"])
+    return cls(model, cfg["llm"]["temperature"], cfg["llm"]["max_tokens"], dry_run)
+
+
 def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, template_path: str | Path,
                    repeats: int | None = None, dry_run: bool = False) -> pd.DataFrame:
     """Clasifica el conjunto ciego `repeats` veces y devuelve una fila por (id_norma, ejecución)."""
@@ -84,7 +127,7 @@ def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, templat
     system, user_tmpl = template.split("=== USUARIO ===", 1)
     ex_block = "\n".join(f"[Ejemplo {i}] Texto: «{t}» → Dimensión: {d}"
                          for i, (t, d) in enumerate(zip(fewshot["texto"], fewshot[target]), start=1))
-    clf = AnthropicClassifier(cfg["llm"]["model"], cfg["llm"]["temperature"], cfg["llm"]["max_tokens"], dry_run)
+    clf = make_classifier(cfg, dry_run)
     rows = []
     for run in range(1, (repeats or cfg["llm"]["repeats"]) + 1):
         for r in test.itertuples(index=False):
@@ -93,7 +136,7 @@ def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, templat
             raw = clf.complete(system.strip(), prompt)
             p1, p2 = parse_response(raw, classes)
             rows.append({"id_norma": r.id_norma, "run": run, "pred": p1, "pred_2": p2, "raw": raw.strip(),
-                         "model": cfg["llm"]["model"], "temperature": cfg["llm"]["temperature"]})
+                         "model": clf.model, "provider": cfg["llm"].get("provider", "anthropic"), "temperature": cfg["llm"]["temperature"]})
     out = pd.DataFrame(rows)
     n_bad = int(out["pred"].isna().sum())
     if n_bad:

@@ -20,6 +20,7 @@ __pycache__/
 
 # clave de API local (nunca se versiona)
 data/raw/anthropic_key.txt
+data/raw/gemini_key.txt
 
 
 # macOS

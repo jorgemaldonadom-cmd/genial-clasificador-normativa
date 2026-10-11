@@ -34,8 +34,9 @@ classic:
   C: 1.0
 
 llm:
-  provider: anthropic                 # alternativa documentada: modelo abierto (Qwen) vía endpoint compatible
-  model: claude-sonnet-4-5            # fijar y registrar la versión exacta usada en cada ejecución
+  provider: gemini                    # anthropic | gemini (el cuaderno 00 lo ajusta según la clave que encuentre)
+  model: claude-sonnet-4-5            # modelo si provider = anthropic
+  model_gemini: gemini-2.5-flash      # modelo si provider = gemini; se registra la versión exacta en cada ejecución
   temperature: 0.0
   repeats: 3
   max_tokens: 40
