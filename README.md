@@ -230,7 +230,7 @@ Al consorcio del proyecto **GENIAL** (Erasmus+, Unión Europea) por el acceso al
 
 | Vídeo | Enlace |
 |---|---|
-| *Pitch* del proyecto (5 min, con demostración de la aplicación) | _pendiente de publicación (YouTube, no listado)_ |
+| *Pitch* del proyecto (5 min, con demostración de la aplicación) | _pendiente de publicación (YouTube, no listado)_ · diapositivas y guion en [`results/reports/proyecto_final/`](results/reports/proyecto_final/) |
 | Respuestas a las preguntas del comité | _pendiente de publicación_ |
 | Presentación técnica (15 min, Sprint 3) | guion y diapositivas en [`results/reports/presentacion_final/`](results/reports/presentacion_final/) |
 
