@@ -33,3 +33,7 @@ results/metrics/hoja_tipificacion_errores_clasico.csv
 results/metrics/fuga_lexica_candidatos.csv
 results/metrics/coder2_labels_plantilla.csv
 results/metrics/pred_llm*
+
+# guiones de video (se entregan fuera del repositorio)
+results/reports/**/Grupo_9_Guion_*
+results/reports/**/Grupo_9_Guia_*

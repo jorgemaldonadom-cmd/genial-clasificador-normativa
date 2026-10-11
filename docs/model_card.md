@@ -32,6 +32,7 @@ Formato basado en Mitchell et al. (2019). Cifras tomadas de `results/metrics/sin
 | Exactitud | 0.635 [0.601, 0.667] | 0.688 [0.602, 0.763] |
 | Top-2 | 0.852 | 0.872 |
 | κ vs referencia | 0.50 | 0.56 |
+| Referencia LLM *few-shot* (Claude Sonnet 5.5, 15 ejemplos, ciego) | — | exactitud 0.64 · F1 macro 0.55 · κ 0.53 (McNemar vs RL n.s.) |
 | F1 por clase | Ped 0.71 · Ética 0.67 · Adm 0.41 · PD 0.80 · Téc 0.35 | — |
 
 Desagregado (exactitud, CV): es 0.66 · pt 0.47 · en 0.36; Hispanoamérica continental 0.67 · Brasil 0.47 · Caribe 0.38; institucional 0.67 · nacional 0.55; países < 20 normas 0.56. Normas nuevas del Caribe (n = 23, fuera de la versión congelada): 0.39.

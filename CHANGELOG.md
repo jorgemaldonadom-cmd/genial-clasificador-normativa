@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## v1.1.0 — 11 de octubre de 2026
+- Rama LLM *few-shot* ejecutada (Claude Sonnet 5.5, 15 ejemplos, 3 ejecuciones): exactitud 0.64, F1 macro 0.55, κ 0.53; empate estadístico con el modelo clásico. Resumen en `results/metrics/llm_resumen.json`; cuaderno 05 con la comparación.
+- `llm.py`: soporte de Gemini, selección automática de modelo, compatibilidad con SDK ≥ 1.x, parser tolerante, guardado incremental y reanudación.
+- Cuaderno 00: celda 7a (clave con `getpass`), flag `REENTRENAR`.
+- Diapositivas del video pitch (5 min) y de la presentación de 15 min actualizadas con la rama LLM.
+
 ## v1.0.0 — octubre de 2026 (proyecto final)
 - Estructura final del repositorio: `src/` (data_processing, model, train, evaluate, utils), `models/`, `app/`, `tests/`, `results/{figures,metrics,reports}`, `docs/`.
 - Optimización de hiperparámetros con Optuna y análisis de sensibilidad (Workshop S5); `best_model` elegido por la regla 1-DE con menor sobreajuste.

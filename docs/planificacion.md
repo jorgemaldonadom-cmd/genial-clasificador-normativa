@@ -12,7 +12,7 @@ El observatorio regional del proyecto **GENIAL** (Erasmus+) codifica a mano cada
 **Objetivos específicos.**
 
 1. Preparar y auditar el corpus GENIAL (813 normas, 28 jurisdicciones) con una partición ciega independiente.
-2. Comparar una rama clásica (TF-IDF + Regresión Logística) con líneas base y, cuando haya clave de API, con una rama LLM *few-shot*, sobre el mismo conjunto ciego.
+2. Comparar una rama clásica (TF-IDF + Regresión Logística) con líneas base y con una rama LLM *few-shot* (Claude Sonnet 5.5, 15 ejemplos), sobre el mismo conjunto ciego.
 3. Diagnosticar sobreajuste, optimizar hiperparámetros con análisis de sensibilidad y elegir el modelo de producción con un criterio explícito.
 4. Auditar la equidad por jurisdicción y fijar la regla de gobernanza (umbral de confianza, revisión obligatoria).
 5. Entregar una aplicación web funcional, un repositorio reproducible y la documentación técnica y ética.
@@ -72,7 +72,7 @@ Herramientas: Python 3.11, scikit-learn, Optuna, Streamlit, pytest, Git/GitHub (
 | Fuga de información por duplicados de URL o por la columna `Investigador` | media | alto | `StratifiedGroupKFold` por `grupo_url`; columnas de fuga excluidas por diseño |
 | Etiqueta única en normas multidimensionales | alta | medio | top-2 y tipificación de errores; recomendación de multi-etiqueta a GENIAL |
 | Peor desempeño en idiomas y países minoritarios | alta | alto | auditoría de equidad; revisión humana obligatoria para en/fr/pt y países < 20 normas |
-| Coste y disponibilidad de la API para la rama LLM | media | bajo | rama opcional, clave fuera del repositorio, comparación sobre las ramas disponibles |
+| Coste y disponibilidad de la API para la rama LLM | media | bajo | clave fuera del repositorio; guardado incremental y reanudación; ejecutada con Claude Sonnet 5.5 (≈ 2 USD) |
 | Sobreajuste del modelo (gap 0.40) | alta | medio | diagnóstico Semana 3, regularización y regla 1-DE en la optimización |
 | Datos no publicables | — | alto | corpus e instrumento fuera del repositorio; solo hash, agregados y muestra anonimizada |
 

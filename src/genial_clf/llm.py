@@ -90,7 +90,10 @@ class AnthropicClassifier:
                 msg = self._client.messages.create(**kw)
                 if self._temperature_ok is None:
                     self._temperature_ok = "extra_body" in kw
-                return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+                text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+                if not text.strip():  # respuesta sin texto: registrar el motivo para el diagnóstico (se cuenta como error)
+                    log.warning("respuesta vacía del modelo (stop_reason=%s, bloques=%s)", getattr(msg, "stop_reason", None), [getattr(b, "type", "?") for b in msg.content])
+                return text
             except Exception as e:
                 m = str(e)
                 if "temperature" in m and self._temperature_ok is not False:

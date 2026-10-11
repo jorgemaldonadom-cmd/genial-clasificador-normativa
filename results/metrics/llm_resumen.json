@@ -1,0 +1,68 @@
+{
+ "modelo": "claude-sonnet-5-5",
+ "proveedor": "anthropic",
+ "ejecuciones": 3,
+ "temperature": null,
+ "n": 125,
+ "exactitud": 0.64,
+ "ic95_exactitud": [
+  0.5528385550024603,
+  0.7188131347592083
+ ],
+ "f1_macro": 0.5536170695721256,
+ "ic95_f1_macro": [
+  0.44704769718772286,
+  0.6478756932105095
+ ],
+ "top2": 0.824,
+ "kappa": 0.5322044148775325,
+ "f1_por_clase": {
+  "Pedagógico": 0.7640449438202247,
+  "Ética": 0.7111111111111111,
+  "Administrativo": 0.3333333333333333,
+  "Protección de Datos": 0.7777777777777778,
+  "Técnico": 0.18181818181818182
+ },
+ "sin_respuesta": 6,
+ "estabilidad_3_ejecuciones": 0.984,
+ "por_idioma": [
+  {
+   "idioma": "es",
+   "n": 112,
+   "accuracy": 0.6607142857142857,
+   "f1_macro": 0.5684536232335503
+  },
+  {
+   "idioma": "pt",
+   "n": 12,
+   "accuracy": 0.5,
+   "f1_macro": 0.31666666666666665
+  },
+  {
+   "idioma": "en",
+   "n": 1,
+   "accuracy": 0.0,
+   "f1_macro": 0.0
+  }
+ ],
+ "mcnemar_vs": {
+  "model_v1": {
+   "n01": 12,
+   "n10": 18,
+   "statistic": 0.8333333333333334,
+   "p_value": 0.3613104285261789,
+   "method": "chi2 con corrección de continuidad",
+   "acuerdo_llm_rl": 0.704,
+   "exactitud_rl": 0.688
+  },
+  "best_model": {
+   "n01": 15,
+   "n10": 19,
+   "statistic": 0.2647058823529412,
+   "p_value": 0.6069054272179508,
+   "method": "chi2 con corrección de continuidad",
+   "acuerdo_llm_rl": 0.672,
+   "exactitud_rl": 0.672
+  }
+ }
+}

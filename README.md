@@ -7,7 +7,7 @@
 [![Streamlit](https://img.shields.io/badge/app-Streamlit-ff4b4b.svg)](app/app.py)
 [![Tests](https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa/actions/workflows/tests.yml/badge.svg)](https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-7A1F3D.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-7A1F3D.svg)](CHANGELOG.md)
 
 Proyecto Integrador (MIAR0545) · Maestría en Inteligencia Artificial · Universidad de Especialidades Espíritu Santo (UEES) · **Grupo 9** · Jorge Javier Maldonado Mahauad y Melissa Figallo · Tutora: Gladys María Villegas Rugel · septiembre-octubre de 2026 · En colaboración con el proyecto [GENIAL](https://genial-project.eu) (Erasmus+).
 
@@ -66,7 +66,7 @@ corpus → hash · limpieza · idioma · duplicados → particiones (ciega = ins
 * **Validación**: `StratifiedGroupKFold` (5 pliegues) estratificada por dimensión y agrupada por URL; intervalos de Wilson y *bootstrap* (2 000); McNemar pareado entre ramas.
 * **Optimización** (Workshop S5): Optuna TPE, 60 ensayos; importancia fANOVA, dependencia parcial, interacción `C × max_features`, tabla de sensibilidad; selección por **regla de una desviación estándar con menor sobreajuste** → `best_model` (`C = 0.157`, 2 000 *features*). [`docs/optimizacion.md`](docs/optimizacion.md).
 * **Umbral de confianza calibrado por modelo**: menor umbral con ≥ 85 % de exactitud en el tramo automático sobre predicciones fuera de muestra (0.50 para `model_v1`, 0.29 para `best_model`).
-* **Rama LLM *few-shot*** (opcional): *prompt* versionado, 15 ejemplos, temperatura 0, tres ejecuciones; requiere clave de API fuera del repositorio.
+* **Rama LLM *few-shot***: Claude Sonnet 5.5 con el *prompt* versionado y 15 ejemplos (sin ajuste de pesos), tres ejecuciones sobre el mismo conjunto ciego; la clave de API vive fuera del repositorio (Gemini también soportado).
 * **Equidad**: desempeño por idioma, tamaño del país, región, ámbito y codificador anonimizado; regla de los cuatro quintos como referencia.
 
 Arquitectura y decisiones: [`docs/arquitectura.md`](docs/arquitectura.md).
@@ -81,8 +81,9 @@ Arquitectura y decisiones: [`docs/arquitectura.md`](docs/arquitectura.md).
 | Metadatos (tipo de norma) | 0.544 [0.457, 0.629] | 0.322 | 0.608 | 0.32 | — |
 | `model_v1` (base) | 0.688 [0.602, 0.763] | 0.617 [0.505, 0.712] | 0.872 | 0.56 | 0.78 / 0.73 / 0.35 / 0.74 / 0.50 |
 | **`best_model` (regla 1-DE)** | 0.672 [0.586, 0.748] | **0.631 [0.530, 0.724]** | 0.864 | 0.54 | 0.74 / 0.71 / 0.33 / 0.80 / 0.57 |
+| LLM *few-shot* (Claude Sonnet 5.5, 15 ejemplos) | 0.640 [0.553, 0.719] | 0.554 [0.447, 0.648] | 0.824 | 0.53 | 0.76 / 0.71 / 0.33 / 0.78 / 0.18 |
 
-McNemar: `model_v1` vs mayoritaria p < 0.001; vs metadatos p = 0.012; `model_v1` vs `best_model` p = 0.75 (n.s.). Validación cruzada por grupo (n = 813, base): exactitud 0.635 [0.601, 0.667], F1 macro 0.587 [0.549, 0.623], κ 0.50.
+McNemar: `model_v1` vs mayoritaria p < 0.001; vs metadatos p = 0.012; `model_v1` vs `best_model` p = 0.75 (n.s.); LLM vs `best_model` p = 0.61 (n.s.). **El LLM *few-shot* empata con el modelo clásico** en exactitud y κ y queda por debajo en F1 macro (Técnico 0.18); 6 de 125 normas no obtuvieron respuesta en ninguna de las tres ejecuciones (cuentan como error); estabilidad entre ejecuciones 98 %. Un modelo lineal de 160 KB entrenado con 673 normas, interpretable y sin coste por llamada, es la opción adecuada para la operación; el LLM queda como segunda opinión opcional (`results/metrics/llm_resumen.json`). Validación cruzada por grupo (n = 813, base): exactitud 0.635 [0.601, 0.667], F1 macro 0.587 [0.549, 0.623], κ 0.50.
 
 **Lo que explican los errores.** 35 de 37 errores ciegos revisados eran normas **multidimensionales**; el modelo acierta el 76 % cuando el codificador tuvo confianza *Alta* y el 41 % cuando fue *Media*. 23 de 39 errores se rescatan con la segunda dimensión.
 
@@ -207,7 +208,7 @@ El sistema clasifica documentos públicos, no personas, pero sus salidas afectan
 * **Privacidad**: el nombre del codificador es dato personal: excluido del modelo, anonimizado, nunca enviado a un LLM; corpus e instrumento fuera del repositorio; claves de API fuera del control de versiones.
 * **Transparencia**: modelo lineal con términos explicativos, probabilidades y motivos de revisión visibles; *model card* y *datasheet*; todas las cifras con intervalos.
 * **Responsabilidad**: decisión final humana; declaración de compromiso del equipo; riesgo mínimo bajo el AI Act de la UE.
-* **Limitaciones**: n = 125 en prueba, etiqueta única, κ humano-humano pendiente, rama LLM no ejecutada en esta versión.
+* **Limitaciones**: n = 125 en prueba, etiqueta única, κ humano-humano pendiente; la rama LLM se evaluó con un solo proveedor y un solo *prompt*.
 
 ## 9. Autores y roles
 
@@ -230,9 +231,9 @@ Al consorcio del proyecto **GENIAL** (Erasmus+, Unión Europea) por el acceso al
 
 | Vídeo | Enlace |
 |---|---|
-| *Pitch* del proyecto (5 min, con demostración de la aplicación) | _pendiente de publicación (YouTube, no listado)_ · diapositivas y guion en [`results/reports/proyecto_final/`](results/reports/proyecto_final/) |
+| *Pitch* del proyecto (5 min, con demostración de la aplicación) | _pendiente de publicación (YouTube, no listado)_ · diapositivas en [`results/reports/proyecto_final/`](results/reports/proyecto_final/) |
 | Respuestas a las preguntas del comité | _pendiente de publicación_ |
-| Presentación técnica (15 min, Sprint 3) | guion y diapositivas en [`results/reports/presentacion_final/`](results/reports/presentacion_final/) |
+| Presentación técnica (15 min, Sprint 3) | diapositivas en [`results/reports/presentacion_final/`](results/reports/presentacion_final/) |
 
 ## 13. Documentación
 
@@ -254,7 +255,7 @@ Al consorcio del proyecto **GENIAL** (Erasmus+, Unión Europea) por el acceso al
   author  = {Maldonado Mahauad, Jorge Javier and Figallo, Melissa},
   title   = {genial-clasificador-normativa: clasificación automática de normativa sobre IA en educación superior de ALC},
   year    = {2026},
-  version = {1.0.0},
+  version = {1.1.0},
   url     = {https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa}
 }
 ```

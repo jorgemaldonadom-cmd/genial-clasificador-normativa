@@ -71,6 +71,6 @@ El clasificador tiene un potencial de daño bajo: no produce contenido, no decid
 1. **Tamaño y origen de la prueba ciega**: n = 125, intervalos de ± 9 pp; sobrerrepresenta países pequeños por diseño del instrumento.
 2. **Etiqueta única**: la tarea real es multi-etiqueta; recomendamos a GENIAL registrar dimensión principal y secundaria.
 3. **κ humano-humano sobre `Dominio` pendiente**: el instrumento del investigador codifica D1-D6; falta una segunda codificación ciega de la misma dimensión para fijar el techo humano.
-4. **Rama LLM no ejecutada en esta versión** (clave de API no disponible en el entorno de entrega); el código y el *prompt* versionado permiten ejecutarla.
+4. **Rama LLM evaluada con un solo proveedor y un solo *prompt*** (Claude Sonnet 5.5, 15 ejemplos): exactitud 0.64, F1 macro 0.55, κ 0.53, sin diferencia significativa con el modelo clásico; 6 normas sin respuesta. Enviar el texto de las normas a un proveedor externo es, además, una dependencia que el modelo lineal evita.
 5. **Umbral y cobertura**: con ≥ 85 % de exactitud automática solo el 14-15 % de las normas queda en el tramo automático; el ahorro de horas es modesto hasta que mejore el corpus.
 6. **Deriva**: la normativa sobre IA cambia rápido; el modelo debe reentrenarse y reauditarse con cada actualización del corpus.

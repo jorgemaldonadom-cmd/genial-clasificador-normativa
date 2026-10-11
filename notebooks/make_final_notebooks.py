@@ -419,7 +419,7 @@ C.append(md("## 3. ¿Qué dicen los errores?\n\nDel Sprint 3 (mismo conjunto, mo
 C.append(code(r'''s = json.loads((RES / "sintesis_resultados.json").read_text(encoding="utf-8"))
 print(json.dumps(s.get("instrumento_investigador", {}), ensure_ascii=False, indent=1)[:1500])'''))
 C.append(md("## 4. Operación: enrutamiento con revisión humana\n\nRegla de gobernanza (`config.yaml → routing`): va a revisión humana toda norma con probabilidad máxima por debajo del **umbral de confianza del modelo**, de país con menos de 20 normas en el corpus o en inglés, francés o portugués. El umbral se calibra en `src/train.py` para cada modelo sobre predicciones fuera de muestra del entrenamiento (menor umbral con ≥ 85 % de exactitud en el tramo automático y ≥ 10 % de normas en él): 0.50 para `model_v1` y 0.29 para `best_model`, cuya regularización aplana las probabilidades. Se simula sobre el conjunto ciego con `best_model` y se calcula la carga humana residual (10 min por norma, supuesto declarado)."))
-C.append(code(r'''from model import Predictor, MODELS_DIR
+C.append(code(r'''from model import Predictor, MODELS_DIR, load_model
 from data_processing import load_splits
 from genial_clf import imn
 sp = load_splits(cfg, with_hidden_labels=True); test = sp["test"].merge(sp["test_labels"], on="id_norma")
@@ -442,15 +442,32 @@ for k, v in fr.items():
     if isinstance(v, dict): print(f"{k:30s} peor: {v['grupo_peor']} ({v['exactitud_min']:.2f}) · mejor: {v['grupo_mejor']} ({v['exactitud_max']:.2f}) · razón mín {v['razón_min']:.2f} · 4/5: {'cumple' if v['cumple_4/5'] else 'NO cumple'}")
 display(Image(filename=str(FIG / "12_fairness_grupos.png"), width=950))'''))
 C.append(md("La brecha es real (es 0.66 · pt 0.47 · en 0.36) y no se corrige con el modelo: se **contiene** con la regla de gobernanza, que envía a revisión el 100 % de las normas en esos idiomas y de los países pequeños. El coste es que la salvaguarda se paga en horas humanas justo donde el corpus es más pobre; eso es lo que la sección de impacto social documenta como límite."))
-C.append(md("## 6. Rama LLM *few-shot* (opcional)\n\nSi existe `results/metrics/pred_llm.csv` (generado por el paso 7 del cuaderno 00 o por `anexos/experimento_sprint3.ipynb`) se compara aquí con los modelos clásicos sobre las mismas normas. Si no, se indica cómo obtenerlo. La clave de API (Gemini o Anthropic) se busca en la variable de entorno, en `data/raw/gemini_key.txt` / `anthropic_key.txt` o en `.env`; nunca se escribe en el cuaderno."))
+C.append(md("## 6. Rama LLM *few-shot* (opcional)\n\nComparación de la rama LLM *few-shot* (`results/metrics/pred_llm.csv`, generado por el paso 7 del cuaderno 00: Claude Sonnet 5.5, 15 ejemplos, 3 ejecuciones) con los modelos clásicos sobre las mismas 125 normas: métricas con IC, McNemar pareado, acuerdo entre ramas, estabilidad entre ejecuciones y desglose por idioma. El resumen agregado se guarda en `results/metrics/llm_resumen.json` (versionado; las predicciones por norma no). La clave de API (Gemini o Anthropic) se busca en la variable de entorno, en `data/raw/gemini_key.txt` / `anthropic_key.txt` o en `.env`; nunca se escribe en el cuaderno."))
 C.append(code(r'''from genial_clf import evaluate as E
+from genial_clf.reliability import kappa
 p = RES / "pred_llm.csv"
 if p.exists():
-    dl = test[["id_norma", cfg["columns"]["target"]]].merge(pd.read_csv(p), on="id_norma"); dl["pred"] = dl["pred"].fillna("__sin respuesta__")
-    rep = E.report(dl[cfg["columns"]["target"]], dl["pred"], CLASSES, dl["pred_2"], cfg["evaluation"]["bootstrap_iters"])
-    print("LLM few-shot: exactitud %.3f %s · F1 macro %.3f %s · top-2 %.3f · κ %.3f" % (rep["accuracy"], rep["accuracy_ci_wilson"], rep["f1_macro"], rep["f1_macro_ci_bootstrap"], rep["top2_accuracy"], rep["kappa_vs_reference"]))
-    print("McNemar LLM vs best_model:", E.mcnemar(dl[cfg["columns"]["target"]], dl["pred"], dl.merge(preds, on="id_norma", suffixes=("", "_rl"))["pred_rl"]))
+    y = cfg["columns"]["target"]
+    dl = test[["id_norma", y, "idioma", "texto"]].merge(pd.read_csv(p), on="id_norma"); dl["pred"] = dl["pred"].fillna("__sin respuesta__")
+    runs = pd.read_csv(RES / "pred_llm_runs.csv", keep_default_na=False); meta = json.loads((RES / "pred_llm_runs.csv.meta.json").read_text(encoding="utf-8"))
+    rep = E.report(dl[y], dl["pred"], CLASSES, dl["pred_2"], cfg["evaluation"]["bootstrap_iters"])
+    sin_resp = int((dl["pred"] == "__sin respuesta__").sum()); estab = float((runs.groupby("id_norma")["pred"].nunique() == 1).mean())
+    filas = [{"rama": f"LLM few-shot ({meta['model']}, 15 ejemplos)", "n": rep["n"], "exactitud": rep["accuracy"], "IC95 exactitud": rep["accuracy_ci_wilson"], "F1 macro": rep["f1_macro"], "IC95 F1 macro": rep["f1_macro_ci_bootstrap"], "top-2": rep["top2_accuracy"], "kappa": rep["kappa_vs_reference"], **{f"F1 {c}": float(v) for c, v in zip(CLASSES, rep["per_class"]["f1"])}}]
+    comp = {}
+    for name in ["model_v1", "best_model"]:
+        pipe = load_model(MODELS_DIR / f"{name}.pkl"); pr = np.asarray(pipe.classes_)[pipe.predict_proba(dl["texto"]).argmax(1)]
+        comp[name] = {**E.mcnemar(dl[y], dl["pred"], pr), "acuerdo_llm_rl": float((pr == dl["pred"]).mean()), "exactitud_rl": float((pr == dl[y]).mean())}
+    resumen_llm = {"modelo": meta["model"], "proveedor": str(runs["provider"].iloc[0]), "ejecuciones": int(meta["runs"]), "temperature": meta["temperature"], "n": int(rep["n"]),
+                   "exactitud": rep["accuracy"], "ic95_exactitud": list(rep["accuracy_ci_wilson"]), "f1_macro": rep["f1_macro"], "ic95_f1_macro": list(rep["f1_macro_ci_bootstrap"]), "top2": rep["top2_accuracy"], "kappa": rep["kappa_vs_reference"],
+                   "f1_por_clase": {c: float(v) for c, v in zip(CLASSES, rep["per_class"]["f1"])}, "sin_respuesta": sin_resp, "estabilidad_3_ejecuciones": estab,
+                   "por_idioma": E.by_group(dl, y, "pred", "idioma", CLASSES).to_dict("records"), "mcnemar_vs": comp}
+    json.dump(resumen_llm, open(RES / "llm_resumen.json", "w"), ensure_ascii=False, indent=1, default=float)
+    display(pd.concat([tabla, pd.DataFrame(filas)], ignore_index=True).round(3))
+    print(f"LLM few-shot ({meta['model']}): exactitud {rep['accuracy']:.3f}, F1 macro {rep['f1_macro']:.3f}, κ {rep['kappa_vs_reference']:.3f} · sin respuesta {sin_resp}/{rep['n']} (cuentan como error) · estabilidad entre {meta['runs']} ejecuciones {estab:.1%}")
+    for k, v in comp.items(): print(f"McNemar LLM vs {k}: p = {v['p_value']:.3f} (LLM acierta y RL falla: {v['n01'] if 'n01' in v else '-'}; RL acierta y LLM falla: {v.get('n10', '-')}) · acuerdo LLM-RL {v['acuerdo_llm_rl']:.2f}")
+    display(E.by_group(dl, y, "pred", "idioma", CLASSES).round(3))
 else:
-    print("Sin predicciones LLM. Para obtenerlas: cuaderno 00, paso 7 (FLAGS['EJECUTAR_LLM'] = True) con la clave de API en data/raw/anthropic_key.txt.")'''))
-C.append(md("## 7. Conclusiones\n\n1. El clasificador supera con holgura las líneas base (p < 0.05) y alcanza κ ≈ 0.55 frente al codificador: acuerdo *moderado*, del orden del que cabe esperar entre dos codificadores humanos en una tarea donde más de un tercio de los errores son normas multidimensionales.\n2. La optimización no mueve el F1 de validación; permite elegir un modelo más regularizado y estable (`best_model`), cuyo F1 macro ciego es 0.631 [0.530, 0.724].\n3. El sistema se despliega como **codificación asistida con revisión humana obligatoria** para idiomas minoritarios y países pequeños; esa regla es la respuesta a la brecha de equidad detectada, no un adorno.\n4. Límites: n = 125 en prueba (intervalos anchos), una sola etiqueta por norma, κ humano-humano sobre `Dominio` pendiente de una segunda codificación."))
+    print("Sin predicciones LLM. Para obtenerlas: cuaderno 00, paso 7 (FLAGS['EJECUTAR_LLM'] = True) con la clave de API en data/raw/anthropic_key.txt o gemini_key.txt.")'''))
+C.append(md("Lectura: la rama LLM *few-shot* (15 ejemplos, sin ajuste de pesos) **empata estadísticamente** con el modelo clásico entrenado con 673 normas (McNemar n.s.) y queda por debajo en F1 macro, sobre todo en Técnico y Administrativo. Seis normas no obtuvieron respuesta en ninguna de las tres ejecuciones y cuentan como error. Conclusión para la operación: el modelo lineal, interpretable, sin coste por llamada y sin enviar texto a terceros, es la opción adecuada; el LLM queda como segunda opinión opcional para las normas que van a revisión humana."))
+C.append(md("## 7. Conclusiones\n\n1. El clasificador supera con holgura las líneas base (p < 0.05) y alcanza κ ≈ 0.55 frente al codificador: acuerdo *moderado*, del orden del que cabe esperar entre dos codificadores humanos en una tarea donde más de un tercio de los errores son normas multidimensionales.\n2. La optimización no mueve el F1 de validación; permite elegir un modelo más regularizado y estable (`best_model`), cuyo F1 macro ciego es 0.631 [0.530, 0.724].\n3. El sistema se despliega como **codificación asistida con revisión humana obligatoria** para idiomas minoritarios y países pequeños; esa regla es la respuesta a la brecha de equidad detectada, no un adorno.\n4. La rama LLM *few-shot* (Claude Sonnet 5.5, 15 ejemplos) no supera al modelo clásico: exactitud 0.64, F1 macro 0.55, κ 0.53, McNemar n.s.; refuerza la elección del modelo lineal para la operación.\n5. Límites: n = 125 en prueba (intervalos anchos), una sola etiqueta por norma, κ humano-humano sobre `Dominio` pendiente de una segunda codificación."))
 write("05_evaluacion.ipynb", C)

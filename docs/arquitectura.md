@@ -41,7 +41,7 @@
 | Optimización | `src/genial_clf/optimize.py`, `scripts/optimizar.py` | estudio Optuna, importancia fANOVA, dependencia parcial, interacciones, sensibilidad, regla 1-DE |
 | Evaluación | `src/evaluate.py` → `genial_clf.evaluate`, `.baselines`, `.reliability`, `.imn` | métricas con IC, McNemar, por idioma, enrutamiento, carga humana residual |
 | Equidad | `scripts/fairness_grupos.py` | desempeño por idioma, país, región, ámbito y codificador anonimizado |
-| LLM (opcional) | `src/genial_clf/llm.py`, `prompts/clasificador_v0.1.md` | rama *few-shot* con clave fuera del repositorio |
+| LLM | `src/genial_clf/llm.py`, `prompts/clasificador_v0.1.md` | rama *few-shot* (Anthropic o Gemini) con clave fuera del repositorio, guardado incremental y reanudación |
 | Aplicación | `app/app.py` | interfaz Streamlit (una norma, lote CSV, acerca del modelo, historial) |
 | Pruebas | `tests/` | 14 pruebas (datos, modelo, aplicación con `streamlit.testing`) |
 | Utilidades | `src/utils.py` | logging, semillas, validación de texto, hash |

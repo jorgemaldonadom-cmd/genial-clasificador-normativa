@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Si usa este repositorio, cite el proyecto y el corpus GENIAL como se indica."
 title: "genial-clasificador-normativa: clasificación automática de normativa sobre IA en educación superior de ALC"
 type: software
-version: 1.0.0
+version: 1.1.0
 date-released: 2026-09-20
 license: MIT
 authors:
