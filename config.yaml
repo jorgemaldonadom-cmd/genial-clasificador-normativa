@@ -34,13 +34,13 @@ classic:
   C: 1.0
 
 llm:
-  provider: gemini                    # anthropic | gemini (el cuaderno 00 lo ajusta según la clave que encuentre)
-  model: claude-sonnet-4-5            # modelo si provider = anthropic
+  provider: anthropic                 # anthropic | gemini (el cuaderno 00 lo ajusta según la clave que encuentre)
+  model: claude-sonnet-5-5            # modelo si provider = anthropic (claude-haiku-5-5 es ~20× más barato; claude-sonnet-4-5 quedó obsoleto)
   model_gemini: auto                  # si provider = gemini: «auto» elige el modelo flash de texto más reciente disponible para la clave (los nombres se retiran con el tiempo); la versión exacta queda registrada en cada ejecución
   temperature: 0.0
-  repeats: 1                          # 3 para medir estabilidad; 1 con cuotas gratuitas (125 llamadas en lugar de 375)
+  repeats: 3                          # 3 ejecuciones para medir estabilidad (375 llamadas); 1 con cuotas gratuitas
   max_tokens: 40
-  min_interval_s: 6.5                 # segundos entre llamadas (≈ 9 por minuto, por debajo del límite gratuito); 0 con cuota de pago
+  min_interval_s: 0                   # segundos entre llamadas; 6.5 con la cuota gratuita de Gemini (≈ 9 por minuto)
 
 evaluation:
   bootstrap_iters: 2000

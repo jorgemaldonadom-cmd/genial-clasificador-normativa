@@ -143,9 +143,9 @@ display(Image(filename=str(ROOT / "results/figures/12_fairness_grupos.png"), wid
 C.append(md("## Paso 6 · Pruebas automatizadas\n\n`tests/test_data_processing.py` (limpieza, texto, validación), `tests/test_model.py` (construcción, guardado, predicción, enrutamiento) y `tests/test_app.py` (la aplicación carga y responde, con `streamlit.testing`)."))
 C.append(code(r'''r = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/test_data_processing.py", "tests/test_model.py", "tests/test_app.py"], capture_output=True, text=True)
 print(r.stdout[-2500:]); print(r.stderr[-800:] if r.returncode else "")'''))
-C.append(md("## Paso 7 · Rama LLM *few-shot* (opcional)\n\nClasifica el conjunto ciego con un modelo de lenguaje a temperatura 0, tres veces, con el *prompt* versionado en `prompts/clasificador_v0.1.md` y los 15 ejemplos del pool. Funciona con **Gemini** (`GEMINI_API_KEY`, gratuito con límites) o con **Anthropic** (`ANTHROPIC_API_KEY`). **Dónde va la clave:** la celda la busca, en este orden, en la variable de entorno, en `data/raw/gemini_key.txt` / `data/raw/anthropic_key.txt` (una sola línea con la clave) o en `.env` (`GEMINI_API_KEY=…`). Los tres lugares están fuera del control de versiones; **nunca pegue la clave en el cuaderno**. Ponga `FLAGS[\"EJECUTAR_LLM\"] = True` para ejecutarla. Con la cuota gratuita de Gemini: `repeats: 1` (125 llamadas, ≈ 15 min con 6.5 s entre llamadas). Cada respuesta se guarda al instante en `pred_llm_parcial.csv`; si la cuota se agota a mitad, basta con **volver a ejecutar la celda más tarde** y continúa desde donde quedó."))
-C.append(md("### 7a · Guardar la clave de API sin escribirla en el cuaderno\n\nEjecute esta celda una sola vez: pide la clave con un cuadro oculto (`getpass`, no queda en la salida) y la guarda en `data/raw/gemini_key.txt`, que está en `.gitignore`. Si el archivo ya existe, no hace nada. Para Anthropic, cambie `PROVEEDOR = \"anthropic\"`."))
-C.append(code(r'''PROVEEDOR = "gemini"            # "gemini" | "anthropic"
+C.append(md("## Paso 7 · Rama LLM *few-shot* (opcional)\n\nClasifica el conjunto ciego con un modelo de lenguaje a temperatura 0, tres veces, con el *prompt* versionado en `prompts/clasificador_v0.1.md` y los 15 ejemplos del pool. Funciona con **Gemini** (`GEMINI_API_KEY`, gratuito con límites) o con **Anthropic** (`ANTHROPIC_API_KEY`). **Dónde va la clave:** la celda la busca, en este orden, en la variable de entorno, en `data/raw/gemini_key.txt` / `data/raw/anthropic_key.txt` (una sola línea con la clave) o en `.env` (`GEMINI_API_KEY=…`). Los tres lugares están fuera del control de versiones; **nunca pegue la clave en el cuaderno**. Ponga `FLAGS[\"EJECUTAR_LLM\"] = True` para ejecutarla. Con la API de Anthropic (`claude-sonnet-5-5`, `repeats: 3`): 375 llamadas, unos 5 minutos y menos de 2 USD. Con la cuota gratuita de Gemini ponga `repeats: 1` y `min_interval_s: 6.5` en `config.yaml`. Cada respuesta se guarda al instante en `pred_llm_parcial.csv`; si la cuota se agota a mitad, basta con **volver a ejecutar la celda más tarde** y continúa desde donde quedó."))
+C.append(md("### 7a · Guardar la clave de API sin escribirla en el cuaderno\n\nEjecute esta celda una sola vez: pide la clave con un cuadro oculto (`getpass`, no queda en la salida) y la guarda en `data/raw/anthropic_key.txt` (o `gemini_key.txt`), que está en `.gitignore`. Si el archivo ya existe, no hace nada. Para Gemini, cambie `PROVEEDOR = \"gemini\"`."))
+C.append(code(r'''PROVEEDOR = "anthropic"         # "anthropic" | "gemini"
 archivo_clave = ROOT / "data/raw" / f"{PROVEEDOR}_key.txt"
 if FLAGS["EJECUTAR_LLM"] and not archivo_clave.exists():
     from getpass import getpass
@@ -168,7 +168,7 @@ C.append(code(r'''def _buscar_api_key(var, archivo):
 
 if FLAGS["EJECUTAR_LLM"]:
     proveedor = None
-    for prov, var, archivo in [("gemini", "GEMINI_API_KEY", "gemini_key.txt"), ("anthropic", "ANTHROPIC_API_KEY", "anthropic_key.txt")]:
+    for prov, var, archivo in [("anthropic", "ANTHROPIC_API_KEY", "anthropic_key.txt"), ("gemini", "GEMINI_API_KEY", "gemini_key.txt")]:
         key, origen = _buscar_api_key(var, archivo)
         if key:
             os.environ[var] = key; proveedor = prov; break
