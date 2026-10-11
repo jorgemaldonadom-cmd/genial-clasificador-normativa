@@ -99,7 +99,8 @@ print("instrumento del investigador:", instr.name, "→", "existe (la prueba cie
 FLAGS = dict(REHACER_PARTICIONES=False,   # True → vuelve a generar data/processed y data/splits aunque existan
              EJECUTAR_OPTUNA=False,       # True → corre los 60 ensayos aunque exista results/metrics/optimizacion/resumen.json (~6 min)
              N_TRIALS=60,
-             EJECUTAR_LLM=False)          # True → rama LLM few-shot (necesita clave de API; ~10 min y coste de API)
+             REENTRENAR=False,            # True → vuelve a entrenar models/*.pkl aunque existan (con otras versiones de scikit-learn/numpy las cifras pueden variar ±2 pp)
+             EJECUTAR_LLM=False)          # True → rama LLM few-shot (necesita clave de API)
 FLAGS'''))
 C.append(md("## Paso 1 · Preparar el corpus y las particiones\n\n`prepare_corpus()` carga el Excel, verifica el hash, normaliza, construye el texto (`título. observaciones`), detecta el idioma, marca duplicados por URL y escribe `data/processed/corpus_depurado.csv` más `results/metrics/reporte_calidad.md`. `make_partitions()` separa entrenamiento (673), pool *few-shot* (15) y prueba ciega (125, las normas del instrumento del investigador con sus duplicados). Las etiquetas de la prueba quedan en `test_labels_hidden.csv` y **solo se leen en el paso 4**."))
 C.append(code(r'''from data_processing import prepare_corpus, make_partitions, load_splits, load_processed, describe
@@ -121,9 +122,12 @@ r = json.loads(resumen_opt.read_text(encoding="utf-8"))
 print("configuración base      :", r["base"], "→ val F1 %.3f · gap %.2f" % (r["base_cv"]["val_f1"], r["base_cv"]["gap"]))
 print("mejor ensayo Optuna     :", r["mejor"], "→ val F1 %.3f · gap %.2f" % (r["mejor_cv"]["val_f1"], r["mejor_cv"]["gap"]))
 print("regla 1-DE (elegida)    :", r["regla_1se"], "→ val F1 %.3f · gap %.2f" % (r["regla_1se_cv"]["val_f1"], r["regla_1se_cv"]["gap"]))'''))
-C.append(md("## Paso 3 · Entrenar y guardar los modelos\n\n`src/train.py` entrena con `train.csv` el modelo base (`model_v1.pkl`) y el optimizado (`best_model.pkl`, hiperparámetros de la regla 1-DE), cada uno con su `.json` de metadatos (hash del corpus, métricas de validación cruzada, fecha) y con su **umbral de confianza calibrado** (menor umbral que da ≥ 85 % de exactitud en el tramo automático sobre predicciones fuera de muestra)."))
+C.append(md("## Paso 3 · Entrenar y guardar los modelos\n\n`src/train.py` entrena con `train.csv` el modelo base (`model_v1.pkl`) y el optimizado (`best_model.pkl`, hiperparámetros de la regla 1-DE), cada uno con su `.json` de metadatos (hash del corpus, métricas de validación cruzada, fecha) y con su **umbral de confianza calibrado** (menor umbral que da ≥ 85 % de exactitud en el tramo automático sobre predicciones fuera de muestra). Los modelos están versionados en el repositorio: por defecto se reutilizan (así la evaluación del paso 4 reproduce exactamente las cifras del README). Reentrenar en otro entorno (otra versión de scikit-learn o numpy) produce modelos equivalentes pero no idénticos, con cifras que pueden variar ±2 pp en la prueba ciega; `REENTRENAR = True` lo fuerza."))
 C.append(code(r'''import train as T
-T.main(prepare=False, which="both")
+if FLAGS["REENTRENAR"] or not (ROOT / "models/best_model.pkl").exists() or not (ROOT / "models/model_v1.pkl").exists():
+    T.main(prepare=False, which="both")
+else:
+    print("modelos ya existentes en models/ (versionados en el repositorio; REENTRENAR = True para volver a entrenarlos)")
 print(json.dumps(json.loads((ROOT / "models/entrenamiento.json").read_text(encoding="utf-8")), ensure_ascii=False, indent=1)[:1800])'''))
 C.append(md("## Paso 4 · Evaluación final en el conjunto ciego\n\nÚnico punto del flujo donde se leen las etiquetas ocultas. Exactitud e IC de Wilson, F1 macro e IC *bootstrap* (2 000 remuestreos), top-2, κ frente a la etiqueta del codificador, McNemar frente a la clase mayoritaria y entre los dos modelos."))
 C.append(code(r'''import evaluate as EV
