@@ -144,6 +144,18 @@ C.append(md("## Paso 6 · Pruebas automatizadas\n\n`tests/test_data_processing.p
 C.append(code(r'''r = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/test_data_processing.py", "tests/test_model.py", "tests/test_app.py"], capture_output=True, text=True)
 print(r.stdout[-2500:]); print(r.stderr[-800:] if r.returncode else "")'''))
 C.append(md("## Paso 7 · Rama LLM *few-shot* (opcional)\n\nClasifica el conjunto ciego con un modelo de lenguaje a temperatura 0, tres veces, con el *prompt* versionado en `prompts/clasificador_v0.1.md` y los 15 ejemplos del pool. Funciona con **Gemini** (`GEMINI_API_KEY`, gratuito con límites) o con **Anthropic** (`ANTHROPIC_API_KEY`). **Dónde va la clave:** la celda la busca, en este orden, en la variable de entorno, en `data/raw/gemini_key.txt` / `data/raw/anthropic_key.txt` (una sola línea con la clave) o en `.env` (`GEMINI_API_KEY=…`). Los tres lugares están fuera del control de versiones; **nunca pegue la clave en el cuaderno**. Ponga `FLAGS[\"EJECUTAR_LLM\"] = True` para ejecutarla (≈ 375 llamadas; con Gemini Flash, unos 10 minutos y dentro de la cuota gratuita)."))
+C.append(md("### 7a · Guardar la clave de API sin escribirla en el cuaderno\n\nEjecute esta celda una sola vez: pide la clave con un cuadro oculto (`getpass`, no queda en la salida) y la guarda en `data/raw/gemini_key.txt`, que está en `.gitignore`. Si el archivo ya existe, no hace nada. Para Anthropic, cambie `PROVEEDOR = \"anthropic\"`."))
+C.append(code(r'''PROVEEDOR = "gemini"            # "gemini" | "anthropic"
+archivo_clave = ROOT / "data/raw" / f"{PROVEEDOR}_key.txt"
+if FLAGS["EJECUTAR_LLM"] and not archivo_clave.exists():
+    from getpass import getpass
+    clave = getpass(f"Pegue la clave de {PROVEEDOR} y pulse Enter (no se muestra): ").strip()
+    if clave:
+        archivo_clave.write_text(clave + "\n", encoding="utf-8"); print("clave guardada en", archivo_clave.relative_to(ROOT), "(fuera del control de versiones)")
+    else:
+        print("no se guardó ninguna clave")
+else:
+    print("archivo de clave:", "existe" if archivo_clave.exists() else "no existe (ponga FLAGS['EJECUTAR_LLM'] = True y vuelva a ejecutar para introducirla)")'''))
 C.append(code(r'''def _buscar_api_key(var, archivo):
     k = os.environ.get(var, "").strip()
     if k: return k, "variable de entorno"
