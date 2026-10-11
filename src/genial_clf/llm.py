@@ -62,21 +62,41 @@ class AnthropicClassifier:
 
             self._client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
+    _temperature_ok: bool | None = None   # None = sin probar; False = el modelo/SDK no admite el parámetro
+
     def complete(self, system: str, user: str) -> str:
+        """Llama a la API. La temperatura se envía como parámetro extra (`extra_body`): los modelos recientes y el SDK ≥ 1.x
+        ya no la admiten; si la API la rechaza, se omite para el resto de la ejecución y queda registrado en el log."""
         if self.dry_run:
             return "Primera: Pedagógico\nSegunda: Ética"
-        for attempt in range(4):
+        n429 = 0
+        for attempt in range(8):
+            kw = dict(model=self.model, max_tokens=self.max_tokens, system=system, messages=[{"role": "user", "content": user}])
+            if self.temperature is not None and self._temperature_ok is not False:
+                kw["extra_body"] = {"temperature": self.temperature}
             try:
-                msg = self._client.messages.create(
-                    model=self.model, max_tokens=self.max_tokens, temperature=self.temperature,
-                    system=system, messages=[{"role": "user", "content": user}],
-                )
+                msg = self._client.messages.create(**kw)
+                if self._temperature_ok is None:
+                    self._temperature_ok = "extra_body" in kw
                 return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
-            except Exception as e:  # reintento con espera exponencial ante límites de cuota
-                wait = 2 ** attempt
-                log.warning("error en la API (%s); reintento en %ds", e, wait)
+            except Exception as e:
+                m = str(e)
+                if "temperature" in m and self._temperature_ok is not False:
+                    self._temperature_ok = False
+                    log.warning("el modelo %s no admite `temperature`; se continúa sin fijarla (la estabilidad se mide con las repeticiones)", self.model)
+                    continue
+                if "429" in m or "rate_limit" in m:
+                    n429 += 1
+                    if n429 >= 4:
+                        raise QuotaExhausted(f"límite de la API alcanzado para {self.model}; el progreso queda guardado y la celda puede reanudarse") from e
+                    wait = 30
+                elif "401" in m or "authentication" in m.lower() or "404" in m or "not_found" in m.lower():
+                    raise RuntimeError(f"la API rechazó la llamada ({m[:200]}): revise la clave y el nombre del modelo en config.yaml") from e
+                else:
+                    wait = min(2 ** attempt, 60)
+                log.warning("error en la API (%s); reintento en %ds", m[:160], wait)
                 time.sleep(wait)
-        raise RuntimeError("la API no respondió tras 4 intentos")
+        raise RuntimeError("la API no respondió tras 8 intentos")
 
 
 class GeminiClassifier:
@@ -192,8 +212,9 @@ def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, templat
                     time.sleep(wait)
                 raw = clf.complete(system.strip(), prompt); t_last = time.time()
                 p1, p2 = parse_response(raw, classes)
+                temp = cfg["llm"]["temperature"] if getattr(clf, "_temperature_ok", True) is not False else "n/a"
                 rows.append({"id_norma": r.id_norma, "run": run, "pred": p1, "pred_2": p2, "raw": raw.strip(),
-                             "model": clf.model, "provider": cfg["llm"].get("provider", "anthropic"), "temperature": cfg["llm"]["temperature"]})
+                             "model": clf.model, "provider": cfg["llm"].get("provider", "anthropic"), "temperature": temp})
                 done.add((int(r.id_norma), run))
                 if checkpoint:
                     pd.DataFrame(rows, columns=cols).to_csv(checkpoint, index=False)
@@ -219,6 +240,7 @@ def stability(preds: pd.DataFrame) -> dict:
 
 def save(preds: pd.DataFrame, path: str | Path) -> None:
     preds.to_csv(path, index=False)
-    meta = {"model": preds["model"].iloc[0], "temperature": float(preds["temperature"].iloc[0]),
+    t0 = preds["temperature"].iloc[0]
+    meta = {"model": preds["model"].iloc[0], "temperature": (None if str(t0) in ("n/a", "nan") else float(t0)),
             "runs": int(preds["run"].nunique()), "n": int(preds["id_norma"].nunique())}
     Path(str(path) + ".meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
