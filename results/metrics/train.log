@@ -38,3 +38,7 @@
 2026-10-11 03:28:42,877 · INFO · train · model_v1: CV val F1 0.547 (gap 0.40) · umbral de confianza 0.50 (tramo automático 14 %, exactitud 0.87) · guardado
 2026-10-11 03:28:44,628 · INFO · model · modelo guardado en /home/claude/repo_genial/models/best_model.pkl
 2026-10-11 03:28:44,629 · INFO · train · best_model: CV val F1 0.540 (gap 0.27) · umbral de confianza 0.29 (tramo automático 15 %, exactitud 0.85) · guardado
+2026-10-11 04:05:39,109 · INFO · model · modelo guardado en /home/claude/repo_genial/models/model_v1.pkl
+2026-10-11 04:05:39,111 · INFO · train · model_v1: CV val F1 0.547 (gap 0.40) · umbral de confianza 0.50 (tramo automático 14 %, exactitud 0.87) · guardado
+2026-10-11 04:05:40,802 · INFO · model · modelo guardado en /home/claude/repo_genial/models/best_model.pkl
+2026-10-11 04:05:40,803 · INFO · train · best_model: CV val F1 0.540 (gap 0.27) · umbral de confianza 0.29 (tramo automático 15 %, exactitud 0.85) · guardado

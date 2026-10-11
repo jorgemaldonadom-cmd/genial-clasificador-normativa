@@ -47,6 +47,10 @@ def parse_response(text: str, classes: list[str]) -> tuple[str | None, str | Non
     return canon(found.get("primera")), canon(found.get("segunda"))
 
 
+class QuotaExhausted(RuntimeError):
+    """La API rechaza las llamadas por cuota (429 repetido): detener sin perder el progreso guardado."""
+
+
 class AnthropicClassifier:
     """Cliente mínimo. Requiere ANTHROPIC_API_KEY en el entorno. Con `dry_run=True` no llama a la API."""
 
@@ -115,20 +119,28 @@ class GeminiClassifier:
             return "Primera: Pedagógico\nSegunda: Ética"
         from google.genai import types
 
-        for attempt in range(4):
+        n429 = 0
+        for attempt in range(8):
             try:
                 r = self._client.models.generate_content(
                     model=self.model, contents=user,
                     config=types.GenerateContentConfig(system_instruction=system, temperature=self.temperature, max_output_tokens=max(self.max_tokens, 64)),
                 )
                 return r.text or ""
-            except Exception as e:  # reintento con espera exponencial ante límites de cuota
-                if "404" in str(e) or "NOT_FOUND" in str(e):
+            except Exception as e:
+                msg = str(e)
+                if "404" in msg or "NOT_FOUND" in msg:
                     raise RuntimeError(f"el modelo {self.model} no está disponible para esta clave; use model_gemini: auto en config.yaml (modelos disponibles: {self.available_models(self._client)[:10]})") from e
-                wait = 2 ** attempt
-                log.warning("error en la API (%s); reintento en %ds", e, wait)
+                if "429" in msg or "RESOURCE_EXHAUSTED" in msg:   # límite por minuto (espera) o cuota diaria agotada (abandonar con progreso guardado)
+                    n429 += 1
+                    if n429 >= 3 or "per_day" in msg.lower() or "daily" in msg.lower():
+                        raise QuotaExhausted(f"cuota de la API agotada para {self.model}; el progreso queda guardado y la celda puede reanudarse más tarde") from e
+                    wait = 65
+                else:                                               # 503 u otros: espera exponencial
+                    wait = min(5 * 2 ** attempt, 120)
+                log.warning("error en la API (%s); reintento en %ds", msg[:160], wait)
                 time.sleep(wait)
-        raise RuntimeError("la API no respondió tras 4 intentos")
+        raise RuntimeError("la API no respondió tras 8 intentos")
 
 
 PROVIDERS = {"anthropic": (AnthropicClassifier, "ANTHROPIC_API_KEY"), "gemini": (GeminiClassifier, "GEMINI_API_KEY")}
@@ -145,8 +157,13 @@ def make_classifier(cfg: dict, dry_run: bool = False):
 
 
 def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, template_path: str | Path,
-                   repeats: int | None = None, dry_run: bool = False) -> pd.DataFrame:
-    """Clasifica el conjunto ciego `repeats` veces y devuelve una fila por (id_norma, ejecución)."""
+                   repeats: int | None = None, dry_run: bool = False, checkpoint: str | Path | None = None,
+                   progress: bool = True) -> pd.DataFrame:
+    """Clasifica el conjunto ciego `repeats` veces y devuelve una fila por (id_norma, ejecución).
+
+    Con `checkpoint` (CSV) guarda cada respuesta al instante y, si se vuelve a llamar, **reanuda** desde donde quedó:
+    pensado para cuotas gratuitas que se agotan a mitad de la ejecución. `llm.min_interval_s` en config.yaml espacia las
+    llamadas para no superar el límite por minuto."""
     classes = cfg["classes"]
     target = cfg["columns"]["target"]
     template = load_prompt_template(template_path)
@@ -154,16 +171,40 @@ def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, templat
     ex_block = "\n".join(f"[Ejemplo {i}] Texto: «{t}» → Dimensión: {d}"
                          for i, (t, d) in enumerate(zip(fewshot["texto"], fewshot[target]), start=1))
     clf = make_classifier(cfg, dry_run)
-    rows = []
-    for run in range(1, (repeats or cfg["llm"]["repeats"]) + 1):
-        for r in test.itertuples(index=False):
-            titulo, obs = r.texto.split(". ", 1) if ". " in r.texto else (r.texto, "")
-            prompt = build_prompt(user_tmpl, ex_block, titulo, obs)
-            raw = clf.complete(system.strip(), prompt)
-            p1, p2 = parse_response(raw, classes)
-            rows.append({"id_norma": r.id_norma, "run": run, "pred": p1, "pred_2": p2, "raw": raw.strip(),
-                         "model": clf.model, "provider": cfg["llm"].get("provider", "anthropic"), "temperature": cfg["llm"]["temperature"]})
-    out = pd.DataFrame(rows)
+    min_interval = 0 if dry_run else float(cfg["llm"].get("min_interval_s", 0))
+    cols = ["id_norma", "run", "pred", "pred_2", "raw", "model", "provider", "temperature"]
+    rows: list[dict] = []
+    done: set[tuple[int, int]] = set()
+    if checkpoint and Path(checkpoint).exists():
+        prev = pd.read_csv(checkpoint)
+        rows = prev.to_dict("records"); done = {(int(a), int(b)) for a, b in zip(prev["id_norma"], prev["run"])}
+        log.info("reanudando: %d respuestas ya guardadas en %s", len(rows), checkpoint)
+    total = len(test) * (repeats or cfg["llm"]["repeats"]); t_last = 0.0
+    try:
+        for run in range(1, (repeats or cfg["llm"]["repeats"]) + 1):
+            for r in test.itertuples(index=False):
+                if (int(r.id_norma), run) in done:
+                    continue
+                titulo, obs = r.texto.split(". ", 1) if ". " in r.texto else (r.texto, "")
+                prompt = build_prompt(user_tmpl, ex_block, titulo, obs)
+                wait = min_interval - (time.time() - t_last)
+                if wait > 0:
+                    time.sleep(wait)
+                raw = clf.complete(system.strip(), prompt); t_last = time.time()
+                p1, p2 = parse_response(raw, classes)
+                rows.append({"id_norma": r.id_norma, "run": run, "pred": p1, "pred_2": p2, "raw": raw.strip(),
+                             "model": clf.model, "provider": cfg["llm"].get("provider", "anthropic"), "temperature": cfg["llm"]["temperature"]})
+                done.add((int(r.id_norma), run))
+                if checkpoint:
+                    pd.DataFrame(rows, columns=cols).to_csv(checkpoint, index=False)
+                if progress and len(rows) % 10 == 0:
+                    print(f"  {len(rows)}/{total} respuestas", end="\r", flush=True)
+    except QuotaExhausted as e:
+        log.warning("%s (%d/%d respuestas guardadas)", e, len(rows), total)
+        if not rows:
+            raise
+    out = pd.DataFrame(rows, columns=cols)
+    out.attrs["completo"] = len(out) == total; out.attrs["total"] = total
     n_bad = int(out["pred"].isna().sum())
     if n_bad:
         log.warning("%d respuestas no parseables (se registran como NA y cuentan como error)", n_bad)

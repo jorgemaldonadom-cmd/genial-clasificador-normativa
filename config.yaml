@@ -38,8 +38,9 @@ llm:
   model: claude-sonnet-4-5            # modelo si provider = anthropic
   model_gemini: auto                  # si provider = gemini: «auto» elige el modelo flash de texto más reciente disponible para la clave (los nombres se retiran con el tiempo); la versión exacta queda registrada en cada ejecución
   temperature: 0.0
-  repeats: 3
+  repeats: 1                          # 3 para medir estabilidad; 1 con cuotas gratuitas (125 llamadas en lugar de 375)
   max_tokens: 40
+  min_interval_s: 6.5                 # segundos entre llamadas (≈ 9 por minuto, por debajo del límite gratuito); 0 con cuota de pago
 
 evaluation:
   bootstrap_iters: 2000
