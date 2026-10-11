@@ -84,7 +84,31 @@ class GeminiClassifier:
         if not dry_run:
             from google import genai  # importación diferida
 
+            logging.getLogger("google_genai").setLevel(logging.WARNING); logging.getLogger("httpx").setLevel(logging.WARNING)
             self._client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+            if model == "auto":
+                self.model = self.pick_model()
+
+    @staticmethod
+    def available_models(client) -> list[str]:
+        """Modelos de la cuenta que admiten generateContent (los nombres cambian con el tiempo: 404 si el modelo se retiró)."""
+        out = []
+        for m in client.models.list():
+            acts = getattr(m, "supported_actions", None) or []
+            if not acts or "generateContent" in acts:
+                out.append(m.name.replace("models/", ""))
+        return out
+
+    def pick_model(self) -> str:
+        """Elige el modelo «flash» de texto más reciente disponible para la clave (excluye lite, imagen, audio, embeddings, previews)."""
+        names = self.available_models(self._client)
+        excl = ("lite", "image", "tts", "audio", "live", "embedding", "preview", "exp", "thinking", "native", "robotics", "computer")
+        cand = [n for n in names if "flash" in n and not any(x in n for x in excl)] or [n for n in names if n.startswith("gemini") and not any(x in n for x in excl)]
+        if not cand:
+            raise RuntimeError(f"ningún modelo Gemini de texto disponible para esta clave; modelos vistos: {names[:20]}")
+        cand.sort(key=lambda n: tuple(int(x) if x.isdigit() else 0 for x in re.findall(r"\d+", n)), reverse=True)
+        log.info("modelos Gemini disponibles: %s → elegido %s", ", ".join(cand[:8]), cand[0])
+        return cand[0]
 
     def complete(self, system: str, user: str) -> str:
         if self.dry_run:
@@ -99,6 +123,8 @@ class GeminiClassifier:
                 )
                 return r.text or ""
             except Exception as e:  # reintento con espera exponencial ante límites de cuota
+                if "404" in str(e) or "NOT_FOUND" in str(e):
+                    raise RuntimeError(f"el modelo {self.model} no está disponible para esta clave; use model_gemini: auto en config.yaml (modelos disponibles: {self.available_models(self._client)[:10]})") from e
                 wait = 2 ** attempt
                 log.warning("error en la API (%s); reintento en %ds", e, wait)
                 time.sleep(wait)

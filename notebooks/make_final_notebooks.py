@@ -177,8 +177,9 @@ if FLAGS["EJECUTAR_LLM"]:
     else:
         from genial_clf import llm
         cfg_llm = {**cfg, "llm": {**cfg["llm"], "provider": proveedor}}
-        modelo = cfg_llm["llm"]["model_gemini"] if proveedor == "gemini" else cfg_llm["llm"]["model"]
-        print(f"proveedor: {proveedor} · modelo: {modelo} · clave leída de {origen} · {len(sp['test'])} normas × {cfg['llm']['repeats']} ejecuciones")
+        clf = llm.make_classifier(cfg_llm)   # con model_gemini: auto consulta los modelos disponibles para la clave y elige el flash más reciente
+        print(f"proveedor: {proveedor} · modelo: {clf.model} · clave leída de {origen} · {len(sp['test'])} normas × {cfg['llm']['repeats']} ejecuciones")
+        cfg_llm["llm"]["model" if proveedor == "anthropic" else "model_gemini"] = clf.model
         preds_llm = llm.classify_blind(sp["test"], sp["fewshot"], cfg_llm, cfg["paths"]["prompt"]); llm.save(preds_llm, RES / "pred_llm_runs.csv")
         preds_llm[preds_llm["run"] == 1][["id_norma", "pred", "pred_2"]].assign(conf=np.nan).to_csv(RES / "pred_llm.csv", index=False)
         print("rama LLM ejecutada:", llm.stability(preds_llm), "· sin respuesta parseable:", int(preds_llm["pred"].isna().sum()))

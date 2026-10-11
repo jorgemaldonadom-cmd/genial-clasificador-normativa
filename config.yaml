@@ -36,7 +36,7 @@ classic:
 llm:
   provider: gemini                    # anthropic | gemini (el cuaderno 00 lo ajusta según la clave que encuentre)
   model: claude-sonnet-4-5            # modelo si provider = anthropic
-  model_gemini: gemini-2.5-flash      # modelo si provider = gemini; se registra la versión exacta en cada ejecución
+  model_gemini: auto                  # si provider = gemini: «auto» elige el modelo flash de texto más reciente disponible para la clave (los nombres se retiran con el tiempo); la versión exacta queda registrada en cada ejecución
   temperature: 0.0
   repeats: 3
   max_tokens: 40
