@@ -31,20 +31,32 @@ _LINE = re.compile(r"^(Primera|Segunda)\s*:\s*(.+?)\s*$", re.I | re.M)
 
 
 def parse_response(text: str, classes: list[str]) -> tuple[str | None, str | None]:
-    """Extrae «Primera: X» y «Segunda: Y»; normaliza a los nombres canónicos de las clases."""
-    found = {m.group(1).lower(): m.group(2) for m in _LINE.finditer(text)}
+    """Extrae la primera y la segunda dimensión. Acepta el formato pedido («Primera: X» / «Segunda: Y») y, como
+    tolerancia, respuestas sin etiqueta: las dos primeras líneas (o fragmentos) que nombren una clase, en orden."""
+    if not isinstance(text, str) or not text.strip():
+        return None, None
     norm = {c.lower(): c for c in classes}
 
     def canon(v: str | None) -> str | None:
         if v is None:
             return None
-        v = v.strip().strip(".").lower()
+        v = v.strip().strip(".").strip("*").strip().lower()
         for k, c in norm.items():
             if v.startswith(k[:6]):
                 return c
         return None
 
-    return canon(found.get("primera")), canon(found.get("segunda"))
+    found = {m.group(1).lower(): m.group(2) for m in _LINE.finditer(text)}
+    p1, p2 = canon(found.get("primera")), canon(found.get("segunda"))
+    if p1 is None:  # sin etiquetas: buscar nombres de clase en orden de aparición
+        hits = []
+        for frag in re.split(r"[\n,;/]+", text):
+            c = canon(re.sub(r"^\s*(primera|segunda|1|2)\s*[:.)-]\s*", "", frag, flags=re.I))
+            if c and c not in hits:
+                hits.append(c)
+        p1 = hits[0] if hits else None
+        p2 = hits[1] if len(hits) > 1 else p2
+    return p1, p2
 
 
 class QuotaExhausted(RuntimeError):
@@ -196,9 +208,11 @@ def classify_blind(test: pd.DataFrame, fewshot: pd.DataFrame, cfg: dict, templat
     rows: list[dict] = []
     done: set[tuple[int, int]] = set()
     if checkpoint and Path(checkpoint).exists():
-        prev = pd.read_csv(checkpoint)
+        prev = pd.read_csv(checkpoint, keep_default_na=False)
+        prev = prev[prev["raw"].astype(str).str.strip() != ""]          # las respuestas vacías se vuelven a consultar
+        prev[["pred", "pred_2"]] = [list(parse_response(t, classes)) for t in prev["raw"].astype(str)]   # re-parseo con el parser vigente
         rows = prev.to_dict("records"); done = {(int(a), int(b)) for a, b in zip(prev["id_norma"], prev["run"])}
-        log.info("reanudando: %d respuestas ya guardadas en %s", len(rows), checkpoint)
+        log.info("reanudando: %d respuestas ya guardadas en %s (%d sin parsear)", len(rows), checkpoint, int(prev["pred"].isna().sum() if len(prev) else 0))
     total = len(test) * (repeats or cfg["llm"]["repeats"]); t_last = 0.0
     try:
         for run in range(1, (repeats or cfg["llm"]["repeats"]) + 1):

@@ -39,7 +39,7 @@ llm:
   model_gemini: auto                  # si provider = gemini: «auto» elige el modelo flash de texto más reciente disponible para la clave (los nombres se retiran con el tiempo); la versión exacta queda registrada en cada ejecución
   temperature: 0.0
   repeats: 3                          # 3 ejecuciones para medir estabilidad (375 llamadas); 1 con cuotas gratuitas
-  max_tokens: 40
+  max_tokens: 120                     # suficiente para «Primera: …\nSegunda: …»; con 40 algunos modelos devolvían respuesta vacía
   min_interval_s: 0                   # segundos entre llamadas; 6.5 con la cuota gratuita de Gemini (≈ 9 por minuto)
 
 evaluation:
