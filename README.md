@@ -4,7 +4,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![scikit-learn 1.8](https://img.shields.io/badge/scikit--learn-1.8-f89939.svg)](https://scikit-learn.org/)
-[![Streamlit](https://img.shields.io/badge/app-Streamlit-ff4b4b.svg)](app/app.py)
+[![Streamlit App](https://img.shields.io/badge/app-genial--clasificador.streamlit.app-ff4b4b.svg)](https://genial-clasificador.streamlit.app)
 [![Tests](https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa/actions/workflows/tests.yml/badge.svg)](https://github.com/jorgemaldonadom-cmd/genial-clasificador-normativa/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.1.0-7A1F3D.svg)](CHANGELOG.md)
@@ -133,7 +133,7 @@ O, sin terminal, **`notebooks/00_ejecutar_todo.ipynb`**: cuaderno maestro que ej
 
 ## 6. Interfaz de usuario
 
-**Aplicación en línea:** _enlace de Streamlit Community Cloud (se publica con la versión 1.0; véase `docs/manual_usuario.md`)_.
+**Aplicación en línea:** **https://genial-clasificador.streamlit.app** (Streamlit Community Cloud, Python 3.11, se reconstruye con cada *push* a `main`; si lleva días sin visitas tarda ~1 min en despertar).
 
 Aplicación Streamlit con cuatro pestañas: **Clasificar una norma** (formulario con validación, ejemplos precargados, botón, indicador de progreso, dimensión propuesta, segunda candidata, gráfico de probabilidades, aviso de revisión humana con motivos, términos influyentes), **Lote (CSV)** (plantilla, hasta 500 filas, validación por fila, gráfico de distribución, exportar CSV), **Acerca del modelo** (ficha, métricas, limitaciones) e **Historial** de sesión. Interfaz en español e inglés; diseño adaptable.
 

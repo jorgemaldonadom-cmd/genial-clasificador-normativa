@@ -1,5 +1,8 @@
 # Historial de versiones
 
+## v1.1.1 — 18 de octubre de 2026
+- Aplicación desplegada en Streamlit Community Cloud: https://genial-clasificador.streamlit.app (README §6, manual de usuario, QR en la diapositiva 9 del pitch).
+
 ## v1.1.0 — 11 de octubre de 2026
 - Rama LLM *few-shot* ejecutada (Claude Sonnet 5.5, 15 ejemplos, 3 ejecuciones): exactitud 0.64, F1 macro 0.55, κ 0.53; empate estadístico con el modelo clásico. Resumen en `results/metrics/llm_resumen.json`; cuaderno 05 con la comparación.
 - `llm.py`: soporte de Gemini, selección automática de modelo, compatibilidad con SDK ≥ 1.x, parser tolerante, guardado incremental y reanudación.

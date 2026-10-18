@@ -4,7 +4,7 @@ Aplicación web (Streamlit) que propone la dimensión de una norma sobre intelig
 
 ## 1. Acceso
 
-* **En línea**: enlace publicado en el README del repositorio (Streamlit Community Cloud).
+* **En línea**: **https://genial-clasificador.streamlit.app** (Streamlit Community Cloud). Si la aplicación lleva días sin visitas, la primera carga tarda alrededor de un minuto mientras despierta.
 * **Local**: con Python ≥ 3.11 y las dependencias instaladas (`pip install -r app/requirements.txt`), ejecute desde la raíz del repositorio:
 
   ```bash
