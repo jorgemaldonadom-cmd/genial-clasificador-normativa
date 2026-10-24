@@ -149,55 +149,85 @@ Manual: [`docs/manual_usuario.md`](docs/manual_usuario.md). Pruebas de la interf
 
 ## 7. Estructura del repositorio
 
+Sigue la estructura requerida por el proyecto final; los elementos marcados con ➕ son adiciones propias del proyecto.
+
 ```
-├── README.md · LICENSE (MIT) · DATA_LICENSE.md · CITATION.cff · CHANGELOG.md
-├── requirements.txt · config.yaml · .gitignore
-├── .github/workflows/tests.yml        integración continua (pytest)
-├── app/
-│   ├── app.py                         aplicación Streamlit
-│   ├── requirements.txt               dependencias mínimas para el despliegue
-│   └── assets/                        capturas de pantalla
-├── data/
-│   ├── README.md                      procedencia, hash, distribución, cómo colocar el corpus
-│   ├── raw/                           corpus e instrumento autorizados (NO versionados)
-│   ├── processed/ · splits/           generados por el pipeline (NO versionados)
-│   └── samples/                       muestra pública de 40 normas y plantilla few-shot
-├── docs/
-│   ├── planificacion.md · analisis_datos.md · arquitectura.md
-│   ├── optimizacion.md · consideraciones_eticas.md · manual_usuario.md
-│   ├── model_card.md · datasheet_corpus.md · protocolo_codificacion_ciega.md
-│   └── decisiones_metodologicas_v1.md · fig_experimento.png · fig_operacion.png
-├── models/
-│   ├── best_model.pkl (+ .json)       modelo de producción (regla 1-DE, umbral 0.29)
-│   ├── model_v1.pkl (+ .json)         modelo base (umbral 0.50)
-│   ├── entrenamiento.json · README.md
-├── notebooks/
-│   ├── 00_ejecutar_todo.ipynb         cuaderno maestro paso a paso
-│   ├── 01_exploracion.ipynb           EDA (Semana 2)
-│   ├── 02_preprocesamiento.ipynb · 03_modelado.ipynb
-│   ├── 04_optimizacion.ipynb · 05_evaluacion.ipynb
-│   ├── make_final_notebooks.py        generador de los cuadernos 00 y 02-05
-│   ├── figuras/ · eda_resumen.json
-│   └── anexos/                        experimento del Sprint 3 y diagnóstico de overfitting (Semana 3)
-├── prompts/clasificador_v0.1.md       prompt versionado de la rama LLM
-├── results/
-│   ├── figures/                       figuras 10-18 (+ overfitting/)
-│   ├── metrics/                       CSV/JSON de todas las evaluaciones (optimizacion/, fairness/, overfitting/)
-│   └── reports/                       entregables semanales (PDF/DOCX/PPTX) y documento técnico
-├── scripts/
-│   ├── run_pipeline.py                CLI del experimento del Sprint 3
-│   ├── optimizar.py                   Optuna + análisis de sensibilidad
-│   └── fairness_grupos.py             auditoría de equidad
-├── src/
-│   ├── __init__.py · utils.py · data_processing.py · model.py · train.py · evaluate.py
-│   └── genial_clf/                    paquete: data, split, coder, classic, baselines, evaluate,
-│                                      reliability, imn, llm, optimize, tracking, config
-└── tests/
-    ├── test_data_processing.py · test_model.py · test_app.py   (14 pruebas)
-    └── test_pipeline.py               pruebas del paquete genial_clf (Sprint 3)
+genial-clasificador-normativa/
+│
+├── README.md                          # Descripción principal del proyecto
+├── requirements.txt                   # Dependencias de Python
+├── .gitignore                         # Archivos a ignorar (corpus, claves, predicciones con texto)
+├── LICENSE                            # Licencia MIT del código
+├── config.yaml                        # ➕ Configuración centralizada (rutas, semilla, hiperparámetros, gobernanza)
+├── CHANGELOG.md · CITATION.cff        # ➕ Historial de versiones y cita
+├── DATA_LICENSE.md                    # ➕ Condiciones de uso de los datos GENIAL
+├── .github/workflows/tests.yml        # ➕ Integración continua (pytest)
+│
+├── docs/                              # Documentación
+│   ├── planificacion.md               # Documento de planificación inicial
+│   ├── analisis_datos.md              # Análisis exploratorio de datos
+│   ├── arquitectura.md                # Diseño del modelo y arquitectura
+│   ├── optimizacion.md                # Proceso de optimización (Workshop S5)
+│   ├── consideraciones_eticas.md      # Análisis ético del proyecto
+│   ├── manual_usuario.md              # Guía para usuarios finales
+│   ├── model_card.md · datasheet_corpus.md            # ➕ Fichas del modelo y del corpus
+│   └── protocolo_codificacion_ciega.md · decisiones_metodologicas_v1.md · fig_*.png   # ➕
+│
+├── data/                              # Datos del proyecto
+│   ├── raw/                           # Corpus e instrumento autorizados (NO versionados; solo .gitkeep)
+│   ├── processed/                     # Corpus depurado generado por el pipeline (NO versionado)
+│   ├── splits/                        # ➕ Particiones train / few-shot / prueba ciega (NO versionadas)
+│   ├── samples/                       # ➕ Muestra pública de 40 normas, plantilla few-shot, CSV de demo
+│   └── README.md                      # Descripción de los datos
+│
+├── notebooks/                         # Jupyter notebooks (ejecutados, con salidas)
+│   ├── 01_exploracion.ipynb           # EDA
+│   ├── 02_preprocesamiento.ipynb      # Limpieza y preparación
+│   ├── 03_modelado.ipynb              # Entrenamiento de modelos
+│   ├── 04_optimizacion.ipynb          # Optimización de hiperparámetros
+│   ├── 05_evaluacion.ipynb            # Evaluación final (prueba ciega, enrutamiento, equidad, LLM)
+│   ├── 00_ejecutar_todo.ipynb         # ➕ Cuaderno maestro paso a paso (reproduce todo y lanza la app)
+│   ├── make_final_notebooks.py        # ➕ Generador de los cuadernos 00 y 02-05
+│   ├── figuras/ · eda_resumen.json    # ➕ Figuras y resumen del EDA
+│   └── anexos/                        # ➕ Experimento del Sprint 3 y diagnóstico de overfitting (Semana 3)
+│
+├── src/                               # Código fuente
+│   ├── __init__.py
+│   ├── data_processing.py             # Funciones de procesamiento
+│   ├── model.py                       # Definición del modelo y Predictor
+│   ├── train.py                       # Script de entrenamiento (+ calibración del umbral)
+│   ├── evaluate.py                    # Script de evaluación
+│   ├── utils.py                       # Funciones auxiliares
+│   └── genial_clf/                    # ➕ Paquete interno: data, split, coder, classic, baselines,
+│                                      #    evaluate, reliability, imn, llm, optimize, tracking, config
+│
+├── models/                            # Modelos entrenados
+│   ├── best_model.pkl (+ .json)       # Mejor modelo guardado (regla 1-DE, umbral 0.29)
+│   ├── model_v1.pkl (+ .json)         # Versión anterior (configuración base, umbral 0.50)
+│   ├── entrenamiento.json             # ➕ Registro de la última ejecución de train.py
+│   └── README.md                      # Descripción de modelos
+│
+├── app/                               # Aplicación / Interfaz
+│   ├── app.py                         # Aplicación principal (Streamlit)
+│   ├── requirements.txt               # Dependencias de la app
+│   └── assets/                        # Capturas de pantalla
+│
+├── tests/                             # Pruebas unitarias
+│   ├── test_data_processing.py
+│   ├── test_model.py
+│   ├── test_app.py
+│   └── test_pipeline.py               # ➕ Pruebas del paquete genial_clf
+│
+├── results/                           # Resultados y visualizaciones
+│   ├── figures/                       # Gráficos generados (figuras 10-18 + overfitting/)
+│   ├── metrics/                       # Métricas de evaluación (CSV/JSON; optimizacion/, fairness/, overfitting/)
+│   └── reports/                       # Reportes generados: documento técnico, entregables semanales, presentaciones
+│
+├── scripts/                           # ➕ Puntos de entrada: run_pipeline.py, optimizar.py, fairness_grupos.py
+└── prompts/                           # ➕ Prompt versionado de la rama LLM
 ```
 
-Convenciones de código: PEP 8, *docstrings* en todos los módulos y funciones públicas, `logging` en lugar de `print` en el código de biblioteca, configuración centralizada en `config.yaml`, semilla fija (2026). Flujo Git: `main` (versiones etiquetadas `v0.1` … `v1.0.0`) y `dev` para trabajo en curso; historial en [`CHANGELOG.md`](CHANGELOG.md).
+Convenciones de código: PEP 8, *docstrings* en todos los módulos y funciones públicas, `logging` en lugar de `print` en el código de biblioteca, configuración centralizada en `config.yaml`, semilla fija (2026). Flujo Git: `main` (versiones etiquetadas `v1.0.0`, `v1.1.0`, `v1.1.1`) y `dev` para trabajo en curso; historial en [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 8. Consideraciones éticas
 
@@ -231,7 +261,7 @@ Al consorcio del proyecto **GENIAL** (Erasmus+, Unión Europea) por el acceso al
 
 | Vídeo | Enlace |
 |---|---|
-| *Pitch* del proyecto (5 min, con demostración de la aplicación) | _pendiente de publicación (YouTube, no listado)_ · diapositivas en [`results/reports/proyecto_final/`](results/reports/proyecto_final/) |
+| *Pitch* del proyecto (5 min, con demostración de la aplicación) | **https://youtu.be/b1v6jRUY0oM** (YouTube, no listado) · diapositivas en [`results/reports/proyecto_final/`](results/reports/proyecto_final/) |
 | Respuestas a las preguntas del comité | _pendiente de publicación_ |
 | Presentación técnica (15 min, Sprint 3) | diapositivas en [`results/reports/presentacion_final/`](results/reports/presentacion_final/) |
 

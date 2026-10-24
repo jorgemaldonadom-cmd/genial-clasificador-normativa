@@ -1,5 +1,8 @@
 # Historial de versiones
 
+## v1.1.2 — 24 de octubre de 2026
+- Enlace al vídeo pitch en el README (§12); árbol del repositorio documentado según la estructura requerida.
+
 ## v1.1.1 — 18 de octubre de 2026
 - Aplicación desplegada en Streamlit Community Cloud: https://genial-clasificador.streamlit.app (README §6, manual de usuario, QR en la diapositiva 9 del pitch).
 
