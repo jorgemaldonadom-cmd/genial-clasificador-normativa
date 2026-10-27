@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## v1.1.3 — 27 de octubre de 2026
+- Vídeo pitch regrabado con la estructura de venta de la Semana 6 (gancho, problema, solución, evidencia, ética y riesgos, impacto y plan, cierre con petición): nuevo enlace en README §12; diapositivas `Grupo_9_Video_Pitch_5min.pptx/.pdf` sustituidas por la versión 3 (8 diapositivas).
+- Vídeo de respuestas a las preguntas del comité (1, 3, 5, 7 y 9) enlazado en README §12.
+
 ## v1.1.2 — 24 de octubre de 2026
 - Enlace al vídeo pitch en el README (§12); árbol del repositorio documentado según la estructura requerida.
 

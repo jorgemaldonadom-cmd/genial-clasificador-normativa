@@ -37,3 +37,4 @@ results/metrics/pred_llm*
 # guiones de video (se entregan fuera del repositorio)
 results/reports/**/Grupo_9_Guion_*
 results/reports/**/Grupo_9_Guia_*
+results/reports/**/Grupo_9_Respuestas_*

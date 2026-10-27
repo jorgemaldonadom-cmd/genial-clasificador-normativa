@@ -261,8 +261,8 @@ Al consorcio del proyecto **GENIAL** (Erasmus+, Unión Europea) por el acceso al
 
 | Vídeo | Enlace |
 |---|---|
-| *Pitch* del proyecto (5 min, con demostración de la aplicación) | **https://youtu.be/b1v6jRUY0oM** (YouTube, no listado) · diapositivas en [`results/reports/proyecto_final/`](results/reports/proyecto_final/) |
-| Respuestas a las preguntas del comité | _pendiente de publicación_ |
+| *Pitch* del proyecto (5 min: gancho, problema, solución, evidencia, ética y riesgos, impacto y plan, cierre) | **https://youtu.be/08XZpkKHZ_o** (YouTube, no listado) · diapositivas en [`results/reports/proyecto_final/Grupo_9_Video_Pitch_5min.pdf`](results/reports/proyecto_final/Grupo_9_Video_Pitch_5min.pdf) |
+| Respuestas a las preguntas del comité (preguntas 1, 3, 5, 7 y 9; ≤ 2 min cada una) | **https://youtu.be/RgHMRyp3Y28** (YouTube, no listado) |
 | Presentación técnica (15 min, Sprint 3) | diapositivas en [`results/reports/presentacion_final/`](results/reports/presentacion_final/) |
 
 ## 13. Documentación
